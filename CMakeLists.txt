@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(BatController-Firmware)
 set(PORT /dev/ttyUSB0)
-set(DEVICE cm:esp32:circuitpet)
+set(DEVICE cm:esp32:batctrl)
 set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32 OR CYGWIN)
