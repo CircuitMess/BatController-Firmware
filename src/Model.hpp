@@ -38,7 +38,7 @@ enum MarkerAction {
 
 struct CamFrame{
 	uint32_t jpgSize;
-	uint8_t* jpg;
+	const uint8_t* jpg;
 	int8_t motors[4];
 	LineStatus lineStatus;
 	Circle ballsDetected[4];
