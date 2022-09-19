@@ -7,7 +7,6 @@
 #include <ESPAsyncWebServer.h>
 #include <pgmspace.h>
 #include <Loop/LoopManager.h>
-#include "src/Arucogen/Arucogen.h"
 
 Display* display;
 Sprite* baseSprite;
@@ -24,10 +23,7 @@ void setup(){
 	Serial.printf("created: %d\n", baseSprite->created());
 
 
-	Arucogen ar(baseSprite);
 	int pixelPerTile = 15;
-
-	ar.generateMarker(3);
 	baseSprite->push();
 
 
