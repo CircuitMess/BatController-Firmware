@@ -9,7 +9,6 @@
 #include <ESPAsyncWebServer.h>
 #include <Loop/LoopManager.h>
 #include <cstdlib>
-#include "../Arucogen.h"
 #include <Nibble.h>
 
 AsyncWebServer server(63);
@@ -54,8 +53,7 @@ void Pair::Broadcast::onStart(){
 
 	server.begin();
 	//TODO: generira Aruco i prikazuje ga na ekran
-//	Arucogen arucogen(Nibble.getDisplay()->getBaseSprite());
-//	arucogen.generateMarker(randNum);
+
 
 	LoopManager::addListener(this);
 }
