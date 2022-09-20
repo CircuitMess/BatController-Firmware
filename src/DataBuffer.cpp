@@ -13,8 +13,6 @@ DataBuffer::DataBuffer(const size_t size, bool local) : size(size){
 
 	if(!buffer){
 		Serial.printf("Couldn alloc DataBuffer, available: %zu, requested: %zu", ESP.getMaxFreeBlockSize(), size);
-	}else{
-		Serial.println("DataBuffer alloced");
 	}
 }
 
