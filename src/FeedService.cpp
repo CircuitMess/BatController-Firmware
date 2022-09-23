@@ -47,6 +47,8 @@ bool FeedService::connect(){
 	if(!c){
 		Serial.println("couldnt connect");
 	}
+
+	return c;
 }
 
 FeedService::State FeedService::getState(){
