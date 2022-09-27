@@ -7,13 +7,14 @@
 
 class Pair::Broadcast : public State, private LoopListener{
 public:
-	Broadcast(Pair::PairService* pairService);
+	Broadcast(Pair::PairService *pairService, uint16_t id);
 	~Broadcast();
 	void loop(uint micros) override;
 protected:
 	void onStart() override;
 	void onStop() override;
 private:
+    uint16_t id;
 };
 
 

@@ -3,8 +3,8 @@
 #include "State.h"
 #include "Broadcast.h"
 
-Pair::PairService::PairService(){
-	currentState = new Pair::Broadcast(this);
+Pair::PairService::PairService(uint16_t id) {
+	currentState = new Pair::Broadcast(this, id);
 	currentState->start();
 }
 

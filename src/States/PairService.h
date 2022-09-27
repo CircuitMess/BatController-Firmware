@@ -3,6 +3,7 @@
 #define BATCONTROLLER_FIRMWARE_PAIRSERVICE_H
 
 
+#include <cstdint>
 
 namespace Pair{
 	class State;
@@ -11,7 +12,7 @@ namespace Pair{
 }
 class Pair::PairService {
 public:
-	PairService();
+	PairService(uint16_t id);
 	~PairService();
 	void setState(Pair::State* state);
 private:
