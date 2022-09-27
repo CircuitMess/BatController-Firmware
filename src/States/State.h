@@ -10,8 +10,8 @@ public:
 	State(Pair::PairService* pairService);
 	virtual ~State() = default;
 
-	virtual void start();
-	virtual void stop();
+	void start();
+	void stop();
 
 protected:
 	virtual void onStart() = 0;
