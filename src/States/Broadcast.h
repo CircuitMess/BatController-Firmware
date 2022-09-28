@@ -15,6 +15,8 @@ protected:
 	void onStop() override;
 private:
     uint16_t id;
+    char* ssid = "Batmobile ";
+    char password[8];
 };
 
 

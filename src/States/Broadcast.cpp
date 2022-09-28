@@ -5,19 +5,12 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
 #include <Loop/LoopManager.h>
 #include <cstdlib>
 #include "../NetworkConfig.h"
 
+AsyncServer* server;
 
-AsyncWebServer server(63);
-char* ssid = "Batmobile ";
-char password[9];
-
-IPAddress local_IP(10, 0, 0, 1);
-IPAddress gateway(10, 0, 0, 1);
-IPAddress subnet(255, 255, 255, 252);
 
 
 Pair::Broadcast::Broadcast(Pair::PairService *pairService, uint16_t id) : State(pairService), id(id){
