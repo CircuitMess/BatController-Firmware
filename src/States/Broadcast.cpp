@@ -25,15 +25,15 @@ void Pair::Broadcast::onStart(){
 	std::sprintf(numChar, "%d", id);
 	strcat(ssid, numChar);
 
-    std::string batmobile = "Batmobile";
-    int i = 0;
-	for(char& c: batmobile){
-		int temp = (int) c;
-		temp = temp + id * 5 + 16;
-		temp = temp % (121 - 64) + 64;
-		password[i] = (char) temp;
-		i++;
-	}
+    char batmobile[8];
+    strncpy(batmobile,"Batmobil", sizeof(batmobile));
+    for(int i = 0; i < 8; i++){
+        char temp =  batmobile[i];
+        temp = temp + id * 5 + 16;
+        temp = temp % ('z' - 'A') + 'A';
+        password[i] = temp;
+    }
+
 
 	Serial.print("Setting AP (Access Point)…");
 	WiFi.softAP(ssid, password);
