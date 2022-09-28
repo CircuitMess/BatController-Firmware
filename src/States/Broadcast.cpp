@@ -8,6 +8,7 @@
 #include <ESPAsyncWebServer.h>
 #include <Loop/LoopManager.h>
 #include <cstdlib>
+#include "../NetworkConfig.h"
 
 
 AsyncWebServer server(63);
@@ -43,7 +44,7 @@ void Pair::Broadcast::onStart(){
 
 	Serial.print("Setting AP (Access Point)…");
 	WiFi.softAP(ssid, password);
-	WiFi.softAPConfig(local_IP, gateway, subnet);
+	WiFi.softAPConfig(controllerIP, gateway, subnet);
 
 	IPAddress IP = WiFi.softAPIP();
 	Serial.print("\nAP IP address: ");
