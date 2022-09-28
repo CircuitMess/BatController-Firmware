@@ -11,7 +11,6 @@
 
 
 AsyncWebServer server(63);
-std::string batmobile = "Batmobile";
 char* ssid = "Batmobile ";
 char password[9];
 
@@ -31,7 +30,9 @@ void Pair::Broadcast::onStart(){
 	char numChar[3];
 	std::sprintf(numChar, "%d", id);
 	strcat(ssid, numChar);
-	int i = 0;
+
+    std::string batmobile = "Batmobile";
+    int i = 0;
 	for(char& c: batmobile){
 		int temp = (int) c;
 		temp = temp + id * 5 + 16;
@@ -47,6 +48,7 @@ void Pair::Broadcast::onStart(){
 	IPAddress IP = WiFi.softAPIP();
 	Serial.print("\nAP IP address: ");
 	Serial.printf(IP.toString().c_str());
+    Serial.printf("\nPass: %s", password);
 	server.begin();
 
 	LoopManager::addListener(this);
