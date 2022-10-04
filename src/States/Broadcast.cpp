@@ -3,11 +3,12 @@
 
 #include "Broadcast.h"
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESPAsyncTCP.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
 #include <Loop/LoopManager.h>
 #include <cstdlib>
 #include "../NetworkConfig.h"
+#include <cstring>
 
 AsyncServer* server;
 
