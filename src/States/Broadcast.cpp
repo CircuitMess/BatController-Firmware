@@ -21,31 +21,32 @@ Pair::Broadcast::~Broadcast(){
 
 }
 
-void Pair::Broadcast::onStart(){
-	char numChar[3];
-	std::sprintf(numChar, "%d", id);
-	strcat(ssid, numChar);
-
-    char batmobile[8];
-    strncpy(batmobile,"Batmobil", sizeof(batmobile));
-    for(int i = 0; i < 8; i++){
+void Pair::Broadcast
+::onStart(){
+    String ssidString = "Batmobile ";
+    ssidString += String(id);
+    Serial.printf("%s\n",ssidString.c_str());
+    ssid = ssidString.c_str();
+//    ssidString.toCharArray(ssid,ssidString.length() + 1);
+    memset(password, 0, 10);
+    String batmobile = "Batmobile";
+    for(int i = 0; i < 9; i++){
         char temp =  batmobile[i];
         temp = temp + id * 5 + 16;
         temp = temp % ('z' - 'A') + 'A';
         password[i] = temp;
     }
+    Serial.printf("\nPass: %s\n", password);
 
-
-	Serial.print("Setting AP (Access Point)…");
+	Serial.print("Setting AP (Access Point)...");
 	WiFi.softAP(ssid, password);
 	WiFi.softAPConfig(controllerIP, gateway, subnet);
 
 	IPAddress IP = WiFi.softAPIP();
 	Serial.print("\nAP IP address: ");
 	Serial.printf(IP.toString().c_str());
-    Serial.printf("\nPass: %s", password);
 
-    server = new AsyncServer(63);
+    server = new AsyncServer(port);
 
     server->onClient([this](void* arg, AsyncClient* client){
 
