@@ -1,5 +1,4 @@
-#define ICACHE_RODATA_ATTR  __attribute__((section(".irom.text")))
-#define PROGMEM   ICACHE_RODATA_ATTR
+
 
 #include "Broadcast.h"
 #include <Arduino.h>
@@ -44,40 +43,7 @@ void Pair::Broadcast
 	Serial.print("\nAP IP address: ");
 	Serial.printf(IP.toString().c_str());
 
-    server = new AsyncServer(port);
-
-    server->onClient([this](void* arg, AsyncClient* client){
-
-        Serial.println("new client connected");
-
-        client->onConnect([this](void*, AsyncClient* server){
-            Serial.println("client connected to port");
-        }, nullptr);
-
-        client->onDisconnect([this](void*, AsyncClient* server){
-            //TODO - reconnect to wifi in case of total disconnect
-            Serial.println("client disconnected from port");
-        });
-
-        client->onError([this](void*, AsyncClient* c, int8_t error){
-            Serial.print("error occured: ");
-            Serial.println(c->errorToString(error));
-        }, nullptr);
-
-        client->onData([this](void* arg, AsyncClient* server, void* data, size_t len){
-            Serial.printf("CLIENT DATA\n");
-            Serial.printf("%s", data);
-//            Serial.write((uint8_t *)data, len);
-        });
-
-        client->onTimeout([this](void*, AsyncClient*, uint32_t time){
-            Serial.printf("timeout error %d passed\n", time);
-        }, nullptr);
-
-    }, nullptr);
-
-
-	server->begin();
+    Com.begin();
 
 	LoopManager::addListener(this);
 }
