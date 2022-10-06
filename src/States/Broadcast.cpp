@@ -7,11 +7,9 @@
 #include <AsyncTCP.h>
 #include <Loop/LoopManager.h>
 #include <cstdlib>
-#include "../NetworkConfig.h"
 #include <cstring>
-
-AsyncServer* server;
-
+#include <Communication.h>
+#include <NetworkConfig.h>
 
 
 Pair::Broadcast::Broadcast(Pair::PairService *pairService, uint16_t id) : State(pairService), id(id){
