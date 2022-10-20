@@ -1,7 +1,7 @@
 #ifndef BATMOBILE_FIRMWARE_NETWORKCONFIG_H
 #define BATMOBILE_FIRMWARE_NETWORKCONFIG_H
 
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 
 extern IPAddress batmobileIP;
 extern IPAddress controllerIP;

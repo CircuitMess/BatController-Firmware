@@ -36,7 +36,7 @@ enum MarkerAction {
 
 
 
-struct CamFrame{
+struct DriveInfo{
 	uint32_t jpgSize;
 	const uint8_t* jpg;
 	int8_t motors[4];
