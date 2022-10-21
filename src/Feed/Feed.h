@@ -4,7 +4,7 @@
 #include <functional>
 #include <Loop/LoopListener.h>
 #include <AsyncUDP.h>
-#include "../Model.hpp"
+#include <DriveInfo.h>
 #include <Util/Settings.h>
 #include <Buffer/RingBuffer.h>
 #include <Util/Task.h>
@@ -45,7 +45,7 @@ private:
 	Task decodeThread;
 	static void decodeFunc(Task* t);
 	void processFrame(DriveInfo& info, Color* dest);
-	static bool findFrame(RingBuffer& buf, DriveInfo& out);
+	static bool findFrame(RingBuffer& buf, std::unique_ptr<DriveInfo>& out);
 
 	RingBuffer buf;
 	JPEGDEC jpeg;

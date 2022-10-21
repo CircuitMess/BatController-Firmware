@@ -1,7 +1,6 @@
 #ifndef BATCONTROLLER_FIRMWARE_DOUBLEBUFFER_H
 #define BATCONTROLLER_FIRMWARE_DOUBLEBUFFER_H
 
-#include "../Model.hpp"
 #include <Display/Color.h>
 #include <array>
 

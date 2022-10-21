@@ -3,6 +3,7 @@
 #include <Loop/LoopManager.h>
 
 const char* tag = "Feed";
+
 #define FRAME_LEN 8
 const uint8_t frameStart[FRAME_LEN] = { 0x18, 0x20, 0x55, 0xf2, 0x5a, 0xc0, 0x4d, 0xaa };
 const uint8_t frameEnd[FRAME_LEN] = { 0x42, 0x2c, 0xd9, 0xe3, 0xff, 0xa0, 0x11, 0x01 };
@@ -23,7 +24,7 @@ void Feed::onFrame(std::function<void(const DriveInfo&, const Color* frame)> fun
 }
 
 void Feed::decodeFunc(Task* t){
-	auto feed = *(Feed*)t->arg;
+	auto feed = *(Feed*) t->arg;
 	auto& client = feed.client;
 
 	ESP_LOGI(tag, "connecting to  %s @ port %d\n", batmobileIP.toString().c_str(), port);
@@ -36,21 +37,22 @@ void Feed::decodeFunc(Task* t){
 		feed.buf.write(packet.data(), packet.length());
 	});
 
-	DriveInfo frame{};
-
 	while(true){
 
+		std::unique_ptr<DriveInfo> frame;
 		bool found = false;
-		while(findFrame(feed.buf, frame));
-		feed.buf.clear();
+		while(findFrame(feed.buf, frame)){
+			vTaskDelay(10);
+		}
 
 		feed.mutex.lock();
 
-		feed.processFrame(frame, feed.doubleBuffer.getWrite()->frame.data());
-		feed.doubleBuffer.getWrite()->driveInfo = frame;
+		feed.processFrame(*frame, feed.doubleBuffer.getWrite()->frame.data());
+		feed.doubleBuffer.getWrite()->driveInfo = *frame;
 		feed.doubleBuffer.swap();
 
 		feed.mutex.unlock();
+
 	}
 
 	client.close();
@@ -66,16 +68,17 @@ void Feed::loop(uint micros){
 	imgReady = false;
 }
 
-bool Feed::findFrame(RingBuffer& buf, DriveInfo& out){
+bool Feed::findFrame(RingBuffer& buf, std::unique_ptr<DriveInfo>& out){
 	bool inPacket = false;
 	uint8_t frameStartMatch = 0;
 	uint8_t frameEndMatch = 0;
 	uint8_t c;
 	//scrubbing through read data
-	while(buf.readAvailable()){
+	size_t start = 0;
+	for(start = 0; start < buf.readAvailable(); start++){
 		//search for frameStart
-		buf.read(&c, 1);
-		if(c == frameStart[frameStartMatch]){
+
+		if(*buf.peek<uint8_t>(start) == frameStart[frameStartMatch]){
 			frameStartMatch++;
 		}else{
 			frameStartMatch = 0;
@@ -91,10 +94,10 @@ bool Feed::findFrame(RingBuffer& buf, DriveInfo& out){
 		}
 	}
 
-
 	//no start found yet
-	if(!inPacket || buf.readAvailable() < 8) return false;
+	if(!inPacket || buf.readAvailable() < FRAME_LEN) return false;
 
+	buf.skip(start - (FRAME_LEN - 1)); //clear bytes before start
 
 	size_t trailer = 0;
 	for(trailer = 0; trailer < buf.readAvailable(); trailer++){
@@ -115,9 +118,14 @@ bool Feed::findFrame(RingBuffer& buf, DriveInfo& out){
 
 
 	if(!inPacket){
-		trailer -= 8; //get start of trailer (length of DriveInfo data)
+		buf.skip(start + 1); //clear bytes before data
 
-		//TODO - create DriveInfo out using DriveInfo constructor, length of entire data is contained in <trailer:int>
+		size_t driveDataLen = trailer - FRAME_LEN + 1;
+
+		out = DriveInfo::deserialize(buf, driveDataLen);
+
+		if(!out) return false;
+
 		return true;
 	}
 
@@ -126,8 +134,8 @@ bool Feed::findFrame(RingBuffer& buf, DriveInfo& out){
 }
 
 void Feed::processFrame(DriveInfo& info, Color* dest){
-	int val = jpeg.openRAM(const_cast<uint8_t*>(info.jpg), info.jpgSize, [](JPEGDRAW* pDraw)->int{
-		memcpy(pDraw->pUser, pDraw->pPixels, 160*120*2);
+	int val = jpeg.openRAM((uint8_t*) (info.frame.data), info.frame.size, [](JPEGDRAW* pDraw) -> int{
+		memcpy(pDraw->pUser, pDraw->pPixels, 160 * 120 * 2);
 		return 1;
 	});
 	if(!val){
@@ -139,6 +147,4 @@ void Feed::processFrame(DriveInfo& info, Color* dest){
 	if(!val){
 		ESP_LOGE(tag, "decode error: %d\n", jpeg.getLastError());
 	}
-
-
 }
