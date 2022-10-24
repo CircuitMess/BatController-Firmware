@@ -13,9 +13,10 @@ public:
 protected:
 	void onStart() override;
 	void onStop() override;
+
 private:
     uint16_t id;
-    const char* ssid;
+    char ssid[14];
     char password[10];
 };
 

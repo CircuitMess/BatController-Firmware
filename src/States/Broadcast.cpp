@@ -1,5 +1,3 @@
-
-
 #include "Broadcast.h"
 #include <Arduino.h>
 #include <WiFi.h>
@@ -7,7 +5,7 @@
 #include <Loop/LoopManager.h>
 #include <cstdlib>
 #include <cstring>
-#include <Communication.h>
+#include <Com/Communication.h>
 #include <NetworkConfig.h>
 
 
@@ -18,22 +16,23 @@ Pair::Broadcast::~Broadcast(){
 
 }
 
-void Pair::Broadcast
-::onStart(){
-    String ssidString = "Batmobile ";
-    ssidString += String(id);
-    Serial.printf("%s\n",ssidString.c_str());
-    ssid = ssidString.c_str();
-//    ssidString.toCharArray(ssid,ssidString.length() + 1);
+void Pair::Broadcast::onStart(){
+    memcpy(ssid, "Batmobile ", 10);
+    ssid[10] = (id / 100) + '0';
+    ssid[11] = ((id / 10) % 10) + '0';
+    ssid[12] = (id % 10) + '0';
+    ssid[13] = '\0';
+    Serial.printf("%s\n", ssid);
+
     memset(password, 0, 10);
-    String batmobile = "Batmobile";
+    char batmobile[] = "Batmobile";
     for(int i = 0; i < 9; i++){
         char temp =  batmobile[i];
         temp = temp + id * 5 + 16;
         temp = temp % ('z' - 'A') + 'A';
         password[i] = temp;
     }
-    Serial.printf("\nPass: %s\n", password);
+    password[9] = '\0';
 
 	Serial.print("Setting AP (Access Point)...");
 	WiFi.softAP(ssid, password);
