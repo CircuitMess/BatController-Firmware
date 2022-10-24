@@ -44,7 +44,7 @@ private:
 	//Thread on Core 0
 	Task decodeThread;
 	static void decodeFunc(Task* t);
-	void processFrame(DriveInfo& info, Color* dest);
+	bool processFrame(DriveInfo& info, Color* dest);
 	static bool findFrame(RingBuffer& buf, std::unique_ptr<DriveInfo>& out);
 
 	RingBuffer buf;

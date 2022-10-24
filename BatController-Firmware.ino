@@ -2,16 +2,20 @@
 #include <CircuitOS.h>
 #include <lvgl.h>
 #include <BatController.h>
+#include <BatCommon.h>
 #include <SPIFFS.h>
 #include "src/FSLVGL.h"
 #include "src/InputLVGL.h"
 #include <Loop/LoopManager.h>
 #include "src/BatTheme.h"
 #include "src/Feed/Feed.h"
-
+#include <NetworkConfig.h>
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
+
+const char* directSSID = "BatRC";
+const char* directPass = "BatRCServer";
 
 void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 	uint32_t w = (area->x2 - area->x1 + 1);
@@ -26,11 +30,32 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 }
 
 void setup(){
+	Serial.begin(115200);
+
 	BatController.begin();
 
 	display = BatController.getDisplay();
 
 	LoopManager::reserve(10);
+
+	disableCore0WDT();
+
+	WiFi.softAPConfig(controllerIP, gateway, subnet);
+	WiFi.softAP(directSSID, directPass);
+
+	Serial.println();
+	Serial.print("Soft-AP IP address = ");
+	Serial.println(WiFi.softAPIP());
+
+	Serial.println();
+	Serial.println("Wifi up, waiting for connection");
+	while(WiFi.softAPgetStationNum() == 0){
+		delay(100);
+	}
+	Serial.println();
+
+	Serial.println("WiFi connected");
+
 
 	lv_init();
 	if(!display->getBaseSprite()->created()){
@@ -38,7 +63,6 @@ void setup(){
 		return;
 	}
 	lv_disp_draw_buf_init(&drawBuffer, display->getBaseSprite()->getBuffer(), NULL, 160 * 128);
-
 	new FSLVGL(SPIFFS, 'S');
 
 	static lv_disp_drv_t displayDriver;
@@ -47,7 +71,7 @@ void setup(){
 	displayDriver.ver_res = 128;
 	displayDriver.flush_cb = lvglFlush;
 	displayDriver.draw_buf = &drawBuffer;
-	lv_disp_t* disp = lv_disp_drv_register(&displayDriver);
+	static lv_disp_t* disp = lv_disp_drv_register(&displayDriver);
 //	BatThemeInit(disp);
 
 	BatController.getInput()->addListener(new InputLVGL());
@@ -66,8 +90,8 @@ void setup(){
 
 		static lv_img_dsc_t my_img_dsc;
 
-		my_img_dsc.data_size = info.jpgSize;
-		my_img_dsc.data = info.jpg;
+		my_img_dsc.data_size = info.frame.size;
+		my_img_dsc.data = (const uint8_t*)info.frame.data;
 
 		my_img_dsc.header.cf = LV_IMG_CF_RAW;
 		my_img_dsc.header.always_zero = 0;

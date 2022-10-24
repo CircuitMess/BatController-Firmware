@@ -1,15 +1,20 @@
 #include "Feed.h"
-#include "../NetworkConfig.h"
+#include <NetworkConfig.h>
 #include <Loop/LoopManager.h>
 
-const char* tag = "Feed";
+static const char* tag = "Feed";
 
 #define FRAME_LEN 8
 const uint8_t frameStart[FRAME_LEN] = { 0x18, 0x20, 0x55, 0xf2, 0x5a, 0xc0, 0x4d, 0xaa };
 const uint8_t frameEnd[FRAME_LEN] = { 0x42, 0x2c, 0xd9, 0xe3, 0xff, 0xa0, 0x11, 0x01 };
 
-Feed::Feed() : buf(ringBufSize), decodeThread("UDPDecodeThread", Feed::decodeFunc, 4096, this){
+Feed::Feed() : buf(ringBufSize), decodeThread("UDPDecodeThread", Feed::decodeFunc, 8192, this){
 	LoopManager::addListener(this);
+	ESP_LOGI(tag, "connecting to  %s @ port %d\n", batmobileIP.toString().c_str(), port);
+	if(!client.connect(batmobileIP, port)){
+		ESP_LOGE(tag, "couldnt connect");
+		return;
+	}
 	decodeThread.start(5, 0);
 }
 
@@ -24,35 +29,44 @@ void Feed::onFrame(std::function<void(const DriveInfo&, const Color* frame)> fun
 }
 
 void Feed::decodeFunc(Task* t){
-	auto feed = *(Feed*) t->arg;
+	Feed &feed = *(Feed*) t->arg;
 	auto& client = feed.client;
 
-	ESP_LOGI(tag, "connecting to  %s @ port %d\n", batmobileIP.toString().c_str(), port);
-	if(!client.connect(batmobileIP, port)){
-		ESP_LOGE(tag, "couldnt connect");
-		return;
-	}
+	RingBuffer* rbuf = &feed.buf;
 
-	client.onPacket([&feed](AsyncUDPPacket& packet){
-		feed.buf.write(packet.data(), packet.length());
+
+	client.onPacket([rbuf](AsyncUDPPacket& packet) {
+		rbuf->write(packet.data(), packet.length());
 	});
 
 	while(true){
 
 		std::unique_ptr<DriveInfo> frame;
-		bool found = false;
 		while(findFrame(feed.buf, frame)){
 			vTaskDelay(10);
 		}
 
 		feed.mutex.lock();
 
-		feed.processFrame(*frame, feed.doubleBuffer.getWrite()->frame.data());
+		if(!frame){
+			Serial.println("bad frame");
+			feed.mutex.unlock();
+			continue;
+		}
+
+		if(!feed.processFrame(*frame, feed.doubleBuffer.getWrite()->frame.data())){
+			feed.mutex.unlock();
+			continue;
+		}
+
 		feed.doubleBuffer.getWrite()->driveInfo = *frame;
 		feed.doubleBuffer.swap();
 
+		feed.imgReady = true;
+
 		feed.mutex.unlock();
 
+		vTaskDelay(1);
 	}
 
 	client.close();
@@ -62,7 +76,9 @@ void Feed::loop(uint micros){
 	if(!imgReady) return;
 
 	mutex.lock();
-	func(doubleBuffer.getRead()->driveInfo, doubleBuffer.getRead()->frame.data());
+	if(func){
+		func(doubleBuffer.getRead()->driveInfo, doubleBuffer.getRead()->frame.data());
+	}
 	mutex.unlock();
 
 	imgReady = false;
@@ -133,18 +149,33 @@ bool Feed::findFrame(RingBuffer& buf, std::unique_ptr<DriveInfo>& out){
 	return false;
 }
 
-void Feed::processFrame(DriveInfo& info, Color* dest){
+bool Feed::processFrame(DriveInfo& info, Color* dest){
+	if(dest == nullptr){
+		Serial.println("processFrame dest nullptr");
+		return false;
+	}
+	jpeg.setUserPointer(dest);
+	Serial.println("user potr set");
+	delay(50);
+
+	Serial.printf("info frame size: %d\n", info.frame.size);
+	delay(60);
 	int val = jpeg.openRAM((uint8_t*) (info.frame.data), info.frame.size, [](JPEGDRAW* pDraw) -> int{
 		memcpy(pDraw->pUser, pDraw->pPixels, 160 * 120 * 2);
 		return 1;
 	});
+
+
 	if(!val){
 		ESP_LOGE(tag, "openRAM error: %d\n", jpeg.getLastError());
+		return false;
 	}
 
-	jpeg.setUserPointer(dest);
 	val = jpeg.decode(0, 0, 0);
 	if(!val){
 		ESP_LOGE(tag, "decode error: %d\n", jpeg.getLastError());
+		return false;
 	}
+
+	return true;
 }
