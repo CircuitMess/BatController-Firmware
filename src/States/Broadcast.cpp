@@ -35,8 +35,10 @@ void Pair::Broadcast::onStart(){
     password[9] = '\0';
 
 	Serial.print("Setting AP (Access Point)...");
-	WiFi.softAP(ssid, password);
-	WiFi.softAPConfig(controllerIP, gateway, subnet);
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(ssid, password, 1, 1, 1);
+    delay(100);
+    WiFi.softAPConfig(controllerIP, gateway, subnet);
 
 	IPAddress IP = WiFi.softAPIP();
 	Serial.print("\nAP IP address: ");
