@@ -32,6 +32,12 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 void setup(){
 	Serial.begin(115200);
 
+
+	esp_log_level_set("*", ESP_LOG_NONE);
+	esp_log_level_set("DataModel", ESP_LOG_VERBOSE);
+	esp_log_level_set("Feed", ESP_LOG_VERBOSE);
+
+
 	BatController.begin();
 
 	display = BatController.getDisplay();

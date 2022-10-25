@@ -31,7 +31,8 @@ private:
 	};
 	//Double buffer
 	DoubleBuffer<buffer_t> doubleBuffer;
-	Mutex mutex;
+	Mutex readMut;
+	Mutex writeMut;
 
 
 	//Thread on Core 1
