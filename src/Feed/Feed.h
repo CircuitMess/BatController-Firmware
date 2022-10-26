@@ -31,8 +31,8 @@ private:
 	};
 	//Double buffer
 	DoubleBuffer<buffer_t> doubleBuffer;
-	Mutex readMut;
-	Mutex writeMut;
+	Mutex doubleBufMut; //locks doubleBuffer read/write/swap
+	Mutex ringBufMut; //locks ringBuffer read/write
 
 
 	//Thread on Core 1

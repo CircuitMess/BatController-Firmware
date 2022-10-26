@@ -21,10 +21,10 @@ Feed::Feed() : buf(ringBufSize), decodeThread("UDPDecodeThread", Feed::decodeFun
 	ESP_LOGI(tag, "connected");
 
 	client.onPacket([this](AsyncUDPPacket& packet) {
-		writeMut.lock();
+		ringBufMut.lock();
 		if(buf.writeAvailable() < packet.length()) buf.clear();
 		buf.write(packet.data(), packet.length());
-		writeMut.unlock();
+		ringBufMut.unlock();
 	});
 
 	decodeThread.start(5, 0);
@@ -48,35 +48,35 @@ void Feed::decodeFunc(Task* t){
 
 		std::unique_ptr<DriveInfo> frame;
 
-		feed.writeMut.lock();
+		feed.ringBufMut.lock();
 		while(!findFrame(feed.buf, frame)){
-			feed.writeMut.unlock();
+			feed.ringBufMut.unlock();
 			vTaskDelay(2);
-			feed.writeMut.lock();
+			feed.ringBufMut.lock();
 		}
 		ESP_LOGI(tag, "found good frame");
 
 		//frame found, try to find additional frames afterwards
 		while(findFrame(feed.buf, frame)){
-			feed.writeMut.unlock();
+			feed.ringBufMut.unlock();
 			vTaskDelay(2);
-			feed.writeMut.lock();
+			feed.ringBufMut.lock();
 		}
-		feed.writeMut.unlock();
+		feed.ringBufMut.unlock();
 
 		ESP_LOGI(tag, "found latest good frame");
 
 
 
-		feed.readMut.lock();
+		feed.doubleBufMut.lock();
 
 		if(!frame){
-			feed.readMut.unlock();
+			feed.doubleBufMut.unlock();
 			continue;
 		}
 
 		if(!feed.processFrame(*frame, feed.doubleBuffer.getWrite()->frame.data())){
-			feed.readMut.unlock();
+			feed.doubleBufMut.unlock();
 			continue;
 		}
 
@@ -85,7 +85,7 @@ void Feed::decodeFunc(Task* t){
 
 		feed.imgReady = true;
 
-		feed.readMut.unlock();
+		feed.doubleBufMut.unlock();
 
 		vTaskDelay(1);
 	}
@@ -96,11 +96,11 @@ void Feed::decodeFunc(Task* t){
 void Feed::loop(uint micros){
 	if(!imgReady) return;
 
-	readMut.lock();
+	doubleBufMut.lock();
 	if(func){
 		func(doubleBuffer.getRead()->driveInfo, doubleBuffer.getRead()->frame.data());
 	}
-	readMut.unlock();
+	doubleBufMut.unlock();
 
 	imgReady = false;
 }
