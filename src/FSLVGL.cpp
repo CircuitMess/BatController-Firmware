@@ -3,7 +3,7 @@
 #include <FS/RamFile.h>
 
 const char* FSLVGL::cached[] = {
-
+		"/DriveScreen/Boost_segment.bin"
 };
 
 std::unordered_map<std::string, fs::File*> FSLVGL::cache;
