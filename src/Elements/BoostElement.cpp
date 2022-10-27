@@ -26,15 +26,17 @@ BoostElement::BoostElement(lv_obj_t* parent) : LVObject(parent){
 }
 
 void BoostElement::setActive(bool active){
-	if(active){
+	if(active && !gifRunning){
 		lv_obj_set_style_bg_opa(bar, LV_OPA_COVER, LV_PART_MAIN);
 		lv_gif_set_src(bgGIF, activePath);
 		lv_gif_restart(bgGIF);
 		lv_gif_set_loop(bgGIF, LV_GIF_LOOP_ON);
+		gifRunning = true;
 
-	}else{
+	}else if(!active && gifRunning){
 		lv_obj_set_style_bg_opa(bar, LV_OPA_TRANSP, LV_PART_MAIN);
 		lv_img_set_src(bgGIF, emptyPath);
+		gifRunning = false;
 	}
 }
 
