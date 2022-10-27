@@ -21,6 +21,9 @@ BoostElement::BoostElement(lv_obj_t* parent) : LVObject(parent){
 	lv_obj_set_style_bg_opa(bar, LV_OPA_TRANSP, LV_STATE_DEFAULT);
 	lv_obj_set_style_radius(bar, 3, LV_PART_MAIN);
 
+	lv_obj_set_style_bg_opa(bar, LV_OPA_TRANSP, LV_PART_MAIN);
+	lv_img_set_src(bgGIF, emptyPath);
+
 	setActive(false);
 	setLevel(0);
 }
