@@ -10,6 +10,9 @@ class GeneralInfoElement : public LVObject {
 public:
 	GeneralInfoElement(lv_obj_t* parent, DriveMode mode = Idle);
 	void setMode(DriveMode mode);
+	void setSignal(uint8_t index); //0-3
+	void setConBat(uint8_t index); //0-7
+	void setMobBat(uint8_t index); //0-7
 
 private:
 	lv_obj_t* modeImg;
