@@ -20,6 +20,8 @@ private:
 	lv_obj_t* bar;
 	lv_obj_t* bgGIF;
 
+	bool gifRunning = false; //to prevent gif restarting on subsequent setActive(true) calls
+
 	static constexpr uint8_t w = 27;
 	static constexpr uint8_t h = 118;
 
