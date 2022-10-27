@@ -45,4 +45,11 @@ void BoostElement::setActive(bool active){
 
 void BoostElement::setLevel(uint8_t level){
 	lv_bar_set_value(bar, level, LV_ANIM_OFF);
+	if(gifRunning) return;
+
+	if(level == 100){
+		lv_img_set_src(bgGIF, fullPath);
+	}else{
+		lv_img_set_src(bgGIF, emptyPath);
+	}
 }
