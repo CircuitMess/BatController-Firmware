@@ -12,15 +12,10 @@ BatteryElement::BatteryElement(lv_obj_t* parent, BatType type) : LVObject(parent
 	char imgPath[50];
 	if(type == BatType::Batmobile){
 		sprintf(imgPath, "S:/Battery/Batmobile.bin");
-		lv_obj_set_size(device, 9, 5);
-
 	}else{
 		sprintf(imgPath, "S:/Battery/Controller.bin");
-		lv_obj_set_size(device, 11, 5);
 	}
 	lv_img_set_src(device, imgPath);
-
-
 }
 
 void BatteryElement::setLevel(uint8_t index){

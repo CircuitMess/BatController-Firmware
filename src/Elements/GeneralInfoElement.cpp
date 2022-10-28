@@ -26,23 +26,18 @@ void GeneralInfoElement::setMode(DriveMode mode){
 	switch(mode){
 		case Manual:
 			sprintf(imgPath, "S:/DriveMode/Manual.bin");
-			lv_obj_set_size(modeImg, 30, 5);
 			break;
 		case Ball:
 			sprintf(imgPath, "S:/DriveMode/Ball.bin");
-			lv_obj_set_size(modeImg, 57, 5);
 			break;
 		case Marker:
 			sprintf(imgPath, "S:/DriveMode/Marker.bin");
-			lv_obj_set_size(modeImg, 69, 5);
 			break;
 		case Line:
 			sprintf(imgPath, "S:/DriveMode/Line.bin");
-			lv_obj_set_size(modeImg, 55, 5);
 			break;
 		case Idle:
 			sprintf(imgPath, "S:/DriveMode/Idle.bin");
-			lv_obj_set_size(modeImg, 14, 5);
 			break;
 	}
 	lv_img_set_src(modeImg, imgPath);
