@@ -10,6 +10,11 @@ enum class BatType {
 class BatteryElement : public LVObject {
 public:
 	BatteryElement(lv_obj_t* parent, BatType type);
+	/**
+	 * @param index = [0-7]
+	 * 0->empty
+	 * 7->full
+	 */
 	void setLevel(uint8_t index);
 
 private:
