@@ -4,7 +4,7 @@
 #include <BatController.h>
 
 ManualDriver::ManualDriver(Feed& feed, lv_obj_t* elementContainer) : Driver(feed, elementContainer), boost(elementContainer){
-	lv_obj_invalidate(boost.getLvObj());
+	lv_obj_set_pos(boost.getLvObj(), 2, 10);
 }
 
 void ManualDriver::onStart(){
@@ -32,7 +32,6 @@ void ManualDriver::buttonPressed(uint i){
 			break;
 		case BTN_A:
 			if(boostGauge > 0) boostActive = true;
-			//boost on
 			break;
 		default:
 			break;
@@ -54,7 +53,6 @@ void ManualDriver::buttonReleased(uint i){
 			break;
 		case BTN_A:
 			boostActive = false;
-			//boost off
 			break;
 		default:
 			break;
