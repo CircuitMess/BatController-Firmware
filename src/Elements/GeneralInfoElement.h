@@ -19,6 +19,8 @@ private:
 	SignalElement* signal;
 	BatteryElement* conBat;
 	BatteryElement* mobBat;
+
+	static const char* modePaths[5];
 };
 
 

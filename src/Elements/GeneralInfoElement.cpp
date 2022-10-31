@@ -1,6 +1,14 @@
 #include <cstdio>
 #include "GeneralInfoElement.h"
 
+const char* GeneralInfoElement::modePaths[] = {
+		"S:/DriveMode/Idle.bin",
+		"S:/DriveMode/Manual.bin",
+		"S:/DriveMode/Ball.bin",
+		"S:/DriveMode/Line.bin",
+		"S:/DriveMode/Marker.bin"
+};
+
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
 	lv_obj_set_pos(obj, 0, 0);
 	lv_obj_set_size(obj, 160, 10);
@@ -22,25 +30,7 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
-	char imgPath[50];
-	switch(mode){
-		case Manual:
-			sprintf(imgPath, "S:/DriveMode/Manual.bin");
-			break;
-		case Ball:
-			sprintf(imgPath, "S:/DriveMode/Ball.bin");
-			break;
-		case Marker:
-			sprintf(imgPath, "S:/DriveMode/Marker.bin");
-			break;
-		case Line:
-			sprintf(imgPath, "S:/DriveMode/Line.bin");
-			break;
-		case Idle:
-			sprintf(imgPath, "S:/DriveMode/Idle.bin");
-			break;
-	}
-	lv_img_set_src(modeImg, imgPath);
+	lv_img_set_src(modeImg, modePaths[mode]);
 }
 
 
