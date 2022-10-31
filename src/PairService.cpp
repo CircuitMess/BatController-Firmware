@@ -8,11 +8,7 @@
 #include <Com/Communication.h>
 #include <NetworkConfig.h>
 
-PairService::PairService(uint16_t id) : id(id) {}
-
-PairService::~PairService(){}
-
-void PairService::broadcast(){
+PairService::PairService(uint16_t id) {
 	memcpy(ssid, "Batmobile ", 10);
 	ssid[10] = (id / 100) + '0';
 	ssid[11] = ((id / 10) % 10) + '0';
@@ -22,7 +18,7 @@ void PairService::broadcast(){
 	memset(password, 0, 10);
 	char batmobile[] = "Batmobile";
 	for(int i = 0; i < 9; i++){
-		char temp =  batmobile[i];
+		char temp = batmobile[i];
 		temp = temp + id * 5 + 16;
 		temp = temp % ('z' - 'A') + 'A';
 		password[i] = temp;
@@ -36,3 +32,7 @@ void PairService::broadcast(){
 
 	Com.begin();
 }
+
+PairService::~PairService(){}
+
+
