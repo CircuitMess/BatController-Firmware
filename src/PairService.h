@@ -4,19 +4,19 @@
 
 
 #include <cstdint>
+#include <Loop/LoopListener.h>
+#include <WiFiClient.h>
 
-namespace Pair{
-	class State;
-	class PairService;
-	class Broadcast;
-}
-class Pair::PairService {
+class PairService {
 public:
 	PairService(uint16_t id);
 	~PairService();
-	void setState(Pair::State* state);
+	void broadcast();
+
 private:
-	Pair::State* currentState;
+	uint16_t id;
+	char ssid[14];
+	char password[10];
 };
 
 
