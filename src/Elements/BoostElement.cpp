@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "BoostElement.h"
 
 BoostElement::BoostElement(lv_obj_t* parent) : LVObject(parent){
@@ -44,6 +45,7 @@ void BoostElement::setActive(bool active){
 }
 
 void BoostElement::setLevel(uint8_t level){
+	level = min((uint8_t)100, level);
 	lv_bar_set_value(bar, level, LV_ANIM_OFF);
 	if(gifRunning) return;
 
