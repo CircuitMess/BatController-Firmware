@@ -3,7 +3,7 @@
 #include <Input/Input.h>
 #include <BatController.h>
 
-ManualDriver::ManualDriver(Feed& feed, lv_obj_t* elementContainer) : Driver(feed, elementContainer), boost(elementContainer){
+ManualDriver::ManualDriver(Feed& feed, lv_obj_t* elementContainer) : boost(elementContainer){
 	lv_obj_set_pos(boost.getLvObj(), 2, 10);
 }
 
