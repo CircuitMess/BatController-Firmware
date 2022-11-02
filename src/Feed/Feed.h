@@ -11,6 +11,7 @@
 #include "DoubleBuffer.h"
 #include <Sync/Mutex.h>
 #include <JPEGDEC.h>
+#include <Sync/BinarySemaphore.h>
 
 class Feed : private LoopListener {
 public:
@@ -21,40 +22,36 @@ public:
 	 * Sets function to be executed on Core #1 (Arduino core) when a frame has been received and decoded.
 	 * @param func Function to be executed on frame, receives DriveInfo and Color array for decoded frame.
 	 */
-	void onFrame(std::function<void(const DriveInfo&, const Color* frame)> func);
-
+	void onFrame(std::function<void(const DriveInfo&, const Color* frame)> callback);
 
 private:
-	struct buffer_t {
-		DriveInfo driveInfo;
-		std::array<Color, 160 * 120> frame;
-	};
-	//Double buffer
-	DoubleBuffer<buffer_t> doubleBuffer;
-	Mutex doubleBufMut; //locks doubleBuffer read/write/swap
-	Mutex ringBufMut; //locks ringBuffer read/write
-
-
-	//Thread on Core 1
-	std::function<void(const DriveInfo&, const Color* frame)> func;
-	void loop(uint micros) override;
-	AsyncUDP client;
-	bool imgReady = false;
-
-
-	//Thread on Core 0
-	Task decodeThread;
-	static void decodeFunc(Task* t);
-	bool processFrame(DriveInfo& info, Color* dest);
-	static bool findFrame(RingBuffer& buf, std::unique_ptr<DriveInfo>& out);
-
-	RingBuffer buf;
 	JPEGDEC jpeg;
+	AsyncUDP udp;
 
-	//constants
-	constexpr static size_t jpgMaxSize = 3000; //upper size limit for JPG quality 30 on Batmobile camera, approximately
-	constexpr static size_t ringBufSize = 3 * (sizeof(DriveInfo) + jpgMaxSize);
-	constexpr static uint16_t port = 5000;
+	RingBuffer rxBuf;
+	Mutex rxMut;
+
+	struct {
+		DriveInfo info;
+		Color* img;
+	} frame;
+
+	BinarySemaphore frameConsumed;
+	bool frameReady = false;
+
+	// Core 0
+	void loop(uint micros) override;
+
+	// Core 1
+	Task decodeTask;
+	void decodeFunc();
+
+	constexpr static size_t JpgMaxSize = 4500; //upper size limit for JPG quality 30 on Batmobile camera, approximately
+	constexpr static size_t RxBufSize = 3 * (sizeof(DriveInfo) + JpgMaxSize);
+
+	std::function<void(const DriveInfo&, const Color* frame)> frameCallback;
+
+	bool findFrame(bool keepLock = false);
 };
 
 #endif //BATCONTROLLER_FIRMWARE_FEED_H
