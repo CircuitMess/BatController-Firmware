@@ -16,16 +16,16 @@ DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
 
 
 	switch(mode){
-		case Idle:
+		case DriveMode::Idle:
 			break;
-		case Manual:
+		case DriveMode::Manual:
 			driver = std::make_unique<ManualDriver>(feed, topLayer);
 			break;
-		case Ball:
+		case DriveMode::Ball:
 			break;
-		case Line:
+		case DriveMode::Line:
 			break;
-		case Marker:
+		case DriveMode::Marker:
 			break;
 	}
 
