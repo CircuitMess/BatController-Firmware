@@ -14,8 +14,8 @@ IntroScreen::IntroScreen(void (* callback)()) : callback(callback){
 		volatile auto temp  = intro->callback;
 		lv_obj_del(intro->getLvObj());
 
-		PairScreen* pll = new PairScreen();
-		pll->start();
+		PairScreen* pairScreen = new PairScreen();
+		pairScreen->start();
 		if(temp != nullptr) temp();
 	}, LV_EVENT_READY, this);
 }
