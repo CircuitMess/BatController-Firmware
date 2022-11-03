@@ -28,6 +28,7 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 }
 
 void setup(){
+	Serial.begin(115200);
 	BatController.begin();
 
 	display = BatController.getDisplay();
