@@ -3,6 +3,7 @@
 
 #include <Display/Sprite.h>
 #include "../Interface/LVScreen.h"
+#include "../PairService.h"
 
 class PairScreen : public LVScreen{
 public:
@@ -24,6 +25,8 @@ private:
 	lv_color_t white;
 
 	const uint8_t scale = 10;
+
+	PairService pair;
 };
 
 

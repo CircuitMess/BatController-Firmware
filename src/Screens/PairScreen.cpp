@@ -74,9 +74,16 @@ void PairScreen::onStart(){
 	}
 
 	lv_anim_start(anim_drop);
+
+	pair.setDoneCallback([](){
+		// TODO: go to main menu
+		Serial.printf("Paired\n");
+	});
+
+	pair.start(randID);
 }
 
 void PairScreen::onStop(){
-	LVScreen::onStop();
+	pair.stop();
 }
 
