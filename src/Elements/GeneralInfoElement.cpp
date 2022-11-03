@@ -11,7 +11,7 @@ const char* GeneralInfoElement::modePaths[] = {
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
 	lv_obj_set_pos(obj, 0, 0);
-	lv_obj_set_size(obj, 160, 10);
+	lv_obj_set_size(obj, 160, 8);
 	lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 	lv_obj_align(obj, LV_ALIGN_TOP_MID, 0, 0);
