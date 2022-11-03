@@ -8,7 +8,7 @@
 
 class ManualDriver : public Driver, private LoopListener, private InputListener{
 public:
-	ManualDriver(Feed& feed, lv_obj_t* elementContainer);
+	ManualDriver(lv_obj_t* elementContainer);
 
 protected:
 	void onStart() override;
@@ -17,6 +17,7 @@ protected:
 private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
+	uint8_t dir = 0;
 
 	void loop(uint micros) override;
 

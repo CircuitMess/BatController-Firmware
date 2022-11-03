@@ -4,9 +4,9 @@
 #include <BatController.h>
 #include <Com/Communication.h>
 
-static const uint directions[] = {BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT};
+static const uint directions[] = { BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT };
 
-ManualDriver::ManualDriver(Feed& feed, lv_obj_t* elementContainer) : boost(elementContainer){
+ManualDriver::ManualDriver(lv_obj_t* elementContainer) : boost(elementContainer){
 	lv_obj_set_pos(boost.getLvObj(), 2, 10);
 }
 
@@ -21,30 +21,54 @@ void ManualDriver::onStop(){
 }
 
 void ManualDriver::buttonPressed(uint i){
-	if(i == BTN_LEFT || i == BTN_RIGHT || i == BTN_UP || i == BTN_DOWN){
-		uint8_t dir = 0;
-		for(int j = 0; j < 4; ++j){
-			dir |= (Input::getInstance()->getButtonState(directions[j]) << j);
-		}
-		Com.sendDriveDir(dir);
-	}else if(i == BTN_A){
+	if(i == BTN_A){
 		if(boostGauge > 0) boostActive = true;
 		Com.sendBoost(boostActive);
 	}else if(i == BTN_B){
 		Com.sendHonk();
+	}else{
+		switch(i){
+			case BTN_UP:
+				dir |= 0b0001;
+				break;
+			case BTN_DOWN:
+				dir |= 0b0010;
+				break;
+			case BTN_LEFT:
+				dir |= 0b0100;
+				break;
+			case BTN_RIGHT:
+				dir |= 0b1000;
+				break;
+			default:
+				break;
+		}
+		Com.sendDriveDir(dir);
 	}
 }
 
 void ManualDriver::buttonReleased(uint i){
-	if(i == BTN_LEFT || i == BTN_RIGHT || i == BTN_UP || i == BTN_DOWN){
-		uint8_t dir = 0;
-		for(int j = 0; j < 4; ++j){
-			dir |= (Input::getInstance()->getButtonState(directions[j]) << j);
-		}
-		Com.sendDriveDir(dir);
-	}else if(i == BTN_A){
+	if(i == BTN_A){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+	}else{
+		switch(i){
+			case BTN_UP:
+				dir &= ~0b0001;
+				break;
+			case BTN_DOWN:
+				dir &= ~0b0010;
+				break;
+			case BTN_LEFT:
+				dir &= ~0b0100;
+				break;
+			case BTN_RIGHT:
+				dir &= ~0b1000;
+				break;
+			default:
+				break;
+		}
+		Com.sendDriveDir(dir);
 	}
 }
 
