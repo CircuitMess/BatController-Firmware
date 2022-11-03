@@ -44,6 +44,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.6.1/libraries/Chat
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.6.1/libraries/lvgl/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.6.1/libraries/glm)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.6.1/libraries/I2C_BM8563/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.6.1/libraries/AsyncUDP/src)
 
 include_directories(${ArduinoLibs}/CircuitOS/src)
 include_directories(${ArduinoLibs}/TJpg_Decoder/src)
