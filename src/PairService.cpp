@@ -1,14 +1,28 @@
 #include "PairService.h"
 #include <Arduino.h>
 #include <WiFi.h>
-#include <AsyncTCP.h>
-#include <Loop/LoopManager.h>
 #include <cstdlib>
 #include <cstring>
 #include <Com/Communication.h>
 #include <NetworkConfig.h>
+#include <Loop/LoopManager.h>
 
-PairService::PairService(uint16_t id) {
+PairService::PairService(){ }
+
+PairService::~PairService(){
+	stop();
+}
+
+void PairService::start(uint16_t id){
+	if(server) return;
+
+	server = Com.getServer();
+	if(!server || !server->status()) return;
+
+	server->onClient([this](void* arg, AsyncClient* client){
+		this->client = std::unique_ptr<AsyncClient>(client);
+	}, nullptr);
+
 	memcpy(ssid, "Batmobile ", 10);
 	ssid[10] = (id / 100) + '0';
 	ssid[11] = ((id / 10) % 10) + '0';
@@ -26,13 +40,33 @@ PairService::PairService(uint16_t id) {
 	password[9] = '\0';
 
 	WiFi.mode(WIFI_AP);
-	WiFi.softAP(ssid, password, 1, 1, 1);
+	WiFi.softAP(ssid, password, 1, 1);
 	delay(100);
 	WiFi.softAPConfig(controllerIP, gateway, subnet);
 
-	Com.begin();
+	LoopManager::addListener(this);
 }
 
-PairService::~PairService(){}
+void PairService::stop(){
+	LoopManager::removeListener(this);
 
+	if(!server) return;
+	server->onClient(nullptr, nullptr);
 
+	server = nullptr;
+}
+
+void PairService::loop(uint micros){
+	if(!client) return;
+
+	stop();
+	Com.setClient(std::move(client));
+
+	if(doneCallback){
+		doneCallback();
+	}
+}
+
+void PairService::setDoneCallback(std::function<void()> doneCallback){
+	PairService::doneCallback = std::move(doneCallback);
+}
