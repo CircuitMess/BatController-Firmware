@@ -24,7 +24,7 @@ private:
 	lv_color_t black;
 	lv_color_t white;
 
-	const uint8_t scale = 10;
+	static constexpr uint8_t Scale = 10;
 
 	PairService pair;
 };
