@@ -8,7 +8,7 @@
 
 class GeneralInfoElement : public LVObject {
 public:
-	GeneralInfoElement(lv_obj_t* parent, DriveMode mode = Idle);
+	GeneralInfoElement(lv_obj_t* parent, DriveMode mode = DriveMode::Idle);
 	void setMode(DriveMode mode);
 	void setSignal(uint8_t index); //0-3
 	void setConBat(uint8_t index); //0-7

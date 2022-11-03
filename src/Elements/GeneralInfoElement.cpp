@@ -30,7 +30,7 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
-	lv_img_set_src(modeImg, modePaths[mode]);
+	lv_img_set_src(modeImg, modePaths[(int) mode]);
 }
 
 
