@@ -30,6 +30,10 @@ private:
 
 	void loop(uint micros) override;
 
+	void setMode(DriveMode mode);
+	DriveMode currentMode = DriveMode::Idle;
+	std::unique_ptr<Driver> driver;
+
 	Feed feed;
 	//FeedDisplay
 	std::unique_ptr<Driver> driver;

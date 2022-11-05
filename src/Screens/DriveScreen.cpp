@@ -31,6 +31,8 @@ DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
 
 	//TODO - feed.onFrame( draw na canvas)
 
+	// If mode is idle, do nothing (setMode returns early)
+	setMode(mode);
 }
 
 void DriveScreen::onStart(){
@@ -43,6 +45,29 @@ void DriveScreen::onStop(){
 	driver->stop();
 	Input::getInstance()->removeListener(this);
 	Com.removeDcListener(this);
+}
+
+void DriveScreen::setMode(DriveMode newMode){
+	if(newMode == currentMode) return;
+
+	driver.reset();
+
+	static const std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer)> starter[5] = {
+			[](lv_obj_t* elementContainer){ return nullptr; },
+			[](lv_obj_t* elementContainer){ return std::make_unique<ManualDriver>(elementContainer); },
+			[](lv_obj_t* elementContainer){ return nullptr; },
+			[](lv_obj_t* elementContainer){ return nullptr; },
+			[](lv_obj_t* elementContainer){ return nullptr; },
+	};
+
+	driver = starter[(int) newMode](nullptr);
+	if(driver == nullptr){
+		currentMode = DriveMode::Idle;
+		return;
+	}
+
+	currentMode = newMode;
+	Com.sendDriveMode(currentMode);
 }
 
 void DriveScreen::buttonPressed(uint i){
