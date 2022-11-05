@@ -36,12 +36,13 @@ DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
 void DriveScreen::onStart(){
 	driver->start();
 	Input::getInstance()->addListener(this);
-	//TODO - regg na status callback
+	Com.addDcListener(this);
 }
 
 void DriveScreen::onStop(){
 	driver->stop();
 	Input::getInstance()->removeListener(this);
+	Com.removeDcListener(this);
 }
 
 void DriveScreen::buttonPressed(uint i){
@@ -61,4 +62,12 @@ void DriveScreen::buttonReleased(uint i){
 
 void DriveScreen::loop(uint micros){
 
+}
+
+void DriveScreen::onDisconnected(){
+	stop();
+	delete this;
+
+	auto pair = new PairScreen();
+	pair->start();
 }

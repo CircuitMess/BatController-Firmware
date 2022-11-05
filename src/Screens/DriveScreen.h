@@ -9,20 +9,22 @@
 #include <Loop/LoopListener.h>
 #include <array>
 #include <Display/Color.h>
+#include <DisconnectListener.h>
 #include "../Elements/GeneralInfoElement.h"
 
 class Feed {
 
 };
 
-
-class DriveScreen : public LVScreen, private InputListener, private LoopListener {
+class DriveScreen : public LVScreen, private InputListener, private LoopListener, private DisconnectListener {
 public:
 	DriveScreen(DriveMode mode);
 	void onStart() override;
 	void onStop() override;
 
 private:
+	void onDisconnected() override;
+
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
 
