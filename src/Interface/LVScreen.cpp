@@ -101,3 +101,7 @@ void LVScreen::onStop(){ }
 LVScreen* LVScreen::getCurrent(){
 	return current;
 }
+
+bool LVScreen::isRunning() const{
+	return running;
+}

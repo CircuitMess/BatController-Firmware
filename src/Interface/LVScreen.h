@@ -28,6 +28,8 @@ public:
 
 	static LVScreen* getCurrent();
 
+	bool isRunning() const;
+
 protected:
 	lv_group_t* inputGroup;
 
