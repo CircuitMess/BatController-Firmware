@@ -66,6 +66,6 @@ void setup(){
 }
 
 void loop(){
-	lv_timer_handler();
 	LoopManager::loop();
+	lv_timer_handler();
 }
