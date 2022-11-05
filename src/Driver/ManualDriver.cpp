@@ -24,6 +24,7 @@ void ManualDriver::buttonPressed(uint i){
 	if(i == BTN_A){
 		if(boostGauge > 0) boostActive = true;
 		Com.sendBoost(boostActive);
+		LoopManager::addListener(this);
 	}else if(i == BTN_B){
 		Com.sendHonk();
 	}else{
@@ -51,6 +52,7 @@ void ManualDriver::buttonReleased(uint i){
 	if(i == BTN_A){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		LoopManager::removeListener(this);
 	}else{
 		switch(i){
 			case BTN_UP:
