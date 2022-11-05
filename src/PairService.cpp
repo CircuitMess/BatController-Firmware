@@ -21,6 +21,7 @@ void PairService::start(uint16_t id){
 
 	server->onClient([this](void* arg, AsyncClient* client){
 		this->client = std::unique_ptr<AsyncClient>(client);
+		this->server->onClient(nullptr, nullptr);
 	}, nullptr);
 
 	memcpy(ssid, "Batmobile ", 10);
