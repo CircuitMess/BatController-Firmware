@@ -5,31 +5,38 @@
 #include "../Driver/ManualDriver.h"
 
 DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
-	topLayer = lv_obj_create(obj);
-	lv_obj_set_size(topLayer, lv_obj_get_width(obj), lv_obj_get_height(obj));
-	lv_obj_move_foreground(topLayer);
+	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_set_pos(infoElement.getLvObj(), 0, 0);
 
-	canvas = lv_canvas_create(obj);
-	lv_canvas_set_buffer(canvas, canvasBuf.data(), 160, 120, LV_IMG_CF_RAW);
-	lv_obj_set_pos(canvas, 0, 4);
-	lv_obj_move_background(canvas);
+	img = lv_img_create(obj);
+	lv_obj_set_size(img, 160, 120);
+	lv_obj_add_flag(img, LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_set_pos(img, 0, 8);
 
+	imgDsc.data = (const uint8_t*)imgBuf.data();
+	imgDsc.data_size = 160 * 120 * 2;
+	imgDsc.header.w = 160;
+	imgDsc.header.h = 120;
+	imgDsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+	imgDsc.header.always_zero = 0;
+	lv_img_set_src(img, &imgDsc);
 
-	switch(mode){
-		case DriveMode::Idle:
-			break;
-		case DriveMode::Manual:
-			driver = std::make_unique<ManualDriver>(feed, topLayer);
-			break;
-		case DriveMode::Ball:
-			break;
-		case DriveMode::Line:
-			break;
-		case DriveMode::Marker:
-			break;
-	}
+	driverLayer = lv_obj_create(obj);
+	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_set_size(driverLayer, lv_obj_get_width(obj), lv_obj_get_height(obj));
+	lv_obj_move_foreground(driverLayer);
 
-	//TODO - feed.onFrame( draw na canvas)
+	feed.onFrame([this](const DriveInfo& info, const Color* frame){
+		if(!isRunning()) return;
+
+		memcpy(imgBuf.data(), frame, 160 * 120 * 2);
+
+		if(driver){
+			driver->onFrame(info, imgBuf.data());
+		}
+
+		lv_obj_invalidate(img);
+	});
 
 	// If mode is idle, do nothing (setMode returns early)
 	setMode(mode);
@@ -79,14 +86,6 @@ void DriveScreen::buttonPressed(uint i){
 			pop();
 			break;
 	}
-}
-
-void DriveScreen::buttonReleased(uint i){
-
-}
-
-void DriveScreen::loop(uint micros){
-
 }
 
 void DriveScreen::onDisconnected(){
