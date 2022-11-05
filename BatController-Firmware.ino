@@ -43,6 +43,7 @@ void setup(){
 	lv_disp_draw_buf_init(&drawBuffer, display->getBaseSprite()->getBuffer(), NULL, 160 * 128);
 
 	new FSLVGL(SPIFFS, 'S');
+	FSLVGL::loadCache();
 
 	static lv_disp_drv_t displayDriver;
 	lv_disp_drv_init(&displayDriver);
