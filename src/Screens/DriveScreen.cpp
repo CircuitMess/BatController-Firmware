@@ -3,6 +3,8 @@
 #include <BatController.h>
 #include <DriveMode.h>
 #include "../Driver/ManualDriver.h"
+#include "PairScreen.h"
+#include <Com/Communication.h>
 
 DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
 	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -80,7 +82,7 @@ void DriveScreen::setMode(DriveMode newMode){
 void DriveScreen::buttonPressed(uint i){
 	switch(i){
 		case BTN_B:
-			//TODO - S3.honk, S3.blinkHeadlights, manual control override
+			Com.sendHonk();
 			break;
 		case BTN_MENU:
 			pop();
