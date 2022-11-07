@@ -4,8 +4,10 @@
 #include <vector>
 #include <lvgl.h>
 
-std::map<uint8_t, lv_key_t> InputLVGL::keyMap = {{ BTN_UP,   LV_KEY_LEFT},
-														  { BTN_DOWN, LV_KEY_RIGHT},
+std::map<uint8_t, lv_key_t> InputLVGL::keyMap = {{ BTN_UP,   LV_KEY_PREV},
+														  { BTN_DOWN, LV_KEY_NEXT},
+														  { BTN_LEFT, LV_KEY_LEFT},
+														  { BTN_RIGHT, LV_KEY_RIGHT},
 														  { BTN_A,    LV_KEY_ENTER},
 														  { BTN_B,    LV_KEY_ESC}};
 
