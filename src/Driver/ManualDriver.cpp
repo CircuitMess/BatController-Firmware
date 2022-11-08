@@ -52,7 +52,6 @@ void ManualDriver::buttonReleased(uint i){
 	if(i == BTN_A){
 		boostActive = false;
 		Com.sendBoost(boostActive);
-		LoopManager::removeListener(this);
 	}else{
 		switch(i){
 			case BTN_UP:
@@ -75,6 +74,8 @@ void ManualDriver::buttonReleased(uint i){
 }
 
 void ManualDriver::loop(uint micros){
+	if(!boostActive && boostGauge == 100 || boostActive && boostGauge == 0) return;
+
 	boostTimer += micros;
 
 	if(boostActive && boostTimer > boostConsumptionRate){
