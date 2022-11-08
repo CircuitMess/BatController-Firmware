@@ -18,6 +18,11 @@ DriveDirectionElement::DriveDirectionElement(lv_obj_t* parent) : LVObject(parent
 	lv_obj_add_flag(canvasHelper, LV_OBJ_FLAG_HIDDEN);
 }
 
+DriveDirectionElement::~DriveDirectionElement(){
+	free(bufferMain);
+	free(bufferHelper);
+}
+
 void DriveDirectionElement::setSpeed(uint8_t speed){
 	this->speed = speed;
 	drawFill();
@@ -46,6 +51,7 @@ void DriveDirectionElement::drawFill(){
 					lv_canvas_set_px(canvasHelper, x, y, lv_color_black());
 			}
 		}
+		free(buf);
 	};
 
 	lv_canvas_fill_bg(canvasHelper, lv_color_make(255, 255, 255), LV_OPA_0);

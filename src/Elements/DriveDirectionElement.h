@@ -6,6 +6,7 @@
 class DriveDirectionElement : public LVObject {
 public:
 	DriveDirectionElement(lv_obj_t* parent);
+	~DriveDirectionElement();
 	/**
 	 * @param speed [0-100]
 	 */
