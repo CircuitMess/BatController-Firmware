@@ -7,12 +7,12 @@
 #include <Display/Color.h>
 
 DriveDirectionElement::DriveDirectionElement(lv_obj_t* parent) : LVObject(parent){
-	bufferMain = static_cast<lv_color_t*>(malloc(sizeof(Color) * 15 * 15)); //W:15*H:15
+	bufferMain = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 15 * 15)); //W:15*H:15
 	canvasMain = lv_canvas_create(obj);
 	lv_canvas_set_buffer(canvasMain, bufferMain, 15, 15, LV_IMG_CF_TRUE_COLOR);
 	lv_canvas_fill_bg(canvasMain, lv_color_make(255, 255, 255), LV_OPA_COVER);
 
-	bufferHelper = static_cast<lv_color_t*>(malloc(sizeof(Color) * 15 * 13)); //W:15*H:13
+	bufferHelper = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 15 * 13)); //W:15*H:13
 	canvasHelper = lv_canvas_create(obj);
 	lv_canvas_set_buffer(canvasHelper, bufferHelper, 15, 13, LV_IMG_CF_TRUE_COLOR);
 	lv_obj_add_flag(canvasHelper, LV_OBJ_FLAG_HIDDEN);
