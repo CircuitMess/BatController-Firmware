@@ -31,6 +31,9 @@ void setup(){
 	Serial.begin(115200);
 	BatController.begin();
 
+	pinMode(PIN_BATT, INPUT);
+	srand(analogRead(PIN_BATT)*7+analogRead(PIN_BATT)*13);
+
 	display = BatController.getDisplay();
 
 	LoopManager::reserve(10);
