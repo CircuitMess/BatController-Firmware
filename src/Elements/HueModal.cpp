@@ -51,6 +51,20 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 		lv_obj_invalidate(circle);
 	}, LV_EVENT_DRAW_PART_END, knobCircle);
 
+	timeout = lv_timer_create([](lv_timer_t* timer){
+		auto modal = ((HueModal*) timer->user_data);
+		if(modal->isActive()) modal->stop();
+	}, timeoutValue, this);
+
+	lv_obj_add_event_cb(slider, [](lv_event_t* e){
+		auto key = lv_event_get_key(e);
+		auto modal = ((HueModal*) e->user_data);
+		if(modal->isActive() && (key == LV_KEY_ESC || key == LV_KEY_ENTER)){
+			modal->stop();
+		}else{
+			lv_timer_reset(modal->timeout);
+		}
+	}, LV_EVENT_KEY, this);
 }
 
 void HueModal::onStart(){
@@ -58,5 +72,6 @@ void HueModal::onStart(){
 }
 
 void HueModal::onStop(){
+	if(!hueCB) return;
 	hueCB(map(lv_slider_get_value(slider), 0, 64, 0, 180));
 }

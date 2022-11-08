@@ -5,7 +5,7 @@
 #include <Input/InputListener.h>
 #include <functional>
 
-class HueModal : public LVModal{
+class HueModal : public LVModal {
 public:
 	explicit HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t currentHue);
 
@@ -18,9 +18,12 @@ private:
 	lv_obj_t* text;
 	lv_obj_t* slider;
 	lv_obj_t* knobCircle;
+	lv_timer_t* timeout;
 
 	static constexpr size_t w = 79;
 	static constexpr size_t h = 48;
+
+	static constexpr size_t timeoutValue = 3000; //3s timeout after which modal is exited
 };
 
 
