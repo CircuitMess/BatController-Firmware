@@ -69,7 +69,7 @@ void DriveScreen::setMode(DriveMode newMode){
 			[](lv_obj_t* elementContainer){ return nullptr; },
 	};
 
-	driver = starter[(int) newMode](nullptr);
+	driver = starter[(int) newMode](driverLayer);
 	if(driver == nullptr){
 		currentMode = DriveMode::Idle;
 		return;
