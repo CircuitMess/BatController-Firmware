@@ -24,12 +24,17 @@ DriveDirectionElement::~DriveDirectionElement(){
 }
 
 void DriveDirectionElement::setSpeed(uint8_t speed){
+	if(speed < 0 || speed > 100) return;
 	this->speed = speed;
 	drawFill();
 	drawRotation();
 }
 
 void DriveDirectionElement::setDirection(float angle){
+	if(angle <0 || angle > 360){
+		angle = fmod(angle, 360.0f);
+		if(angle < 0) angle += 360.0f;
+	}
 	this->angle = angle;
 	drawRotation();
 }

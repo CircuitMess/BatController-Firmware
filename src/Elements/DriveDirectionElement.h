@@ -11,14 +11,20 @@ public:
 	 * @param speed [0-100]
 	 */
 	void setSpeed(uint8_t speed);
+	/**
+	 * @param angle [0-360]
+	 * it could be any number, positive or negative
+	 * or out of the range, the code will set it
+	 * in range
+	 */
 	void setDirection(float angle);
 
 private:
 	void drawFill();
 	void drawRotation();
 
-	float angle;
-	uint8_t speed;
+	float angle = 0;
+	uint8_t speed = 0;
 
 	lv_obj_t* canvasMain;
 	lv_obj_t* canvasHelper;
