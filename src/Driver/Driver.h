@@ -12,7 +12,7 @@ public:
 	void start();
 	void stop();
 
-	void onFrame(const DriveInfo& frame, Color* pixels);
+	virtual void onFrame(const DriveInfo& frame, Color* pixels);
 
 protected:
 	virtual void onStart(){};
