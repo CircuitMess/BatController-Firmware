@@ -20,8 +20,8 @@ InputLVGL::InputLVGL(){
 	static lv_indev_drv_t inputDriver;
 	lv_indev_drv_init(&inputDriver);
 	inputDriver.type = LV_INDEV_TYPE_KEYPAD;
-	inputDriver.long_press_repeat_time = UINT16_MAX;
-	inputDriver.long_press_time = UINT16_MAX;
+	inputDriver.long_press_repeat_time = 20;
+	inputDriver.long_press_time = 350;
 	inputDriver.read_cb = [](lv_indev_drv_t* drv, lv_indev_data_t* data){InputLVGL::getInstance()->read(drv, data);};
 	inputDevice = lv_indev_drv_register(&inputDriver);
 }
