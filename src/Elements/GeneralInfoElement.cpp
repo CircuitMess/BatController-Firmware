@@ -59,7 +59,7 @@ void GeneralInfoElement::setMobBat(uint8_t index){
 
 void GeneralInfoElement::loop(uint micros){
 	counter += micros;
-	if(counter >= second){
+	if(counter >= BatteryCheckInterval){
 		counter = 0;
 		if(conBatIndex == Battery.getLevel()) return;
 		conBatIndex = Battery.getLevel();
