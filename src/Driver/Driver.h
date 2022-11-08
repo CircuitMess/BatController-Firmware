@@ -5,8 +5,6 @@
 #include <Display/Color.h>
 #include "../Interface/LVObject.h"
 
-class Feed; //TODO - maknuti, koristiti pravi Feed
-
 class Driver{
 public:
 	void start();
