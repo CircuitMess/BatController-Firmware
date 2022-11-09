@@ -50,7 +50,7 @@ void DriveDirectionElement::drawFill(){
 			return;
 		}
 
-		uint8_t* buf = static_cast<uint8_t*>(malloc(f.size()));
+		uint8_t buf[390];
 		f.read(buf, f.size());
 
 		for(uint8_t x = 0; x < 15; x++){
@@ -59,7 +59,6 @@ void DriveDirectionElement::drawFill(){
 					lv_canvas_set_px(canvasHelper, x, y, lv_color_black());
 			}
 		}
-		free(buf);
 	};
 
 	lv_canvas_fill_bg(canvasHelper, lv_color_make(255, 255, 255), LV_OPA_0);
