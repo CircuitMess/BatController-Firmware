@@ -24,7 +24,6 @@ void ManualDriver::buttonPressed(uint i){
 	if(i == BTN_A){
 		if(boostGauge > 0) boostActive = true;
 		Com.sendBoost(boostActive);
-		LoopManager::addListener(this);
 	}else if(i == BTN_B){
 		Com.sendHonk();
 	}else{
@@ -74,7 +73,14 @@ void ManualDriver::buttonReleased(uint i){
 }
 
 void ManualDriver::loop(uint micros){
-	if(!boostActive && boostGauge == 100 || boostActive && boostGauge == 0) return;
+	directionSendTimer += micros;
+	if(directionSendTimer >= directionSendInterval){
+		directionSendTimer = 0;
+		Com.sendDriveDir(dir);
+	}
+
+
+	if((!boostActive && boostGauge == 100) || (boostActive && boostGauge == 0)) return;
 
 	boostTimer += micros;
 

@@ -6,7 +6,7 @@
 #include <Loop/LoopListener.h>
 #include <Input/InputListener.h>
 
-class ManualDriver : public Driver, private LoopListener, private InputListener{
+class ManualDriver : public Driver, private LoopListener, private InputListener {
 public:
 	ManualDriver(lv_obj_t* elementContainer);
 
@@ -18,6 +18,8 @@ private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
 	uint8_t dir = 0;
+	size_t directionSendTimer = 0;
+	static constexpr size_t directionSendInterval = 100000; //send direction every 100ms
 
 	void loop(uint micros) override;
 
