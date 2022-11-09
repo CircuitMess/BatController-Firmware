@@ -15,9 +15,11 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 	lv_img_set_src(text, "S:/DriveScreen/BallHueText.bin");
 
 	slider = lv_slider_create(obj);
-	lv_slider_set_range(slider, 0, 64);
-	lv_slider_set_value(slider, map(currentHue, 0, 180, 0, 64), LV_ANIM_OFF);
-	lv_obj_set_size(slider, 64, 5);
+	lv_slider_set_range(slider, 0, sliderRange);
+	lv_slider_set_value(slider, map(currentHue, 0, 180, 0, sliderRange), LV_ANIM_OFF);
+	lv_obj_set_size(slider, 65, 5);
+	lv_obj_set_style_pad_left(slider, 1, LV_PART_MAIN);
+	lv_obj_set_style_pad_right(slider, 1, LV_PART_MAIN);
 	lv_group_add_obj(inputGroup, slider);
 	//knob horizontal padding - offset from slider left/right, knob vertical padding - offset from slider top/bottom
 	lv_obj_set_style_pad_top(slider, 14, LV_PART_KNOB);
@@ -43,18 +45,21 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 	lv_obj_add_event_cb(slider, [](lv_event_t* e){
 		auto circle = (lv_obj_t*) e->user_data;
 		auto slider = e->target;
-		auto color = lv_color_hsv_to_rgb(map(lv_slider_get_value(slider), 0, 64, 0, 360), 100, 100);
-		auto x = lv_slider_get_value(slider) + lv_obj_get_x(slider) - lv_obj_get_style_pad_left(slider, LV_PART_KNOB);
+		auto color = lv_color_hsv_to_rgb(map(lv_slider_get_value(slider), 0, sliderRange, 0, 360), 100, 100);
+		auto x = lv_slider_get_value(slider) * 2 + lv_obj_get_x(slider) - lv_obj_get_style_pad_left(slider, LV_PART_KNOB);
 		lv_obj_set_x(circle, x);
 		lv_obj_set_style_bg_color(circle, color, LV_STATE_DEFAULT);
 		lv_obj_invalidate(slider);
 		lv_obj_invalidate(circle);
 	}, LV_EVENT_DRAW_PART_END, knobCircle);
 
-	timeout = lv_timer_create([](lv_timer_t* timer){
-		auto modal = ((HueModal*) timer->user_data);
-		if(modal->isActive()) modal->stop();
-	}, timeoutValue, this);
+	lv_obj_add_event_cb(slider, [](lv_event_t* e){
+		auto modal = (HueModal*) e->user_data;
+		lv_timer_reset(modal->timeout);
+		if(!modal->hueCB) return;
+		modal->hueCB(map(lv_slider_get_value(modal->slider), 0, sliderRange, 0, 180));
+	}, LV_EVENT_VALUE_CHANGED, this);
+
 
 	lv_obj_add_event_cb(slider, [](lv_event_t* e){
 		auto key = lv_event_get_key(e);
@@ -69,9 +74,15 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 
 void HueModal::onStart(){
 	lv_group_focus_obj(slider);
+
+	timeout = lv_timer_create([](lv_timer_t* timer){
+		auto modal = ((HueModal*) timer->user_data);
+		if(modal->isActive()) modal->stop();
+	}, timeoutValue, this);
 }
 
 void HueModal::onStop(){
+	lv_timer_del(timeout);
 	if(!hueCB) return;
-	hueCB(map(lv_slider_get_value(slider), 0, 64, 0, 180));
+	hueCB(map(lv_slider_get_value(slider), 0, sliderRange, 0, 180));
 }
