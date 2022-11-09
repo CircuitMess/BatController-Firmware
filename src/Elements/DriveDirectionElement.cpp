@@ -16,6 +16,9 @@ DriveDirectionElement::DriveDirectionElement(lv_obj_t* parent) : LVObject(parent
 	canvasHelper = lv_canvas_create(obj);
 	lv_canvas_set_buffer(canvasHelper, bufferHelper, 15, 13, LV_IMG_CF_TRUE_COLOR);
 	lv_obj_add_flag(canvasHelper, LV_OBJ_FLAG_HIDDEN);
+
+	setSpeed(0);
+	setDirection(0);
 }
 
 DriveDirectionElement::~DriveDirectionElement(){
