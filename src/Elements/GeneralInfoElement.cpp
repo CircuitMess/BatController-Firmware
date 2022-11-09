@@ -1,5 +1,7 @@
 #include <cstdio>
 #include "GeneralInfoElement.h"
+#include <Loop/LoopManager.h>
+#include <BatteryService.h>
 
 const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Idle.bin",
@@ -27,6 +29,15 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	lv_obj_align(conBat->getLvObj(), LV_ALIGN_RIGHT_MID, 40, 0);
 	mobBat = new BatteryElement(obj, BatType::Batmobile);
 	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -57, 0);
+
+	conBatIndex = Battery.getLevel();
+	setConBat(conBatIndex);
+
+	LoopManager::addListener(this);
+}
+
+GeneralInfoElement::~GeneralInfoElement(){
+	LoopManager::removeListener(this);
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
@@ -44,4 +55,14 @@ void GeneralInfoElement::setConBat(uint8_t index){
 
 void GeneralInfoElement::setMobBat(uint8_t index){
 	mobBat->setLevel(index);
+}
+
+void GeneralInfoElement::loop(uint micros){
+	counter += micros;
+	if(counter >= BatteryCheckInterval){
+		counter = 0;
+		if(conBatIndex == Battery.getLevel()) return;
+		conBatIndex = Battery.getLevel();
+		setConBat(conBatIndex);
+	}
 }
