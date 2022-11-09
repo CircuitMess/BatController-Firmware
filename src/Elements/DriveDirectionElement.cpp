@@ -27,8 +27,7 @@ DriveDirectionElement::~DriveDirectionElement(){
 }
 
 void DriveDirectionElement::setSpeed(uint8_t speed){
-	if(speed < 0 || speed > 100) return;
-	this->speed = speed;
+	this->speed = std::clamp(speed, (uint8_t)0,  (uint8_t)100);
 	drawFill();
 	drawRotation();
 }
