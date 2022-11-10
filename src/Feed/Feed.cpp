@@ -119,7 +119,7 @@ bool Feed::findFrame(bool keepLock){
 
 	// Clear buffer if shifted size doesn't match size when shifted
 	for(int i = 0; i < 4; i++){
-		if(frameShiftedSizeRaw[SizeShift[i]] != frameSizeRaw[i]){
+		if(frameShiftedSizeRaw[FrameSizeShift[i]] != frameSizeRaw[i]){
 			ESP_LOGD(tag, "Frame checksum doesn't match");
 			rxBuf.clear();
 			return false;
