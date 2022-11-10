@@ -4,13 +4,13 @@
 #include <vector>
 #include <lvgl.h>
 
-std::map<uint8_t, lv_key_t> InputLVGL::keyMap = {{ BTN_UP,   LV_KEY_PREV},
+const std::map<uint8_t, lv_key_t> InputLVGL::keyMap = {{ BTN_UP,   LV_KEY_PREV},
 														  { BTN_DOWN, LV_KEY_NEXT},
 														  { BTN_LEFT, LV_KEY_LEFT},
 														  { BTN_RIGHT, LV_KEY_RIGHT},
 														  { BTN_A,    LV_KEY_ENTER},
 														  { BTN_B,    LV_KEY_ESC}};
-
+bool InputLVGL::verticalNavigation = true;
 
 InputLVGL* InputLVGL::instance = nullptr;
 
@@ -29,8 +29,10 @@ InputLVGL::InputLVGL(){
 void InputLVGL::read(lv_indev_drv_t* drv, lv_indev_data_t* data){
 	if(lastKey == (uint32_t)-1) return;
 
-	data->key = keyMap[lastKey];
+	data->key = keyMap.at(lastKey);
 	data->state = pressed ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
+	if(data->key == LV_KEY_PREV && !verticalNavigation) data->key = LV_KEY_UP;
+	if(data->key == LV_KEY_NEXT && !verticalNavigation) data->key = LV_KEY_DOWN;
 }
 
 void InputLVGL::buttonReleased(uint i){
@@ -53,6 +55,10 @@ InputLVGL* InputLVGL::getInstance(){
 
 lv_indev_t* InputLVGL::getIndev(){
 	return inputDevice;
+}
+
+void InputLVGL::enableVerticalNavigation(bool enable){
+	verticalNavigation = enable;
 }
 
 
