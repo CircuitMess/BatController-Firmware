@@ -111,28 +111,13 @@ bool Feed::findFrame(bool keepLock){
 		return false;
 	}
 
-	// Read shifted frame size
-	uint8_t frameShiftedSizeRaw[4];
-	for(int i = 0; i < 4; i++){
-		frameShiftedSizeRaw[i] = *rxBuf.peek<uint8_t>(sizeof(FrameHeader) + sizeof(size_t) + i);
-	}
-
-	// Clear buffer if shifted size doesn't match size when shifted
-	for(int i = 0; i < 4; i++){
-		if(frameShiftedSizeRaw[FrameSizeShift[i]] != frameSizeRaw[i]){
-			ESP_LOGD(tag, "Frame checksum doesn't match");
-			rxBuf.skip(sizeof(FrameHeader));
-			return false;
-		}
-	}
-
 	// Abort if rest of frame is missing
-	if(rxBuf.readAvailable() < frameSize + sizeof(FrameHeader) + sizeof(FrameTrailer) + sizeof(size_t) * 2){
+	if(rxBuf.readAvailable() < frameSize + sizeof(FrameHeader) + sizeof(FrameTrailer) + sizeof(size_t)){
 		return false;
 	}
 
 	// Search for frame trailer
-	size_t endOffset = frameSize + sizeof(FrameHeader) + sizeof(size_t) * 2;
+	size_t endOffset = frameSize + sizeof(FrameHeader) + sizeof(size_t);
 	for(bytesMatched = 0; bytesMatched < sizeof(FrameTrailer); bytesMatched++){
 		uint8_t byte = *rxBuf.peek<uint8_t>(endOffset + bytesMatched);
 		if(byte != FrameTrailer[bytesMatched]) break;
