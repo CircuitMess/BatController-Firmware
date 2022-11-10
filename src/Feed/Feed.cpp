@@ -121,7 +121,7 @@ bool Feed::findFrame(bool keepLock){
 	for(int i = 0; i < 4; i++){
 		if(frameShiftedSizeRaw[FrameSizeShift[i]] != frameSizeRaw[i]){
 			ESP_LOGD(tag, "Frame checksum doesn't match");
-			rxBuf.clear();
+			rxBuf.skip(sizeof(FrameHeader));
 			return false;
 		}
 	}
