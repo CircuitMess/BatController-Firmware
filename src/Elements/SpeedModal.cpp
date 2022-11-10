@@ -1,7 +1,7 @@
 #include "SpeedModal.h"
 #include <BatController.h>
 
-SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed) : LVModal(parent){
+SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed) : LVModal(parent), speedCB(speedCB){
 
 	lv_obj_set_size(obj, w, h);
 	lv_obj_set_style_bg_img_src(obj, "S:/DriveScreen/ModalBg.bin", LV_STATE_DEFAULT);
@@ -19,7 +19,7 @@ SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, u
 	lv_slider_set_value(slider, map(currentSpeed, 0, 100, 0, sliderRange), LV_ANIM_OFF);
 	lv_obj_set_size(slider, 65, 5);
 	lv_obj_set_style_pad_left(slider, 1, LV_PART_MAIN);
-	lv_obj_set_style_pad_right(slider, 1, LV_PART_MAIN);
+	lv_obj_set_style_pad_right(slider, 2, LV_PART_MAIN);
 	lv_group_add_obj(inputGroup, slider);
 
 	lv_obj_set_style_bg_img_src(slider, "S:/DriveScreen/SpeedBar.bin", LV_PART_MAIN);

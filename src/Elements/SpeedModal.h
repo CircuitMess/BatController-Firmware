@@ -22,7 +22,7 @@ private:
 	static constexpr size_t w = 79;
 	static constexpr size_t h = 48;
 
-	static constexpr uint8_t sliderRange = 32;
+	static constexpr uint8_t sliderRange = 31;
 
 	static constexpr size_t timeoutValue = 3000; //3s timeout after which modal is exited
 };
