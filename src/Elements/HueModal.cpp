@@ -1,7 +1,7 @@
 #include "HueModal.h"
 #include <BatController.h>
 
-HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t currentHue) : LVModal(parent){
+HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t currentHue) : LVModal(parent), hueCB(hueCB){
 
 	lv_obj_set_size(obj, w, h);
 	lv_obj_set_style_bg_img_src(obj, "S:/DriveScreen/ModalBg.bin", LV_STATE_DEFAULT);
@@ -38,19 +38,21 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 	lv_obj_set_style_bg_opa(knobCircle, LV_OPA_COVER, LV_STATE_DEFAULT);
 	auto color = lv_color_hsv_to_rgb(currentHue * 2, 100, 100);
 	lv_obj_set_style_bg_color(knobCircle, color, LV_STATE_DEFAULT);
-	auto x = lv_slider_get_value(slider) + lv_obj_get_x(slider) - lv_obj_get_style_pad_left(slider, LV_PART_KNOB);
+	auto x = map(lv_slider_get_value(slider), 0, sliderRange, 0, 63) + lv_obj_get_x(slider) - lv_obj_get_style_pad_left(slider, LV_PART_KNOB) +
+			 lv_obj_get_style_pad_left(slider, LV_PART_MAIN);
 	auto y = lv_obj_get_y(slider) - lv_obj_get_style_pad_top(slider, LV_PART_KNOB) + 1;
 	lv_obj_set_pos(knobCircle, x, y);
 
 	lv_obj_add_event_cb(slider, [](lv_event_t* e){
+		auto drawParams = (lv_obj_draw_part_dsc_t*) e->param;
+		if(drawParams->part != LV_PART_KNOB) return;
 		auto circle = (lv_obj_t*) e->user_data;
 		auto slider = e->target;
 		auto color = lv_color_hsv_to_rgb(map(lv_slider_get_value(slider), 0, sliderRange, 0, 360), 100, 100);
-		auto x = lv_slider_get_value(slider) * 2 + lv_obj_get_x(slider) - lv_obj_get_style_pad_left(slider, LV_PART_KNOB);
+		auto x = map(lv_slider_get_value(slider), 0, sliderRange, 0, 63) + lv_obj_get_x(slider) - lv_obj_get_style_pad_left(slider, LV_PART_KNOB) +
+				 lv_obj_get_style_pad_left(slider, LV_PART_MAIN);
 		lv_obj_set_x(circle, x);
 		lv_obj_set_style_bg_color(circle, color, LV_STATE_DEFAULT);
-		lv_obj_invalidate(slider);
-		lv_obj_invalidate(circle);
 	}, LV_EVENT_DRAW_PART_END, knobCircle);
 
 	lv_obj_add_event_cb(slider, [](lv_event_t* e){
