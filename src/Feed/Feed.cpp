@@ -126,7 +126,7 @@ bool Feed::findFrame(bool keepLock){
 	// Clear whole frame if trailer isn't found at expected offset
 	if(bytesMatched != sizeof(FrameTrailer)){
 		rxBuf.skip(endOffset + sizeof(FrameTrailer));
-		ESP_LOGD(tag, "Trailer missmatch. Clearing %zu bytes\n", endOffset + sizeof(FrameTrailer));
+		ESP_LOGD(tag, "Trailer missmatch. Clearing %zu bytes", endOffset + sizeof(FrameTrailer));
 		return false;
 	}
 
@@ -164,7 +164,7 @@ start:
 		rxMut.unlock();
 
 		if(frame == nullptr){
-			ESP_LOGD(tag, "Couldn't deserialize frame\n");
+			ESP_LOGD(tag, "Couldn't deserialize frame");
 			goto start;
 		}
 
