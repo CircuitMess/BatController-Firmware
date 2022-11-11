@@ -7,6 +7,7 @@
 #include <Display/Color.h>
 
 DriveDirectionElement::DriveDirectionElement(lv_obj_t* parent) : LVObject(parent){
+	lv_obj_set_size(obj, 15, 15);
 	bufferMain = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 15 * 15)); //W:15*H:15
 	canvasMain = lv_canvas_create(obj);
 	lv_canvas_set_buffer(canvasMain, bufferMain, 15, 15, LV_IMG_CF_TRUE_COLOR);
