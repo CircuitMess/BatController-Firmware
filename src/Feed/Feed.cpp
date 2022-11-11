@@ -158,7 +158,12 @@ start:
 		rxBuf.skip(sizeof(FrameHeader));
 		size_t size;
 		rxBuf.read(reinterpret_cast<uint8_t*>(&size), sizeof(size_t));
+
+		size_t available = rxBuf.readAvailable();
 		auto frame = DriveInfo::deserialize(rxBuf, size);
+		size_t readTotal = available - rxBuf.readAvailable();
+		rxBuf.skip(size - readTotal); // skip frame if deserialize exited early
+
 		rxBuf.skip(sizeof(FrameTrailer));
 
 		rxMut.unlock();
