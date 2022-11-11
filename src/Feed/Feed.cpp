@@ -34,8 +34,6 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 
 	udp.listen(controllerIP, feedPort);
 	udp.onPacket([this](AsyncUDPPacket& packet) {
-		return;
-
 		Locker lock(rxMut);
 
 		if(rxBuf.writeAvailable() < packet.length()){
@@ -48,7 +46,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 
 	LoopManager::addListener(this);
 	frameConsumed.signal();
-	// decodeTask.start(1, 0);
+	decodeTask.start(1, 0);
 }
 
 Feed::~Feed(){
