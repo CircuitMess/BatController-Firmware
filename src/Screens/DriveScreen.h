@@ -16,6 +16,8 @@
 class DriveScreen : public LVScreen, private InputListener, private DisconnectListener {
 public:
 	DriveScreen(DriveMode mode);
+
+	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
 

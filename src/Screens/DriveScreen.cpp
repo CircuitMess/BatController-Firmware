@@ -44,6 +44,10 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	setMode(mode);
 }
 
+void DriveScreen::onStarting(){
+	memset(imgBuf.data(), 0xff, 160 * 120 * 2);
+}
+
 void DriveScreen::onStart(){
 	driver->start();
 	Input::getInstance()->addListener(this);
