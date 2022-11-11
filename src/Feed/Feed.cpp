@@ -78,7 +78,7 @@ bool Feed::findFrame(bool keepLock){
 	}
 
 	// Clear buffer if header isn't found
-	if(bytesMatched == 0){
+	if(bytesMatched != sizeof(FrameHeader)){
 		size_t size = rxBuf.readAvailable();
 		rxBuf.clear();
 		ESP_LOGD(tag, "Couldn't find frame header. Skipping %zu bytes", size);
