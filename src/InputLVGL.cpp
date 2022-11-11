@@ -13,6 +13,7 @@ const std::map<uint8_t, lv_key_t> InputLVGL::keyMap = {{ BTN_UP,    LV_KEY_PREV 
 												 { BTN_MENU,  LV_KEY_ESC }};
 
 InputLVGL* InputLVGL::instance = nullptr;
+bool InputLVGL::verticalNavigation = true;
 
 InputLVGL::InputLVGL(){
 	instance = this;
