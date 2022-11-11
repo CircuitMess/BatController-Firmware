@@ -16,6 +16,7 @@
 class DriveScreen : public LVScreen, private InputListener, private DisconnectListener {
 public:
 	DriveScreen(DriveMode mode);
+	virtual ~DriveScreen();
 
 	void onStarting() override;
 	void onStart() override;
@@ -35,7 +36,7 @@ private:
 
 	lv_obj_t* img;
 	lv_img_dsc_t imgDsc {};
-	std::array<Color, 160 * 120> imgBuf {};
+	Color* imgBuf = nullptr;
 
 	GeneralInfoElement infoElement;
 };

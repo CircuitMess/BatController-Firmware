@@ -30,7 +30,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	feed->decodeFunc();
 }, 8192, this){
 
-	frame.img = static_cast<Color*>(malloc(160 * 120 * 2));
+	frame.img = static_cast<Color*>(heap_caps_malloc(160 * 120 * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT));
 
 	udp.listen(controllerIP, feedPort);
 	udp.onPacket([this](AsyncUDPPacket& packet) {
