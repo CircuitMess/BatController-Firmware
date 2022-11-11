@@ -30,7 +30,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	feed->decodeFunc();
 }, 8192, this){
 
-	frame.img = static_cast<Color*>(malloc(160 * 120 * 2));
+	frame.img = static_cast<Color*>(heap_caps_malloc(160 * 120 * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT));
 
 	udp.listen(controllerIP, feedPort);
 	udp.onPacket([this](AsyncUDPPacket& packet) {
@@ -78,7 +78,7 @@ bool Feed::findFrame(bool keepLock){
 	}
 
 	// Clear buffer if header isn't found
-	if(bytesMatched == 0){
+	if(bytesMatched != sizeof(FrameHeader)){
 		size_t size = rxBuf.readAvailable();
 		rxBuf.clear();
 		ESP_LOGD(tag, "Couldn't find frame header. Skipping %zu bytes", size);
@@ -111,13 +111,28 @@ bool Feed::findFrame(bool keepLock){
 		return false;
 	}
 
+	// Read shifted frame size
+	uint8_t frameShiftedSizeRaw[4];
+	for(int i = 0; i < 4; i++){
+		frameShiftedSizeRaw[i] = *rxBuf.peek<uint8_t>(sizeof(FrameHeader) + sizeof(size_t) + i);
+	}
+
+	// Clear buffer if shifted size doesn't match size when shifted
+	for(int i = 0; i < 4; i++){
+		if(frameShiftedSizeRaw[FrameSizeShift[i]] != frameSizeRaw[i]){
+			ESP_LOGD(tag, "Frame checksum doesn't match");
+			rxBuf.skip(sizeof(FrameHeader));
+			return false;
+		}
+	}
+
 	// Abort if rest of frame is missing
-	if(rxBuf.readAvailable() < frameSize + sizeof(FrameHeader) + sizeof(FrameTrailer) + sizeof(size_t)){
+	if(rxBuf.readAvailable() < frameSize + sizeof(FrameHeader) + sizeof(FrameTrailer) + sizeof(size_t) * 2){
 		return false;
 	}
 
 	// Search for frame trailer
-	size_t endOffset = frameSize + sizeof(FrameHeader) + sizeof(size_t);
+	size_t endOffset = frameSize + sizeof(FrameHeader) + sizeof(size_t) * 2;
 	for(bytesMatched = 0; bytesMatched < sizeof(FrameTrailer); bytesMatched++){
 		uint8_t byte = *rxBuf.peek<uint8_t>(endOffset + bytesMatched);
 		if(byte != FrameTrailer[bytesMatched]) break;
@@ -126,7 +141,7 @@ bool Feed::findFrame(bool keepLock){
 	// Clear whole frame if trailer isn't found at expected offset
 	if(bytesMatched != sizeof(FrameTrailer)){
 		rxBuf.skip(endOffset + sizeof(FrameTrailer));
-		ESP_LOGD(tag, "Trailer missmatch. Clearing %zu bytes\n", endOffset + sizeof(FrameTrailer));
+		ESP_LOGD(tag, "Trailer missmatch. Clearing %zu bytes", endOffset + sizeof(FrameTrailer));
 		return false;
 	}
 
@@ -158,13 +173,19 @@ start:
 		rxBuf.skip(sizeof(FrameHeader));
 		size_t size;
 		rxBuf.read(reinterpret_cast<uint8_t*>(&size), sizeof(size_t));
+		rxBuf.skip(sizeof(size_t));
+
+		size_t available = rxBuf.readAvailable();
 		auto frame = DriveInfo::deserialize(rxBuf, size);
+		size_t readTotal = available - rxBuf.readAvailable();
+		rxBuf.skip(size - readTotal); // skip frame if deserialize exited early
+
 		rxBuf.skip(sizeof(FrameTrailer));
 
 		rxMut.unlock();
 
 		if(frame == nullptr){
-			ESP_LOGD(tag, "Couldn't deserialize frame\n");
+			ESP_LOGD(tag, "Couldn't deserialize frame");
 			goto start;
 		}
 
