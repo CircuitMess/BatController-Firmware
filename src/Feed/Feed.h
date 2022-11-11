@@ -23,6 +23,7 @@ public:
 	 * @param func Function to be executed on frame, receives DriveInfo and Color array for decoded frame.
 	 */
 	void onFrame(std::function<void(const DriveInfo&, const Color* frame)> callback);
+	void setPostProcCallback(std::function<void(const DriveInfo&, const Color* frame)> callback);
 
 private:
 	JPEGDEC jpeg;
@@ -50,6 +51,7 @@ private:
 	constexpr static size_t RxBufSize = 3 * (sizeof(DriveInfo) + JpgMaxSize);
 
 	std::function<void(const DriveInfo&, const Color* frame)> frameCallback;
+	std::function<void(const DriveInfo&, const Color* frame)> postProcCallback;
 
 	bool findFrame(bool keepLock = false);
 };
