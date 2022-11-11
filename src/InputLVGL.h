@@ -15,12 +15,21 @@ public:
 	void buttonReleased(uint i) override;
 
 	static InputLVGL* getInstance();
+	/**
+	 * Enables navigation with up/down buttons. If disabled, buttons will be sent as up/down keys to objects.
+	 * Enabled by default.
+	 * @param enable true - vertical navigation enabled, false - vertical navigation disabled
+	 */
+	static void enableVerticalNavigation(bool enable);
+
 	lv_indev_t* getIndev();
 
 private:
 	uint32_t lastKey = -1;
 	bool pressed = false;
-	static std::map<uint8_t, lv_key_t> keyMap;
+	static const std::map<uint8_t, lv_key_t> keyMap;
+
+	static bool verticalNavigation;
 
 	lv_indev_t* inputDevice;
 	static InputLVGL* instance;
