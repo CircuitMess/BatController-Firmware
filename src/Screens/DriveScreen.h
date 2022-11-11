@@ -32,8 +32,8 @@ private:
 	lv_obj_t* driverLayer;
 
 	lv_obj_t* img;
-	lv_img_dsc_t imgDsc;
-	std::array<Color, 160 * 120> imgBuf;
+	lv_img_dsc_t imgDsc {};
+	std::array<Color, 160 * 120> imgBuf {};
 
 	GeneralInfoElement infoElement;
 };

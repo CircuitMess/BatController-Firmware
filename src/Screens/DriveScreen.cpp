@@ -6,7 +6,7 @@
 #include "PairScreen.h"
 #include <Com/Communication.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
+DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_set_pos(infoElement.getLvObj(), 0, 0);
 
@@ -24,7 +24,7 @@ DriveScreen::DriveScreen(DriveMode mode) : infoElement(obj, mode){
 	lv_img_set_src(img, &imgDsc);
 
 	driverLayer = lv_obj_create(obj);
-	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_add_flag(driverLayer, LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_set_size(driverLayer, lv_obj_get_width(obj), lv_obj_get_height(obj));
 	lv_obj_move_foreground(driverLayer);
 
