@@ -2,9 +2,8 @@
 #include <BatController.h>
 #include <Com/Communication.h>
 
-//TODO - change speedModal 3rd argument to previously stored speed from settings
 AutoControls::AutoControls(lv_obj_t* container, LVScreen* parentScreen) : dirElement(container), speedModal(parentScreen, [](uint8_t speed){
-	//TODO - store changed speed to settings, apply to other components
+	Com.sendDriveSpeed(speed);
 }, 0){
 	lv_obj_update_layout(container);
 	auto dirElementX = lv_obj_get_width(container) - lv_obj_get_width(dirElement.getLvObj()) - 3;
@@ -14,6 +13,7 @@ AutoControls::AutoControls(lv_obj_t* container, LVScreen* parentScreen) : dirEle
 
 void AutoControls::start(){
 	BatController.getInput()->addListener(this);
+	Com.sendDriveSpeed(0);
 }
 
 void AutoControls::stop(){
