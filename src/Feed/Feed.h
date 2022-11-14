@@ -51,7 +51,7 @@ private:
 	constexpr static size_t RxBufSize = 3 * (sizeof(DriveInfo) + JpgMaxSize);
 
 	std::function<void(const DriveInfo&, const Color* frame)> frameCallback;
-	std::function<void(const DriveInfo&, const Color* frame)> postProcCallback;
+	std::function<void(const DriveInfo&, Color* frame)> postProcCallback;
 
 	bool findFrame(bool keepLock = false);
 };
