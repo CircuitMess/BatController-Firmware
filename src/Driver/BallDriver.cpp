@@ -16,7 +16,7 @@ void BallDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	const float leftMotors = (frame.motors.frontLeft + frame.motors.backLeft) / 2;
 	const float rightMotors = (frame.motors.frontRight + frame.motors.backRight) / 2;
 	float angle = (leftMotors - rightMotors) / (abs(leftMotors) + abs(rightMotors)) * 90;
-	if(leftMotors <= 0 && rightMotors <= 0) angle += 180;
+	if(leftMotors < 0 && rightMotors < 0) angle += 180;
 	autoControls.setDirection(angle);
 }
 
