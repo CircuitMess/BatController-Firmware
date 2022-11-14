@@ -23,7 +23,7 @@ public:
 	 * @param func Function to be executed on frame, receives DriveInfo and Color array for decoded frame.
 	 */
 	void onFrame(std::function<void(const DriveInfo&, const Color* frame)> callback);
-	void setPostProcCallback(std::function<void(const DriveInfo&, const Color* frame)> callback);
+	void setPostProcCallback(std::function<void(const DriveInfo&, Color*)> callback);
 
 private:
 	JPEGDEC jpeg;

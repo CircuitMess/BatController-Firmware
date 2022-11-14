@@ -225,6 +225,6 @@ void Feed::loop(uint micros){
 	frameConsumed.signal();
 }
 
-void Feed::setPostProcCallback(std::function<void(const DriveInfo&, const Color*)> callback){
+void Feed::setPostProcCallback(std::function<void(const DriveInfo&, Color*)> callback){
 	postProcCallback = callback;
 }
