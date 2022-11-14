@@ -55,12 +55,16 @@ void DriveScreen::onStarting(){
 }
 
 void DriveScreen::onStart(){
+	if(!driver) return;
+
 	driver->start();
 	Input::getInstance()->addListener(this);
 	Com.addDcListener(this);
 }
 
 void DriveScreen::onStop(){
+	if(!driver) return;
+
 	driver->stop();
 	Input::getInstance()->removeListener(this);
 	Com.removeDcListener(this);
@@ -68,6 +72,10 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
+	if(newMode == DriveMode::Idle){
+		currentMode = newMode;
+		return;
+	}
 
 	driver.reset();
 
@@ -77,11 +85,6 @@ void DriveScreen::setMode(DriveMode newMode){
 			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }},
 			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
-
-	if(driver == nullptr){
-		currentMode = DriveMode::Idle;
-		return;
-	}
 
 	driver = starter.at(newMode)(driverLayer, this);
 	currentMode = newMode;
