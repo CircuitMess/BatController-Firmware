@@ -41,7 +41,7 @@ void PairService::start(uint16_t id){
 	password[9] = '\0';
 
 	WiFi.mode(WIFI_AP);
-	WiFi.softAP(ssid, password, 1, 1);
+	WiFi.softAP(ssid, password, 1);
 	delay(100);
 	WiFi.softAPConfig(controllerIP, gateway, subnet);
 
