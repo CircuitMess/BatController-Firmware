@@ -8,8 +8,6 @@ BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : autoControls(con
 																	Com.sendBallHue(hue);
 																	hueElement.setHue(hue);
 																}, 120){
-	autoControls.start();
-	Input::getInstance()->addListener(this);
 }
 
 void BallDriver::onFrame(const DriveInfo& frame, Color* pixels){
@@ -26,4 +24,13 @@ void BallDriver::buttonPressed(uint i){
 	}
 }
 
+void BallDriver::onStart(){
+	autoControls.start();
+	Input::getInstance()->addListener(this);
+}
+
+void BallDriver::onStop(){
+	autoControls.stop();
+	Input::getInstance()->removeListener(this);
+}
 

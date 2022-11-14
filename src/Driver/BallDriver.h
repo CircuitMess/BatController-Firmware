@@ -18,6 +18,9 @@ private:
 	HueModal hueModal;
 
 	void buttonPressed(uint i) override;
+protected:
+	void onStart() override;
+	void onStop() override;
 };
 
 
