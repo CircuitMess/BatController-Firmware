@@ -2,8 +2,9 @@
 #include <BatController.h>
 #include <Com/Communication.h>
 
-AutoControls::AutoControls(lv_obj_t* container, LVScreen* parentScreen) : dirElement(container), speedModal(parentScreen, [](uint8_t speed){
+AutoControls::AutoControls(lv_obj_t* container, LVScreen* parentScreen) : dirElement(container), speedModal(parentScreen, [this](uint8_t speed){
 	Com.sendDriveSpeed(speed);
+	dirElement.setSpeed(speed);
 }, 0){
 	lv_obj_update_layout(container);
 	auto dirElementX = lv_obj_get_width(container) - lv_obj_get_width(dirElement.getLvObj()) - 3;

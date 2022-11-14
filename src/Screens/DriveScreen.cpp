@@ -3,6 +3,7 @@
 #include <BatController.h>
 #include <DriveMode.h>
 #include "../Driver/ManualDriver.h"
+#include "../Driver/BallDriver.h"
 #include "PairScreen.h"
 #include <Com/Communication.h>
 
@@ -70,20 +71,19 @@ void DriveScreen::setMode(DriveMode newMode){
 
 	driver.reset();
 
-	static const std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer)> starter[5] = {
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return std::make_unique<ManualDriver>(elementContainer); },
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return nullptr; },
+	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> starter = {
+			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
+			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
+			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }},
+			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
 
-	driver = starter[(int) newMode](driverLayer);
 	if(driver == nullptr){
 		currentMode = DriveMode::Idle;
 		return;
 	}
 
+	driver = starter.at(newMode)(driverLayer, this);
 	currentMode = newMode;
 	Com.sendDriveMode(currentMode);
 }
