@@ -44,11 +44,6 @@ void GeneralInfoElement::setMode(DriveMode mode){
 	lv_img_set_src(modeImg, modePaths[(int) mode]);
 }
 
-
-void GeneralInfoElement::setSignal(uint8_t index){
-	signal->setLevel(index);
-}
-
 void GeneralInfoElement::setConBat(uint8_t index){
 	conBat->setLevel(index);
 }
