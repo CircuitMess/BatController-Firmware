@@ -8,9 +8,9 @@ class SignalElement : public LVObject, private ComListener {
 public:
 	SignalElement(lv_obj_t* parent);
 	~SignalElement() override;
+	
 private:
 	void onSignalStrength(uint8_t percent) override;
-private:
 	/**
 	 * @param index = [0-3]
 	 * 0->no signal
