@@ -11,6 +11,8 @@ BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : autoControls(con
 }
 
 void BallDriver::onFrame(const DriveInfo& frame, Color* pixels){
+	if(frame.mode != DriveMode::Ball) return;
+
 	const float leftMotors = (frame.motors.frontLeft + frame.motors.backLeft) / 2;
 	const float rightMotors = (frame.motors.frontRight + frame.motors.backRight) / 2;
 	float angle = (leftMotors - rightMotors) / (abs(leftMotors) + abs(rightMotors)) * 90;
