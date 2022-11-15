@@ -4,6 +4,7 @@
 #include <DriveMode.h>
 #include "../Driver/ManualDriver.h"
 #include "../Driver/BallDriver.h"
+#include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include <Com/Communication.h>
 
@@ -82,7 +83,7 @@ void DriveScreen::setMode(DriveMode newMode){
 	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> starter = {
 			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
 			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
-			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }},
+			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer, screen); }},
 			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
 
