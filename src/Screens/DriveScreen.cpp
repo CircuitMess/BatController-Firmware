@@ -7,6 +7,7 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include <Com/Communication.h>
+#include <Loop/LoopManager.h>
 
 DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -117,3 +118,19 @@ void DriveScreen::onDisconnected(){
 	auto pair = new PairScreen();
 	pair->start();
 }
+
+void DriveScreen::loop(uint micros){
+	microCounter += micros;
+	if(microCounter >= fillInterval){
+		microCounter = 0;
+		fillPercent += 5;
+		overrideElement.fill(fillPercent);
+		if(fillPercent >= 115){
+			setMode(DriveMode::Manual);
+			hideOverrideElement();
+			LoopManager::removeListener(this);
+			return;
+		}
+	}
+}
+

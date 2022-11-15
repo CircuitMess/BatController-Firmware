@@ -13,7 +13,7 @@
 #include "../Elements/GeneralInfoElement.h"
 #include "../Feed/Feed.h"
 
-class DriveScreen : public LVScreen, private InputListener, private DisconnectListener {
+class DriveScreen : public LVScreen, private InputListener, private DisconnectListener, private LoopListener {
 public:
 	DriveScreen(DriveMode mode);
 	virtual ~DriveScreen();
@@ -26,6 +26,7 @@ private:
 	void onDisconnected() override;
 
 	void buttonPressed(uint i) override;
+	void loop(uint micros) override;
 
 	void setMode(DriveMode mode);
 	DriveMode currentMode = DriveMode::Idle;
