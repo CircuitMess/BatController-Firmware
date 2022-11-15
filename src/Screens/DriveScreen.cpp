@@ -9,7 +9,7 @@
 #include <Com/Communication.h>
 #include <Loop/LoopManager.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
+DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode), overrideElement(obj){
 	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_set_pos(infoElement.getLvObj(), 0, 0);
 
@@ -46,6 +46,11 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 
 	// If mode is idle, do nothing (setMode returns early)
 	setMode(mode);
+
+	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_align(overrideElement.getLvObj(), LV_ALIGN_CENTER, 0, 0);
+	lv_obj_move_foreground(overrideElement.getLvObj());
+	hideOverrideElement();
 }
 
 DriveScreen::~DriveScreen(){
@@ -134,3 +139,9 @@ void DriveScreen::loop(uint micros){
 	}
 }
 
+
+void DriveScreen::hideOverrideElement(){
+	fillPercent = 0;
+	overrideElement.fill(fillPercent);
+	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+}

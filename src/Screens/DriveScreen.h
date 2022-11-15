@@ -12,6 +12,7 @@
 #include <DisconnectListener.h>
 #include "../Elements/GeneralInfoElement.h"
 #include "../Feed/Feed.h"
+#include "../Elements/OverrideElement.h"
 
 class DriveScreen : public LVScreen, private InputListener, private DisconnectListener, private LoopListener {
 public:
@@ -29,6 +30,8 @@ private:
 	void loop(uint micros) override;
 
 	void setMode(DriveMode mode);
+	void hideOverrideElement();
+
 	DriveMode currentMode = DriveMode::Idle;
 	std::unique_ptr<Driver> driver;
 
@@ -40,6 +43,11 @@ private:
 	Color* imgBuf = nullptr;
 
 	GeneralInfoElement infoElement;
+	OverrideElement overrideElement;
+
+	uint8_t fillPercent = 0;
+	uint16_t microCounter = 0;
+	uint16_t fillInterval = 5000;
 };
 
 
