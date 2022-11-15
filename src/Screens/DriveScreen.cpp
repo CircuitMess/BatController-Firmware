@@ -113,6 +113,21 @@ void DriveScreen::buttonPressed(uint i){
 		case BTN_MENU:
 			pop();
 			break;
+		case BTN_A:
+			if(currentMode == DriveMode::Manual) break;
+			LoopManager::addListener(this);
+			lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+			break;
+	}
+}
+
+void DriveScreen::buttonReleased(uint i){
+	switch(i){
+		case BTN_A:
+			if(currentMode == DriveMode::Manual) break;
+			LoopManager::removeListener(this);
+			hideOverrideElement();
+			break;
 	}
 }
 

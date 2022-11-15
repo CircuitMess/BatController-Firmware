@@ -25,7 +25,7 @@ public:
 
 private:
 	void onDisconnected() override;
-
+	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
 	void loop(uint micros) override;
 
