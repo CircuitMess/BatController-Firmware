@@ -15,7 +15,6 @@ public:
 	void setMobBat(uint8_t index); //0-7
 
 private:
-	void setSignal(uint8_t index); //0-3
 	void setConBat(uint8_t index); //0-7
 	void loop(uint micros) override;
 

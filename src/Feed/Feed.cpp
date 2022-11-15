@@ -209,6 +209,10 @@ start:
 		this->frame.info = frame;
 		this->frame.info->frame = {};
 
+		if(postProcCallback){
+			postProcCallback(this->frame.info, this->frame.img);
+		}
+
 		frameReady = true;
 	}
 }
@@ -223,4 +227,8 @@ void Feed::loop(uint micros){
 
 	frameReady = false;
 	frameConsumed.signal();
+}
+
+void Feed::setPostProcCallback(std::function<void(const DriveInfo&, Color*)> callback){
+	postProcCallback = callback;
 }

@@ -10,7 +10,7 @@
 #include <Com/Communication.h>
 #include <WiFi.h>
 #include "src/BatTheme.h"
-#include "src/Screens/PairScreen.h"
+#include "src/Screens/IntroScreen.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
@@ -29,7 +29,7 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 
 void setup(){
 	Serial.begin(115200);
-	BatController.begin();
+	BatController.begin(false);
 
 	pinMode(PIN_BATT, INPUT);
 	srand(analogRead(PIN_BATT)*7+analogRead(PIN_BATT)*13);
@@ -59,13 +59,13 @@ void setup(){
 
 	BatController.getInput()->addListener(new InputLVGL());
 
-	// TODO: begin WiFi and Com after intro screen to save on RAM
-	// WiFi.begin initializes the TCP/IP stack and needs to precede Com.begin
-	WiFi.begin();
-	Com.begin();
-
-	auto pair = new PairScreen();
-	pair->start();
+	auto intro = new IntroScreen([](){
+		WiFi.begin();
+		Com.begin();
+	});
+	intro->start();
+	lv_timer_handler();
+	BatController.fadeIn();
 }
 
 void loop(){

@@ -2,8 +2,9 @@
 #define BATCONTROLLER_FIRMWARE_INTROSCREEN_H
 
 #include "../Interface/LVScreen.h"
+#include <Loop/LoopListener.h>
 
-class IntroScreen : public LVScreen {
+class IntroScreen : public LVScreen, private LoopListener {
 public:
 	IntroScreen(void (* callback)());
 
@@ -11,8 +12,15 @@ public:
 	void onStop() override;
 
 private:
-	lv_obj_t* gif;
 	void (*callback)() = nullptr;
+
+	void loop(uint micros) override;
+
+	uint32_t currentFrame = 0;
+	uint32_t frameTime;
+
+	lv_obj_t* img;
+
 };
 
 

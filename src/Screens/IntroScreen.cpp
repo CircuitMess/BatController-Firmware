@@ -1,31 +1,47 @@
 #include "IntroScreen.h"
 #include "../Screens/PairScreen.h"
+#include <Loop/LoopManager.h>
+
+static const uint16_t FrameDurations[] = { 200, 150, 150, 50, 50, 50, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 800 };
 
 IntroScreen::IntroScreen(void (* callback)()) : callback(callback){
-	gif = lv_gif_create(obj);
-	lv_gif_set_src(gif, "S:/Intro.gif");
-	lv_gif_set_loop(gif, LV_GIF_LOOP_SINGLE);
-	lv_gif_stop(gif);
-	lv_gif_restart(gif);
-
-	lv_obj_add_event_cb(gif, [](lv_event_t * e){
-		IntroScreen* intro = static_cast<IntroScreen*>(e->user_data);
-		intro->stop();
-		volatile auto temp  = intro->callback;
-		lv_obj_del(intro->getLvObj());
-
-		PairScreen* pairScreen = new PairScreen();
-		pairScreen->start();
-		if(temp != nullptr) temp();
-	}, LV_EVENT_READY, this);
+	img = lv_img_create(obj);
+	lv_img_set_src(img, "S:/Intro/1.bin");
+	lv_obj_set_size(img, 160, 128);
 }
 
 void IntroScreen::onStart(){
-	lv_gif_restart(gif);
-	lv_gif_start(gif);
+	frameTime = millis();
+	LoopManager::addListener(this);
 }
 
 void IntroScreen::onStop(){
-	lv_gif_stop(gif);
-	lv_obj_del(gif);
+	LoopManager::removeListener(this);
+}
+
+void IntroScreen::loop(uint micros){
+	uint32_t time = millis();
+	if(time - frameTime < FrameDurations[currentFrame]) return;
+
+	currentFrame++;
+	if(currentFrame >= sizeof(FrameDurations) / sizeof(FrameDurations[0])){
+		stop();
+		volatile auto callback = this->callback;
+		delete this;
+
+		if(callback){
+			callback();
+		}
+
+		auto pair = new PairScreen();
+		pair->start();
+		return;
+	}
+
+	frameTime = time;
+
+	char path[32];
+	sprintf(path, "S:/Intro/%d.bin", currentFrame+1);
+	lv_img_set_src(img, path);
+	lv_obj_invalidate(img);
 }
