@@ -30,13 +30,13 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	lv_obj_set_size(driverLayer, lv_obj_get_width(obj), lv_obj_get_height(obj));
 	lv_obj_move_foreground(driverLayer);
 
-	feed.onFrame([this](const DriveInfo& info, const Color* frame){
+	feed.onFrame([this](std::shared_ptr<const DriveInfo> info, const Color* frame){
 		if(!isRunning()) return;
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
 		if(driver){
-			driver->onFrame(info, imgBuf);
+			driver->onFrame(*info, imgBuf);
 		}
 
 		lv_obj_invalidate(img);
