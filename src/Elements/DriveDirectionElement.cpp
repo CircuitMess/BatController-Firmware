@@ -56,12 +56,12 @@ void DriveDirectionElement::drawFill(){
 		for(uint8_t x = 0; x < 15; x++){
 			for(uint8_t y = startingY; y < 13; y++){
 				if(((uint16_t*) buf)[y * 15 + x] == 0)
-					lv_canvas_set_px(canvasHelper, x, y, lv_color_black());
+				lv_canvas_set_px_color(canvasHelper, x, y, lv_color_black());
 			}
 		}
 	};
 
-	lv_canvas_fill_bg(canvasHelper, lv_color_make(255, 255, 255), LV_OPA_0);
+	lv_canvas_fill_bg(canvasHelper, LV_COLOR_CHROMA_KEY, LV_OPA_TRANSP);
 	drawToCanvas(arrowEmptyPath);
 	uint8_t percent = 13 - 13 * speed / 100;
 	drawToCanvas(arrowFullPath, percent);
@@ -70,6 +70,7 @@ void DriveDirectionElement::drawFill(){
 }
 
 void DriveDirectionElement::drawRotation(){
+	lv_canvas_fill_bg(canvasMain, LV_COLOR_CHROMA_KEY, LV_OPA_TRANSP);
 	lv_canvas_transform(canvasMain, lv_canvas_get_img(canvasHelper), (int16_t) (angle * 10), 256, 0, 0, 15 / 2, 15 / 2, true);
 	lv_obj_invalidate(obj);
 }
