@@ -61,7 +61,7 @@ void DriveDirectionElement::drawFill(){
 		}
 	};
 
-	lv_canvas_fill_bg(canvasHelper, LV_COLOR_CHROMA_KEY, LV_OPA_TRANSP);
+	lv_canvas_fill_bg(canvasHelper, LV_COLOR_CHROMA_KEY, LV_OPA_COVER);
 	drawToCanvas(arrowEmptyPath);
 	uint8_t percent = 13 - 13 * speed / 100;
 	drawToCanvas(arrowFullPath, percent);
@@ -70,7 +70,7 @@ void DriveDirectionElement::drawFill(){
 }
 
 void DriveDirectionElement::drawRotation(){
-	lv_canvas_fill_bg(canvasMain, LV_COLOR_CHROMA_KEY, LV_OPA_TRANSP);
+	lv_canvas_fill_bg(canvasMain, LV_COLOR_CHROMA_KEY, LV_OPA_COVER);
 	lv_canvas_transform(canvasMain, lv_canvas_get_img(canvasHelper), (int16_t) (angle * 10), 256, 0, 0, 15 / 2, 15 / 2, true);
 	lv_obj_invalidate(obj);
 }
