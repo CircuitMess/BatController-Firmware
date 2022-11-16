@@ -47,7 +47,7 @@ private:
 
 	uint8_t fillPercent = 0;
 	uint16_t microCounter = 0;
-	uint16_t fillInterval = 5000;
+	static const uint16_t fillInterval = 5000;
 };
 
 
