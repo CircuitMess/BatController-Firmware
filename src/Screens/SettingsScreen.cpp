@@ -356,7 +356,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
-		settings->push(new PairScreen());
+		//TODO: switch scene to PairScreen
 	}, LV_EVENT_CLICKED, this);
 
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
