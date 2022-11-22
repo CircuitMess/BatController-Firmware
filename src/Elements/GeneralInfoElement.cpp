@@ -2,6 +2,7 @@
 #include "GeneralInfoElement.h"
 #include <Loop/LoopManager.h>
 #include <BatteryService.h>
+#include <Com/Communication.h>
 
 const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Idle.bin",
@@ -33,23 +34,17 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	conBatIndex = Battery.getLevel();
 	setConBat(conBatIndex);
 
+	Com.addListener(this);
 	LoopManager::addListener(this);
 }
 
 GeneralInfoElement::~GeneralInfoElement(){
 	LoopManager::removeListener(this);
+	Com.removeListener(this);
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
 	lv_img_set_src(modeImg, modePaths[(int) mode]);
-}
-
-void GeneralInfoElement::setConBat(uint8_t index){
-	conBat->setLevel(index);
-}
-
-void GeneralInfoElement::setMobBat(uint8_t index){
-	mobBat->setLevel(index);
 }
 
 void GeneralInfoElement::loop(uint micros){

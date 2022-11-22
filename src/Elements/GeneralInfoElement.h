@@ -7,15 +7,14 @@
 #include "BatteryElement.h"
 #include "SignalElement.h"
 
-class GeneralInfoElement : public LVObject, private LoopListener {
+class GeneralInfoElement : public LVObject, private LoopListener, private ComListener {
 public:
 	GeneralInfoElement(lv_obj_t* parent, DriveMode mode = DriveMode::Idle);
 	~GeneralInfoElement();
 	void setMode(DriveMode mode);
-	void setMobBat(uint8_t index); //0-7
 
 private:
-	void setConBat(uint8_t index); //0-7
+	void onBattery(uint8_t percent, bool charging) override;
 	void loop(uint micros) override;
 
 	lv_obj_t* modeImg;
