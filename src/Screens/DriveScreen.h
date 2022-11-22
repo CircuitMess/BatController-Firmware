@@ -45,9 +45,9 @@ private:
 	GeneralInfoElement infoElement;
 	OverrideElement overrideElement;
 
-	uint8_t fillPercent = 0;
-	uint16_t microCounter = 0;
-	static const uint16_t fillInterval = 5000;
+	uint8_t overridePercent = 0;
+	uint16_t overrideCounter = 0;
+	static constexpr uint16_t OverrideTime = 5000;
 };
 
 

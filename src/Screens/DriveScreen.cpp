@@ -140,12 +140,12 @@ void DriveScreen::onDisconnected(){
 }
 
 void DriveScreen::loop(uint micros){
-	microCounter += micros;
-	if(microCounter >= fillInterval){
-		microCounter = 0;
-		fillPercent += 5;
-		overrideElement.fill(fillPercent);
-		if(fillPercent >= 115){
+	overrideCounter += micros;
+	if(overrideCounter >= OverrideTime){
+		overrideCounter = 0;
+		overridePercent += 5;
+		overrideElement.fill(overridePercent);
+		if(overridePercent >= 115){
 			setMode(DriveMode::Manual);
 			hideOverrideElement();
 			LoopManager::removeListener(this);
@@ -156,7 +156,7 @@ void DriveScreen::loop(uint micros){
 
 
 void DriveScreen::hideOverrideElement(){
-	fillPercent = 0;
-	overrideElement.fill(fillPercent);
+	overridePercent = 0;
+	overrideElement.fill(overridePercent);
 	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
 }
