@@ -3,6 +3,7 @@
 #include <BatController.h>
 #include <DriveMode.h>
 #include "../Driver/ManualDriver.h"
+#include "../Driver/BallDriver.h"
 #include "PairScreen.h"
 #include <Com/Communication.h>
 
@@ -54,12 +55,16 @@ void DriveScreen::onStarting(){
 }
 
 void DriveScreen::onStart(){
+	if(!driver) return;
+
 	driver->start();
 	Input::getInstance()->addListener(this);
 	Com.addDcListener(this);
 }
 
 void DriveScreen::onStop(){
+	if(!driver) return;
+
 	driver->stop();
 	Input::getInstance()->removeListener(this);
 	Com.removeDcListener(this);
@@ -67,20 +72,25 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
-
 	driver.reset();
 
-	static const std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer)> starter[5] = {
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return std::make_unique<ManualDriver>(elementContainer); },
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return nullptr; },
+	if(newMode == DriveMode::Idle){
+		currentMode = newMode;
+		Com.sendDriveMode(DriveMode::Idle);
+		return;
+	}
+
+	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> Starters = {
+			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
+			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
+			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }},
+			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
 
-	driver = starter[(int) newMode](driverLayer);
-	if(driver == nullptr){
+	auto starter = Starters.at(newMode);
+	if(!starter || (driver = starter(driverLayer, this)) == nullptr){
 		currentMode = DriveMode::Idle;
+		Com.sendDriveMode(currentMode);
 		return;
 	}
 
