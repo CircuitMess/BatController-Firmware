@@ -116,7 +116,6 @@ void DriveScreen::buttonPressed(uint i){
 		case BTN_B:
 			if(currentMode == DriveMode::Manual) break;
 			LoopManager::addListener(this);
-			lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
 			break;
 	}
 }
@@ -141,6 +140,13 @@ void DriveScreen::onDisconnected(){
 
 void DriveScreen::loop(uint micros){
 	overrideCounter += micros;
+	if(elementHidden){
+		showElementCounter += micros;
+		if(showElementCounter >=  ShowElementTime){
+			lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+			elementHidden = false;
+		}
+	}
 	if(overrideCounter >= OverrideTime){
 		overrideCounter = 0;
 		overridePercent += 5;
@@ -159,4 +165,6 @@ void DriveScreen::hideOverrideElement(){
 	overridePercent = 0;
 	overrideElement.fill(overridePercent);
 	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+	elementHidden = true;
+	showElementCounter = 0;
 }

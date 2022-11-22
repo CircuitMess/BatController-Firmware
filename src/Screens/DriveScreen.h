@@ -48,6 +48,10 @@ private:
 	uint8_t overridePercent = 0;
 	uint32_t overrideCounter = 0;
 	static constexpr uint32_t OverrideTime = 100000;
+
+	uint32_t showElementCounter = 0;
+	static constexpr uint32_t ShowElementTime = 500000;
+	bool elementHidden = true;
 };
 
 
