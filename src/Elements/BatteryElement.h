@@ -18,12 +18,18 @@ public:
 	 * 7->full
 	 */
 	void setLevel(uint8_t index);
+	void setCharging(bool charging);
 
 private:
 	void loop(uint micros) override;
 
 	lv_obj_t* img;
 	lv_obj_t* device;
+
+	bool charging = false;
+	uint8_t picIndex = 0;
+	uint32_t microCounter = 0;
+	static const uint32_t  checkInterval = 400000;
 };
 
 
