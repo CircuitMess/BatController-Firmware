@@ -46,8 +46,8 @@ private:
 	OverrideElement overrideElement;
 
 	uint8_t overridePercent = 0;
-	uint16_t overrideCounter = 0;
-	static constexpr uint16_t OverrideTime = 5000;
+	uint32_t overrideCounter = 0;
+	static constexpr uint32_t OverrideTime = 100000;
 };
 
 
