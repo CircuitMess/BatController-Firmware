@@ -20,7 +20,10 @@ MarkerActionElement::MarkerActionElement(lv_obj_t* parent, MarkerAction action) 
 }
 
 void MarkerActionElement::setAction(MarkerAction action){
-	if(!images.count(action)) return;
+	if(!images.count(action)){
+		lv_img_set_src(img, nullptr);
+		return;
+	}
 
 	lv_img_set_src(img, images.at(action));
 

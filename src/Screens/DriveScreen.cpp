@@ -4,6 +4,7 @@
 #include <DriveMode.h>
 #include "../Driver/ManualDriver.h"
 #include "../Driver/BallDriver.h"
+#include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include <Com/Communication.h>
 
@@ -30,13 +31,13 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	lv_obj_set_size(driverLayer, lv_obj_get_width(obj), lv_obj_get_height(obj));
 	lv_obj_move_foreground(driverLayer);
 
-	feed.onFrame([this](const DriveInfo& info, const Color* frame){
+	feed.onFrame([this](std::shared_ptr<const DriveInfo> info, const Color* frame){
 		if(!isRunning()) return;
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
 		if(driver){
-			driver->onFrame(info, imgBuf);
+			driver->onFrame(*info, imgBuf);
 		}
 
 		lv_obj_invalidate(img);
@@ -83,7 +84,7 @@ void DriveScreen::setMode(DriveMode newMode){
 	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> Starters = {
 			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
 			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
-			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }},
+			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer, screen); }},
 			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
 
