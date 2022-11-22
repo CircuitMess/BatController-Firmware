@@ -72,21 +72,28 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
+	driver.reset();
+
 	if(newMode == DriveMode::Idle){
 		currentMode = newMode;
+		Com.sendDriveMode(DriveMode::Idle);
 		return;
 	}
 
-	driver.reset();
-
-	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> starter = {
+	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> Starters = {
 			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
 			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
 			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }},
 			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
 
-	driver = starter.at(newMode)(driverLayer, this);
+	auto starter = Starters.at(newMode);
+	if(!starter || (driver = starter(driverLayer, this)) == nullptr){
+		currentMode = DriveMode::Idle;
+		Com.sendDriveMode(currentMode);
+		return;
+	}
+
 	currentMode = newMode;
 	Com.sendDriveMode(currentMode);
 }
