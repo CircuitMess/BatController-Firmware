@@ -10,6 +10,10 @@ ManualDriver::ManualDriver(lv_obj_t* elementContainer) : boost(elementContainer)
 	lv_obj_set_pos(boost.getLvObj(), 2, 10);
 }
 
+ManualDriver::~ManualDriver() {
+    stop();
+}
+
 void ManualDriver::onStart(){
 	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);

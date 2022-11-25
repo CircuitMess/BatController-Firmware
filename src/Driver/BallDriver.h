@@ -12,6 +12,8 @@ public:
 	BallDriver(lv_obj_t* container, LVScreen* screen);
 	void onFrame(const DriveInfo& frame, Color* pixels) override;
 
+    ~BallDriver() override;
+
 private:
 	AutoControls autoControls;
 	BallHueElement hueElement;

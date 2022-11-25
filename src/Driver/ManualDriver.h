@@ -10,6 +10,8 @@ class ManualDriver : public Driver, private LoopListener, private InputListener 
 public:
 	ManualDriver(lv_obj_t* elementContainer);
 
+    ~ManualDriver() override;
+
 protected:
 	void onStart() override;
 	void onStop() override;

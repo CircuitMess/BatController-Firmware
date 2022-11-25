@@ -10,6 +10,9 @@ class MarkerDriver : public Driver {
 public:
 	MarkerDriver(lv_obj_t* container, LVScreen* screen);
 	void onFrame(const DriveInfo& frame, Color* pixels) override;
+
+    ~MarkerDriver() override;
+
 protected:
 	void onStart() override;
 	void onStop() override;

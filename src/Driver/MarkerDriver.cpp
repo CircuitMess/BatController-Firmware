@@ -4,6 +4,9 @@ MarkerDriver::MarkerDriver(lv_obj_t* container, LVScreen* screen) : autoControls
 																	markerElement(container, MarkerAction::None){
 }
 
+MarkerDriver::~MarkerDriver() {
+    stop();
+}
 
 void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	auto markerInfo = frame.toMarker();

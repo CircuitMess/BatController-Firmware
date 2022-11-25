@@ -10,6 +10,10 @@ BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : autoControls(con
 																}, 120){
 }
 
+BallDriver::~BallDriver() {
+    stop();
+}
+
 void BallDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	if(frame.mode != DriveMode::Ball) return;
 
@@ -32,6 +36,7 @@ void BallDriver::onStart(){
 }
 
 void BallDriver::onStop(){
+    Serial.println("ON STOP");
 	autoControls.stop();
 	Input::getInstance()->removeListener(this);
 }
