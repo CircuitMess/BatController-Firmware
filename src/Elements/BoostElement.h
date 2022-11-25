@@ -27,7 +27,7 @@ private:
 
 	static constexpr const char* fullPath = "S:/DriveScreen/Boost_full.bin";
 	static constexpr const char* emptyPath = "S:/DriveScreen/Boost_empty.bin";
-	static constexpr const char* activePath = "S:/DriveScreen/Boost_fire.gif";
+	// static constexpr const char* activePath = "S:/DriveScreen/Boost_fire.gif";
 	static constexpr const char* fillSegmentPath = "S:/DriveScreen/Boost_segment.bin";
 };
 
