@@ -153,10 +153,15 @@ void DriveScreen::loop(uint micros){
 		overridePercent += 5;
 		overrideElement.fill(overridePercent);
 		if(overridePercent >= 115){
-			setMode(DriveMode::Manual);
-			hideOverrideElement();
-			LoopManager::removeListener(this);
-			return;
+            LoopManager::removeListener(this);
+            if(currentMode != DriveMode::Manual){
+                previousMode = currentMode;
+                setMode(DriveMode::Manual);
+            }else{
+                setMode(previousMode);
+            }
+            hideOverrideElement();
+            return;
 		}
 	}
 }
