@@ -114,7 +114,7 @@ void DriveScreen::buttonPressed(uint i){
 			pop();
 			break;
 		case BTN_B:
-			if(currentMode == DriveMode::Manual) break;
+			if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
 			LoopManager::addListener(this);
 			break;
 	}
@@ -123,9 +123,9 @@ void DriveScreen::buttonPressed(uint i){
 void DriveScreen::buttonReleased(uint i){
 	switch(i){
 		case BTN_B:
-			if(currentMode == DriveMode::Manual) break;
-			LoopManager::removeListener(this);
-			hideOverrideElement();
+			if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
+            LoopManager::removeListener(this);
+            hideOverrideElement();
 			break;
 	}
 }
