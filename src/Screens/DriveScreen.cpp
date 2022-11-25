@@ -103,6 +103,8 @@ void DriveScreen::setMode(DriveMode newMode){
 
 	currentMode = newMode;
 	Com.sendDriveMode(currentMode);
+    infoElement.setMode(currentMode);
+    driver->start();
 }
 
 void DriveScreen::buttonPressed(uint i){
