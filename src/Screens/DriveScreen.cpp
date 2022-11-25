@@ -101,9 +101,6 @@ void DriveScreen::setMode(DriveMode newMode){
 
 void DriveScreen::buttonPressed(uint i){
 	switch(i){
-		case BTN_B:
-			Com.sendHonk();
-			break;
 		case BTN_MENU:
 			pop();
 			break;
