@@ -142,9 +142,8 @@ void DriveScreen::loop(uint micros){
 	overrideCounter += micros;
 	if(elementHidden){
 		showElementCounter += micros;
-		if(showElementCounter >=  ShowElementTime){
-			lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
-			elementHidden = false;
+		if(showElementCounter >= ShowElementTime){
+			showOverrideElement();
 		}
 	}
 	if(overrideCounter >= OverrideTime){
@@ -160,6 +159,15 @@ void DriveScreen::loop(uint micros){
 	}
 }
 
+void DriveScreen::showOverrideElement() {
+    if(currentMode == DriveMode::Manual){
+        overrideElement.setText(overrideText::Auto);
+    }else{
+        overrideElement.setText(overrideText::Manual);
+    }
+    lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+    elementHidden = false;
+}
 
 void DriveScreen::hideOverrideElement(){
 	overridePercent = 0;
