@@ -34,6 +34,7 @@ private:
     void showOverrideElement();
 
 	DriveMode currentMode = DriveMode::Idle;
+	DriveMode previousMode = DriveMode::Idle;
 	std::unique_ptr<Driver> driver;
 
 	Feed feed;
