@@ -3,12 +3,17 @@
 
 #include "../Interface/LVModal.h"
 
-class OverrideElement  : public LVObject {
+enum overrideText {
+	Manual, Auto
+};
+
+class OverrideElement : public LVObject {
 public:
 	OverrideElement(lv_obj_t* parent);
 	~OverrideElement() override;
 
 	void fill(uint8_t percent);
+	void setText(overrideText text);
 
 private:
 	lv_obj_t* text;

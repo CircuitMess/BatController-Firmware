@@ -33,3 +33,14 @@ OverrideElement::~OverrideElement(){}
 void OverrideElement::fill(uint8_t percent){
 	lv_slider_set_value(slider, map(percent, 0, 100, 0, sliderRange), LV_ANIM_ON);
 }
+
+void OverrideElement::setText(overrideText oText){
+	switch(oText){
+		case overrideText::Manual:
+			lv_label_set_text(text, "MANUAL\nOVERRIDE");
+			break;
+		case overrideText::Auto:
+			lv_label_set_text(text, "INITIALIZING\nAUTOPILOT");
+			break;
+	}
+}
