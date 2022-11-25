@@ -11,3 +11,7 @@ void Driver::stop(){
 void Driver::onFrame(const DriveInfo& frame, Color* pixels){
 
 }
+
+Driver::~Driver() {
+
+}
