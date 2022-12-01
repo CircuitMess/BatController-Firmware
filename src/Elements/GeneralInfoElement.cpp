@@ -5,7 +5,7 @@
 #include <Com/Communication.h>
 
 const char* GeneralInfoElement::modePaths[] = {
-		"S:/DriveMode/Idle.bin",
+		"",
 		"S:/DriveMode/Manual.bin",
 		"S:/DriveMode/Ball.bin",
 		"S:/DriveMode/Line.bin",
