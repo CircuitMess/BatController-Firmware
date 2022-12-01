@@ -1,7 +1,6 @@
 #include <Loop/LoopManager.h>
 #include "MainMenu.h"
-#include "../Driver/ManualDriver.h"
-#include "DummyScreen.h"
+#include "DriveScreen.h"
 #include <Pins.hpp>
 #include <Input/Input.h>
 
@@ -203,11 +202,11 @@ void MainMenu::launch() {
     stop();
 
     static LVScreen *(*screens[])() = {
-            []() -> LVScreen * { return new DummyScreen(); },
-            []() -> LVScreen * { return new DummyScreen(); },
-            []() -> LVScreen * { return new DummyScreen(); },
-            []() -> LVScreen * { return new DummyScreen(); },
-            []() -> LVScreen * { return new DummyScreen(); },
+            []() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
+            []() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
+            []() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
+            []() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
+            //[]() -> LVScreen * { return new DummyScreen(); }, TODO: add settings
     };
 
     LoopManager::defer([this](uint32_t) {
