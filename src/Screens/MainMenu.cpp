@@ -157,10 +157,6 @@ void MainMenu::onStarting() {
     }
 
     if (inited) {
-        for (int i = 0; i < ItemCount; i++) {
-            lv_obj_set_style_translate_x(smalls[i], selected == i ? lv_pct(110) : 0, LV_STATE_DEFAULT | LV_PART_MAIN);
-        }
-
         lv_group_focus_obj(bigs[selected]);
         lv_obj_scroll_to_y(mid, selected * 128, LV_ANIM_OFF);
     }
@@ -250,6 +246,6 @@ void MainMenu::selectPrev() {
 }
 
 void MainMenu::buttonPressed(uint i) {
-//    if(i != BTN_BACK && i != BTN_R) return;
+//    if(i != BTN_BACK && i != BTN_R) return; TODO: I have no idea what to do with this
 //    LockScreen::activate(this);
 }
