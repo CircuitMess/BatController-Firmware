@@ -3,6 +3,7 @@
 #include <BatController.h>
 #include <Aruco/Aruco.h>
 #include "DriveScreen.h"
+#include <Com/Communication.h>
 
 PairScreen::PairScreen() : LVScreen(){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
@@ -89,6 +90,9 @@ void PairScreen::onStart(){
 }
 
 void PairScreen::onStop(){
+	//TODO - send volume from settings instead of 0
+	Com.sendVolume(0);
+
 	pair.stop();
 }
 

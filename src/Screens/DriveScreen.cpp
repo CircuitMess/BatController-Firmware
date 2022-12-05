@@ -73,6 +73,14 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
+
+	//TODO - also set DriveSpeed in settings to zero
+	Com.sendDriveSpeed(0);
+	if(newMode == DriveMode::Ball){
+		//TODO - send BallHue from settings
+		Com.sendBallHue(0);
+	}
+
 	driver.reset();
 
 	if(newMode == DriveMode::Idle){
