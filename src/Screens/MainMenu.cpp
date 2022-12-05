@@ -124,6 +124,15 @@ void MainMenu::unloadGIFs() {
     bigs.clear();
 }
 
+
+void MainMenu::unloadLastGIF() {
+    lv_obj_del(bigs[selected]);
+    bigs.clear();
+
+    delete infoElement;
+    infoElement = nullptr;
+}
+
 void MainMenu::setRed(uint8_t index, bool reverse) {
     if (index >= smalls.size()) return;
 
@@ -214,11 +223,9 @@ void MainMenu::launch() {
         if (!screen) return;
 
         push(screen);
-
-        auto timer = lv_timer_create([](lv_timer_t *timer) {
-            auto menu = static_cast<MainMenu *>(timer->user_data);
-            menu->unloadGIFs();
-            printf("Doing timer\n");
+        auto timer = lv_timer_create([](lv_timer_t* timer){
+            auto menu = static_cast<MainMenu*>(timer->user_data);
+            menu->unloadLastGIF();
         }, 500, this);
         lv_timer_set_repeat_count(timer, 1);
     });

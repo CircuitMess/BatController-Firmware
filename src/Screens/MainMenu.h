@@ -33,6 +33,7 @@ private:
 
     void loadGIFs();
     void unloadGIFs();
+    void unloadLastGIF();
 
     void scrollTo(uint8_t index);
     void launch();
