@@ -117,10 +117,10 @@ void MainMenu::loadGIFs() {
 }
 
 void MainMenu::unloadGIFs() {
-    for (auto gif: bigs) {
-        lv_obj_del(gif);
+    for (int i = 0; i < bigs.size(); i++) {
+        if(i != selected)
+        lv_obj_del(bigs[i]);
     }
-    bigs.clear();
 }
 
 
