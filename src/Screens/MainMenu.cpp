@@ -47,7 +47,6 @@ MainMenu::MainMenu() : LVScreen() {
     lv_obj_set_flex_align(mid, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
 
-    infoElement = new GeneralInfoElement(top);
 
     for (const auto &item: Items) {
         lv_obj_t *bigContainer = lv_obj_create(mid);
@@ -147,6 +146,8 @@ void MainMenu::setRed(uint8_t index, bool reverse) {
 }
 
 void MainMenu::onStarting() {
+    infoElement = new GeneralInfoElement(top, DriveMode::Idle);
+
     if (bigs.empty()) {
         loadGIFs();
     } else {
@@ -192,10 +193,7 @@ void MainMenu::onStop() {
     for (int i = 0; i < ItemCount; i++) {
         lv_gif_stop(bigs[i]);
     }
-
-    delete infoElement;
-    infoElement = nullptr;
-
+    unloadGIFs();
     Input::getInstance()->removeListener(this);
 }
 
