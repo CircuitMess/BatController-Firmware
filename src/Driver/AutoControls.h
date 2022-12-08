@@ -2,6 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_AUTOCONTROLS_H
 
 #include <Loop/LoopListener.h>
+#include <DriveInfo.h>
 #include "../Elements/DriveDirectionElement.h"
 #include "../Elements/SpeedModal.h"
 
@@ -22,6 +23,8 @@ public:
 	 * in range
 	 */
 	void setDirection(float angle);
+
+	void setDirection(MotorInfo motors);
 
 
 private:
