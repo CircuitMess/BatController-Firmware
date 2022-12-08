@@ -25,7 +25,7 @@ private:
 
 	void loop(uint micros) override;
 
-	BoostElement boost;
+	BoostElement* boost;
 	uint8_t boostGauge = 0;
 	bool boostActive = false;
 	uint32_t boostTimer = 0;
