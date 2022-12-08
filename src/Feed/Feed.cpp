@@ -53,6 +53,9 @@ Feed::~Feed(){
 	decodeTask.stop(true);
 	LoopManager::removeListener(this);
 	free(frame.img);
+
+	udp.onPacket(AuPacketHandlerFunction());
+	udp.close();
 }
 
 bool Feed::findFrame(bool keepLock){
