@@ -11,43 +11,14 @@ PairScreen::PairScreen() : LVScreen(), /*scanAruco(obj), connecting(obj), error(
     lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
     lv_obj_set_size(obj, 160, 128);
 
-	buffer = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 49 * Scale * Scale));
 
-	canvas = lv_canvas_create(bg);
-	lv_obj_set_pos(canvas, 10, (128 - 7 * Scale) / 2);
-	lv_obj_set_size(canvas, 7 * Scale, 7 * Scale);
-	lv_obj_set_style_bg_color(canvas, lv_palette_darken(LV_PALETTE_BLUE, 2), 0);
-	lv_obj_set_style_bg_opa(canvas, LV_OPA_COVER, 0);
-	lv_canvas_set_buffer(canvas, buffer, 7 * Scale, 7 * Scale, LV_IMG_CF_INDEXED_1BIT);
-	lv_canvas_set_palette(canvas, 0, lv_color_white());
-	lv_canvas_set_palette(canvas, 1, lv_color_black());
-
-	white.full = 0;
-	black.full = 1;
-	lv_canvas_fill_bg(canvas, black, LV_OPA_COVER);
-
-	text = lv_label_create(bg);
-	lv_obj_set_size(text, 7 * Scale, 7 * Scale);
-	lv_obj_set_pos(text, 7 * Scale + 20, (128 - 7 * Scale) / 2);
-	lv_obj_set_style_text_color(text, lv_color_white(), 0);
-	lv_obj_set_style_text_font(text, &lv_font_unscii_8 ,0);
-	lv_label_set_text(text, "Scan\nwith\ncamera\nto begin\npairing");
-
-	anim_drop = new lv_anim_t();
-	lv_anim_init(anim_drop);
-	lv_anim_set_var(anim_drop, bg);
-	lv_anim_set_values(anim_drop, -128, 0);
-	lv_anim_set_time(anim_drop, 500);
-	lv_anim_set_repeat_count(anim_drop, 0);
-	lv_anim_set_exec_cb(anim_drop, [](void* var, int32_t v){
-		lv_obj_set_y((_lv_obj_t*) var, v);
-	});
-
+    lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_style_pad_top(obj, 128, 0);
+    lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 }
 
 
-PairScreen::~PairScreen(){
-	free(buffer);
+PairScreen::~PairScreen() {
 }
 
 void PairScreen::onStart() {
@@ -68,7 +39,8 @@ void PairScreen::onStart() {
 		mainMenu->start();
 	});
 
-	pair.start(randID);
+    pair.start(0);
+    lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
 }
 
 void PairScreen::onStop(){
