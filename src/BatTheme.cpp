@@ -11,12 +11,27 @@
 #define OUTLINE_WIDTH           lv_disp_dpx(theme.disp, 3)
 #define TRANSITION_TIME         80
 
+#define COLOR_WHITE   lv_color_white()
+#define COLOR_LIGHT   lv_palette_lighten(LV_PALETTE_GREY, 3)
+#define COLOR_MID     lv_palette_lighten(LV_PALETTE_GREY, 1)
+#define COLOR_DARK    lv_palette_main(LV_PALETTE_GREY)
+#define COLOR_DIM     lv_palette_darken(LV_PALETTE_GREY, 2)
+#define PAD_DEF       LV_DPX(5)
+
+
+#define RADIUS_DEFAULT (disp_size == DISP_LARGE ? lv_disp_dpx(theme.disp, 12) : lv_disp_dpx(theme.disp, 8))
+
+#define PAD_DEF     (disp_size == DISP_LARGE ? lv_disp_dpx(theme.disp, 24) : disp_size == DISP_MEDIUM ? lv_disp_dpx(theme.disp, 20) : lv_disp_dpx(theme.disp, 16))
+#define PAD_SMALL   (disp_size == DISP_LARGE ? lv_disp_dpx(theme.disp, 14) : disp_size == DISP_MEDIUM ? lv_disp_dpx(theme.disp, 12) : lv_disp_dpx(theme.disp, 10))
+#define PAD_TINY   (disp_size == DISP_LARGE ? lv_disp_dpx(theme.disp, 8) : disp_size == DISP_MEDIUM ? lv_disp_dpx(theme.disp, 6) : lv_disp_dpx(theme.disp, 2))
+
 typedef struct {
 	lv_style_t scr;
 	lv_style_t scrollbar;
 	lv_style_t scrollbar_scrolled;
 	lv_style_t card;
 	lv_style_t btn;
+    lv_style_t light;
 
 	/*Utility*/
 	lv_style_t bg_color_primary;
@@ -126,6 +141,14 @@ static lv_color_t grey_filter_cb(const lv_color_filter_dsc_t* f, lv_color_t colo
 	else return lv_color_mix(lv_palette_lighten(LV_PALETTE_GREY, 2), color, opa);
 }
 
+
+static lv_color_t dark_color_filter_cb(const lv_color_filter_dsc_t * f, lv_color_t c, lv_opa_t opa)
+{
+    LV_UNUSED(f);
+    return lv_color_darken(c, opa);
+}
+
+
 static void style_init(void){
 	static const lv_style_prop_t trans_props[] = {
 			LV_STYLE_BG_OPA, LV_STYLE_BG_COLOR,
@@ -196,6 +219,56 @@ static void style_init(void){
 	lv_style_set_outline_width(&styles->outline_secondary, OUTLINE_WIDTH);
 	lv_style_set_outline_opa(&styles->outline_secondary, LV_OPA_50);
 
+    style_init_reset(&styles->keyboard_btn_bg);
+    lv_style_set_shadow_width(&styles->keyboard_btn_bg, 0);
+    lv_style_set_radius(&styles->keyboard_btn_bg, disp_size == DISP_SMALL ? RADIUS_DEFAULT / 2 : RADIUS_DEFAULT);
+
+    style_init_reset(&styles->scr);
+    lv_style_set_bg_opa(&styles->scr, LV_OPA_COVER);
+    lv_style_set_bg_color(&styles->scr, color_scr);
+    lv_style_set_text_color(&styles->scr, color_text);
+    lv_style_set_pad_row(&styles->scr, PAD_SMALL);
+    lv_style_set_pad_column(&styles->scr, PAD_SMALL);
+
+    style_init_reset(&styles->pad_tiny);
+    lv_style_set_pad_all(&styles->pad_tiny, PAD_TINY);
+    lv_style_set_pad_row(&styles->pad_tiny, PAD_TINY);
+    lv_style_set_pad_column(&styles->pad_tiny, PAD_TINY);
+
+    style_init_reset(&styles->pad_small);
+    lv_style_set_pad_all(&styles->pad_small, PAD_SMALL);
+    lv_style_set_pad_gap(&styles->pad_small, PAD_SMALL);
+
+    style_init_reset(&styles->btn);
+    lv_style_set_radius(&styles->btn, (disp_size == DISP_LARGE ? lv_disp_dpx(theme.disp,
+                                                                             16) : disp_size == DISP_MEDIUM ? lv_disp_dpx(theme.disp, 12) : lv_disp_dpx(theme.disp, 8)));
+    lv_style_set_bg_opa(&styles->btn, LV_OPA_COVER);
+    lv_style_set_bg_color(&styles->btn, color_grey);
+    if(!(theme.flags & MODE_DARK)) {
+        lv_style_set_shadow_color(&styles->btn, lv_palette_main(LV_PALETTE_GREY));
+        lv_style_set_shadow_width(&styles->btn, LV_DPX(3));
+        lv_style_set_shadow_opa(&styles->btn, LV_OPA_50);
+        lv_style_set_shadow_ofs_y(&styles->btn, lv_disp_dpx(theme.disp, LV_DPX(4)));
+    }
+    lv_style_set_text_color(&styles->btn, color_text);
+    lv_style_set_pad_hor(&styles->btn, PAD_DEF);
+    lv_style_set_pad_ver(&styles->btn, PAD_SMALL);
+    lv_style_set_pad_column(&styles->btn, lv_disp_dpx(theme.disp, 5));
+    lv_style_set_pad_row(&styles->btn, lv_disp_dpx(theme.disp, 5));
+
+    static lv_color_filter_dsc_t dark_filter;
+    lv_color_filter_dsc_init(&dark_filter, dark_color_filter_cb);
+
+    style_init_reset(&styles->pressed);
+    lv_style_set_color_filter_dsc(&styles->pressed, &dark_filter);
+    lv_style_set_color_filter_opa(&styles->pressed, 35);
+
+    style_init_reset(&styles->bg_color_secondary_muted);
+    lv_style_set_bg_color(&styles->bg_color_secondary_muted, theme.color_secondary);
+    lv_style_set_text_color(&styles->bg_color_secondary_muted, theme.color_secondary);
+    lv_style_set_bg_opa(&styles->bg_color_secondary_muted, LV_OPA_20);
+
+
 	style_init_reset(&styles->bg_color_primary);
 	lv_style_set_bg_color(&styles->bg_color_primary, theme.color_primary);
 	lv_style_set_text_color(&styles->bg_color_primary, lv_color_white());
@@ -224,6 +297,26 @@ static void style_init(void){
 
 	style_init_reset(&styles->transition_normal);
 	lv_style_set_transition(&styles->transition_normal, &trans_normal); /*Go back to default state with delay*/
+
+    style_init_reset(&styles->light);
+    lv_style_set_bg_opa(&styles->light, LV_OPA_COVER);
+    lv_style_set_bg_color(&styles->light, COLOR_LIGHT);
+    lv_style_set_border_color(&styles->light, COLOR_MID);
+    lv_style_set_border_width(&styles->light, 1);
+    lv_style_set_pad_all(&styles->light, PAD_DEF);
+    lv_style_set_pad_gap(&styles->light, PAD_DEF / 2);
+    lv_style_set_line_width(&styles->light, LV_DPX(2));
+    lv_style_set_line_color(&styles->light, COLOR_MID);
+    lv_style_set_arc_width(&styles->light, LV_DPX(2));
+    lv_style_set_arc_color(&styles->light, COLOR_MID);
+
+//    static lv_color_filter_dsc_t dark_filter;
+    lv_color_filter_dsc_init(&dark_filter, dark_color_filter_cb);
+
+    style_init_reset(&styles->pressed);
+    lv_style_set_color_filter_dsc(&styles->pressed, &dark_filter);
+    lv_style_set_color_filter_opa(&styles->pressed, 35);
+
 }
 /**********************
 *   GLOBAL FUNCTIONS
@@ -254,7 +347,7 @@ void BatThemeInit(lv_disp_t* disp){
 
 	disp->theme = &theme;
 
-	lv_disp_set_bg_image(disp, "S/bg.bin");
+//	lv_disp_set_bg_image(disp, "S/scanAruco.bin");
 	lv_disp_set_bg_opa(disp, LV_OPA_COVER);
 }
 
@@ -276,7 +369,8 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
 	if(lv_obj_check_type(obj, &lv_textarea_class)) {
 		lv_obj_add_style(obj, &styles->ta_cursor, LV_PART_CURSOR | LV_STATE_FOCUSED);
 		lv_obj_add_style(obj, &styles->ta_placeholder, LV_PART_TEXTAREA_PLACEHOLDER);
-	}
+
+    }
 
 	if(lv_obj_check_type(obj, &lv_obj_class)){
 		// lv_obj_add_style(obj, &styles->card, 0);
@@ -307,9 +401,21 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
 
 		lv_obj_add_style(obj, &styles->transition_normal, LV_PART_INDICATOR | LV_STATE_CHECKED);
 		lv_obj_add_style(obj, &styles->transition_normal, LV_PART_INDICATOR);
-	}
 
-
+    }else if(lv_obj_check_type(obj, &lv_keyboard_class)) {
+        lv_obj_add_style(obj, &styles->light, 0);
+        lv_obj_add_style(obj, &styles->light, LV_PART_ITEMS);
+        lv_obj_add_style(obj, &styles->pressed, LV_PART_ITEMS | LV_STATE_PRESSED);
+        lv_obj_add_style(obj, disp_size == DISP_LARGE ? &styles->pad_small : &styles->pad_tiny, 0);
+        lv_obj_add_style(obj, &styles->outline_primary, LV_STATE_FOCUS_KEY);
+//        lv_obj_add_style(obj, &styles->outline_secondary, LV_STATE_EDITED);
+//        lv_obj_add_style(obj, &styles->disabled, LV_PART_ITEMS | LV_STATE_DISABLED);
+//        lv_obj_add_style(obj, &styles->bg_color_white, LV_PART_ITEMS);
+//        lv_obj_add_style(obj, &styles->keyboard_btn_bg, LV_PART_ITEMS);
+//        lv_obj_add_style(obj, &styles->bg_color_grey, LV_PART_ITEMS | LV_STATE_CHECKED);
+//        lv_obj_add_style(obj, &styles->bg_color_primary_muted, LV_PART_ITEMS | LV_STATE_FOCUS_KEY);
+//        lv_obj_add_style(obj, &styles->bg_color_secondary_muted, LV_PART_ITEMS | LV_STATE_EDITED);
+    }
 
 }
 
