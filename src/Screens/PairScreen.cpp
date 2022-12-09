@@ -5,15 +5,11 @@
 #include "DriveScreen.h"
 #include "MainMenu.h"
 
-PairScreen::PairScreen() : LVScreen(){
-	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
-	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 
-	bg = lv_obj_create(obj);
-	lv_obj_set_style_bg_color(bg, lv_color_black(), 0);
-	lv_obj_set_style_bg_opa(bg, LV_OPA_COVER, 0);
-	lv_obj_set_size(bg, 160, 128);
-	lv_obj_set_pos(bg, 0, -128);
+PairScreen::PairScreen() : LVScreen(), /*scanAruco(obj), connecting(obj), error(obj), scanQR(obj),*/ input(obj, inputGroup){
+    lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
+    lv_obj_set_size(obj, 160, 128);
 
 	buffer = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 49 * Scale * Scale));
 
@@ -54,28 +50,14 @@ PairScreen::~PairScreen(){
 	free(buffer);
 }
 
-void PairScreen::onStart(){
-	int randID = rand() % 256;
-	Color tempBuffer[7 * 7];
+void PairScreen::onStart() {
+    int randID = rand() % 256;
 
-	Aruco::generate(randID, tempBuffer);
-	auto drawRect = [this](uint8_t x, uint8_t y){
-		for(uint32_t locY = y * Scale; locY < y * Scale + Scale; locY++){
-			for(uint32_t locX = x * Scale; locX < x * Scale + Scale; locX++){
-				lv_canvas_set_px(this->canvas, locX, locY, this->white);
-			}
-		}
-	};
-
-	for(uint8_t y = 0; y < 7; y++){
-		for(uint8_t x = 0; x < 7; x++){
-			if(tempBuffer[y * 7 + x] == TFT_BLACK){
-				drawRect(x, y);
-			}
-		}
-	}
-
-	lv_anim_start(anim_drop);
+//    scanAruco.start(randID);
+//    connecting.start();
+//    error.start();
+//    scanQR.start();
+    input.start();
 
 	pair.setDoneCallback([this](){
 		stop();
