@@ -19,6 +19,7 @@ public:
 private:
 	lv_obj_t* bar;
 	lv_obj_t* bgGIF;
+	lv_obj_t* bgIMG;
 
 	bool gifRunning = false; //to prevent gif restarting on subsequent setActive(true) calls
 

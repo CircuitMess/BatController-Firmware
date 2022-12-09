@@ -49,6 +49,7 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 
 DriveScreen::~DriveScreen(){
 	free(imgBuf);
+	setMode(DriveMode::Idle);
 }
 
 void DriveScreen::onStarting(){

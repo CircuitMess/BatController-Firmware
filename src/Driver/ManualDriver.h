@@ -25,12 +25,23 @@ private:
 
 	void loop(uint micros) override;
 
-	BoostElement boost;
+	BoostElement* boost;
 	uint8_t boostGauge = 0;
 	bool boostActive = false;
 	uint32_t boostTimer = 0;
 	static constexpr uint boostFillRate = 40000; //increment boost by 1 every 40ms when recharging boost
 	static constexpr uint boostConsumptionRate = 20000; //decrease by 1 every 10ms when using boost
+
+	void sendDriveDir();
+
+	bool gyro = false;
+	uint8_t gyroDir = 0;
+	static constexpr uint8_t GyroAddr = 0x18;
+	uint32_t gyroCounter = 0;
+	static constexpr uint32_t GyroReadInterval = 10000;
+	static constexpr uint32_t GyroCheckInterval = 100000;
+	void sendGyro();
+	void checkGyro();
 };
 
 
