@@ -6,6 +6,7 @@
 #include "../Driver/BallDriver.h"
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
+#include "MainMenu.h"
 #include <Com/Communication.h>
 
 DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
@@ -53,7 +54,7 @@ DriveScreen::~DriveScreen(){
 }
 
 void DriveScreen::onStarting(){
-	memset(imgBuf, 0xff, 160 * 120 * 2);
+	memset(imgBuf, 0, 160 * 120 * 2);
 }
 
 void DriveScreen::onStart(){
@@ -101,11 +102,13 @@ void DriveScreen::setMode(DriveMode newMode){
 }
 
 void DriveScreen::buttonPressed(uint i){
-	switch(i){
-		case BTN_MENU:
-			pop();
-			break;
-	}
+	if(i != BTN_MENU) return;
+
+	stop();
+	delete this;
+
+	auto mainMenu = new MainMenu();
+	mainMenu->start();
 }
 
 void DriveScreen::onDisconnected(){
