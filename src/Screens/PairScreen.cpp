@@ -3,6 +3,7 @@
 #include <BatController.h>
 #include <Aruco/Aruco.h>
 #include "DriveScreen.h"
+#include "MainMenu.h"
 
 PairScreen::PairScreen() : LVScreen(){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
@@ -79,10 +80,10 @@ void PairScreen::onStart(){
 	pair.setDoneCallback([this](){
 		stop();
 		delete this;
-		// TODO: go to main menu
+
 		Serial.printf("Paired\n");
-		auto driveScreen = new DriveScreen(DriveMode::Manual);
-		driveScreen->start();
+		auto mainMenu = new MainMenu();
+		mainMenu->start();
 	});
 
 	pair.start(randID);
