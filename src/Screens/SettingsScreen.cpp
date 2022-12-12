@@ -102,7 +102,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
 		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
 		if(!(lv_obj_get_state(event->target) & LV_STATE_EDITED)){
-			slider->pop();
+			slider->backToMain();
 		}
 	}, LV_EVENT_CANCEL, this);
 
@@ -183,7 +183,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_event_cb(shutdownSlider, [](lv_event_t* event){
 		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
 		if(!(lv_obj_get_state(event->target) & LV_STATE_EDITED)){
-			slider->pop();
+			slider->backToMain();
 		}
 	}, LV_EVENT_CANCEL, this);
 
@@ -286,7 +286,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_event_cb(brightnessSlider, [](lv_event_t* event){
 		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
 		if(!(lv_obj_get_state(event->target) & LV_STATE_EDITED)){
-			slider->pop();
+			slider->backToMain();
 		}
 	}, LV_EVENT_CANCEL, this);
 
@@ -363,7 +363,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
 		SettingsScreen* factory = static_cast<SettingsScreen*>(event->user_data);
-		factory->pop();
+		factory->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, pairBatmobile);
@@ -403,7 +403,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(factoryReset, [](lv_event_t* event){
 		SettingsScreen* screen = static_cast<SettingsScreen*>(event->user_data);
-		screen->pop();
+		screen->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, factoryReset);
@@ -443,7 +443,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
 		SettingsScreen* factory = static_cast<SettingsScreen*>(event->user_data);
-		factory->pop();
+		factory->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, HWTest);
@@ -514,4 +514,13 @@ void SettingsScreen::buttonPressed(uint i){
 	if(i == BTN_A){
 //			LockScreen::activate(this);
 	}
+}
+
+void SettingsScreen::backToMain(){
+	volatile auto parent = this->parent;
+
+	stop();
+	delete this;
+
+	parent->start();
 }

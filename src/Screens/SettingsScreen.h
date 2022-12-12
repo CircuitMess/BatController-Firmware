@@ -41,6 +41,8 @@ private:
 	void buttonHeld(uint i) override;
 	void buttonReleased(uint i) override;
 
+	void backToMain();
+
 };
 
 #endif //BATCONTROLLER_FIRMWARE_SETTINGSSCREEN_H
