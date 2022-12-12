@@ -3,6 +3,7 @@
 #include "DriveScreen.h"
 #include <Pins.hpp>
 #include <Input/Input.h>
+#include "SettingsScreen.h"
 
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
@@ -213,7 +214,7 @@ void MainMenu::launch() {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
-				[]() -> LVScreen * { return nullptr; }
+				[]() -> LVScreen * { return new SettingsScreen(); }
 		};
 		volatile const auto selected = menu->selected;
 		volatile auto launcher = screens[selected];
