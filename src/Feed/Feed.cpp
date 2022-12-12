@@ -53,6 +53,9 @@ Feed::~Feed(){
 	decodeTask.stop(true);
 	LoopManager::removeListener(this);
 	free(frame.img);
+
+	udp.onPacket(AuPacketHandlerFunction());
+	udp.close();
 }
 
 bool Feed::findFrame(bool keepLock){
@@ -149,7 +152,7 @@ bool Feed::findFrame(bool keepLock){
 	return true;
 }
 
-void Feed::onFrame(std::function<void(const DriveInfo&, const Color* frame)> callback){
+void Feed::onFrame(std::function<void(std::shared_ptr<const DriveInfo>, const Color*)> callback){
 	this->frameCallback = callback;
 }
 
@@ -176,7 +179,8 @@ start:
 		rxBuf.skip(sizeof(size_t));
 
 		size_t available = rxBuf.readAvailable();
-		auto frame = DriveInfo::deserialize(rxBuf, size);
+		std::shared_ptr<DriveInfo> frame = DriveInfo::deserialize(rxBuf, size);
+
 		size_t readTotal = available - rxBuf.readAvailable();
 		rxBuf.skip(size - readTotal); // skip frame if deserialize exited early
 
@@ -203,11 +207,13 @@ start:
 			goto start;
 		}
 
-		this->frame.info = *frame;
-		this->frame.info.frame = {};
+		free(frame->frame.data);
+		frame->frame.data = nullptr;
+		this->frame.info = frame;
+		this->frame.info->frame = {};
 
 		if(postProcCallback){
-			postProcCallback(this->frame.info, this->frame.img);
+			postProcCallback(*this->frame.info, this->frame.img);
 		}
 
 		frameReady = true;
@@ -219,6 +225,7 @@ void Feed::loop(uint micros){
 
 	if(frameCallback){
 		frameCallback(frame.info, frame.img);
+		frame.info.reset();
 	}
 
 	frameReady = false;

@@ -2,9 +2,10 @@
 #include "GeneralInfoElement.h"
 #include <Loop/LoopManager.h>
 #include <BatteryService.h>
+#include <Com/Communication.h>
 
 const char* GeneralInfoElement::modePaths[] = {
-		"S:/DriveMode/Idle.bin",
+		"",
 		"S:/DriveMode/Manual.bin",
 		"S:/DriveMode/Ball.bin",
 		"S:/DriveMode/Line.bin",
@@ -31,33 +32,58 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -57, 0);
 
 	conBatIndex = Battery.getLevel();
-	setConBat(conBatIndex);
+	conBat->setLevel(conBatIndex);
 
+	Com.addListener(this);
 	LoopManager::addListener(this);
 }
 
 GeneralInfoElement::~GeneralInfoElement(){
 	LoopManager::removeListener(this);
+	Com.removeListener(this);
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
 	lv_img_set_src(modeImg, modePaths[(int) mode]);
 }
 
-void GeneralInfoElement::setConBat(uint8_t index){
-	conBat->setLevel(index);
-}
-
-void GeneralInfoElement::setMobBat(uint8_t index){
-	mobBat->setLevel(index);
-}
-
 void GeneralInfoElement::loop(uint micros){
 	counter += micros;
 	if(counter >= BatteryCheckInterval){
 		counter = 0;
-		if(conBatIndex == Battery.getLevel()) return;
-		conBatIndex = Battery.getLevel();
-		setConBat(conBatIndex);
+		if(Battery.charging()){
+			conBat->setCharging(true);
+			return;
+		} else {
+			conBat->setCharging(false);
+			if(conBatIndex == Battery.getLevel()) return;
+			conBatIndex = Battery.getLevel();
+			conBat->setLevel(conBatIndex);
+		}
+	}
+}
+
+void GeneralInfoElement::onBattery(uint8_t percent, bool charging){
+	if(charging){
+		mobBat->setCharging(true);
+	}else{
+		mobBat->setCharging(false);
+		if(percent > 90){
+			mobBat->setLevel(7);
+		}else if(percent > 78){
+			mobBat->setLevel(6);
+		}else if(percent > 66){
+			mobBat->setLevel(5);
+		}else if(percent > 54){
+			mobBat->setLevel(4);
+		}else if(percent > 42){
+			mobBat->setLevel(3);
+		}else if(percent > 30){
+			mobBat->setLevel(2);
+		}else if(percent >= 10){
+			mobBat->setLevel(1);
+		}else if(percent < 10){
+			mobBat->setLevel(0);
+		}
 	}
 }

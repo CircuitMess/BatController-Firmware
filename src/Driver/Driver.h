@@ -7,7 +7,9 @@
 
 class Driver{
 public:
-	void start();
+    virtual ~Driver();
+
+    void start();
 	void stop();
 
 	virtual void onFrame(const DriveInfo& frame, Color* pixels);

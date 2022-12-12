@@ -1,5 +1,6 @@
 #include "SpeedModal.h"
 #include <BatController.h>
+#include "../InputLVGL.h"
 
 SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed) : LVModal(parent), speedCB(speedCB){
 
@@ -50,6 +51,8 @@ SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, u
 
 
 void SpeedModal::onStart(){
+	InputLVGL::enableVerticalNavigation(false);
+
 	lv_group_focus_obj(slider);
 
 	timeout = lv_timer_create([](lv_timer_t* timer){
@@ -59,6 +62,8 @@ void SpeedModal::onStart(){
 }
 
 void SpeedModal::onStop(){
+	InputLVGL::enableVerticalNavigation(false);
+
 	lv_timer_del(timeout);
 	if(!speedCB) return;
 	speedCB(map(lv_slider_get_value(slider), 0, sliderRange, 0, 100));

@@ -3,7 +3,10 @@
 #include <BatController.h>
 #include <DriveMode.h>
 #include "../Driver/ManualDriver.h"
+#include "../Driver/BallDriver.h"
+#include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
+#include "MainMenu.h"
 #include <Com/Communication.h>
 
 DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
@@ -29,13 +32,13 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	lv_obj_set_size(driverLayer, lv_obj_get_width(obj), lv_obj_get_height(obj));
 	lv_obj_move_foreground(driverLayer);
 
-	feed.onFrame([this](const DriveInfo& info, const Color* frame){
+	feed.onFrame([this](std::shared_ptr<const DriveInfo> info, const Color* frame){
 		if(!isRunning()) return;
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
 		if(driver){
-			driver->onFrame(info, imgBuf);
+			driver->onFrame(*info, imgBuf);
 		}
 
 		lv_obj_invalidate(img);
@@ -47,19 +50,24 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 
 DriveScreen::~DriveScreen(){
 	free(imgBuf);
+	setMode(DriveMode::Idle);
 }
 
 void DriveScreen::onStarting(){
-	memset(imgBuf, 0xff, 160 * 120 * 2);
+	memset(imgBuf, 0, 160 * 120 * 2);
 }
 
 void DriveScreen::onStart(){
+	if(!driver) return;
+
 	driver->start();
 	Input::getInstance()->addListener(this);
 	Com.addDcListener(this);
 }
 
 void DriveScreen::onStop(){
+	if(!driver) return;
+
 	driver->stop();
 	Input::getInstance()->removeListener(this);
 	Com.removeDcListener(this);
@@ -67,20 +75,25 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
-
 	driver.reset();
 
-	static const std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer)> starter[5] = {
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return std::make_unique<ManualDriver>(elementContainer); },
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return nullptr; },
-			[](lv_obj_t* elementContainer){ return nullptr; },
+	if(newMode == DriveMode::Idle){
+		currentMode = newMode;
+		Com.sendDriveMode(DriveMode::Idle);
+		return;
+	}
+
+	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> Starters = {
+			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
+			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
+			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer, screen); }},
+			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
 	};
 
-	driver = starter[(int) newMode](driverLayer);
-	if(driver == nullptr){
+	auto starter = Starters.at(newMode);
+	if(!starter || (driver = starter(driverLayer, this)) == nullptr){
 		currentMode = DriveMode::Idle;
+		Com.sendDriveMode(currentMode);
 		return;
 	}
 
@@ -89,14 +102,13 @@ void DriveScreen::setMode(DriveMode newMode){
 }
 
 void DriveScreen::buttonPressed(uint i){
-	switch(i){
-		case BTN_B:
-			Com.sendHonk();
-			break;
-		case BTN_MENU:
-			pop();
-			break;
-	}
+	if(i != BTN_MENU) return;
+
+	stop();
+	delete this;
+
+	auto mainMenu = new MainMenu();
+	mainMenu->start();
 }
 
 void DriveScreen::onDisconnected(){

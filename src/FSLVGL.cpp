@@ -3,7 +3,22 @@
 #include <FS/RamFile.h>
 
 const char* FSLVGL::cached[] = {
-		"/DriveScreen/Boost_segment.bin"
+		"/DriveScreen/Boost_segment.bin",
+        "/Menu/Small/Ball_b.bin",
+        "/Menu/Small/Ball_r.bin",
+        "/Menu/Small/Line_b.bin",
+        "/Menu/Small/Line_r.bin",
+        "/Menu/Small/Manual_b.bin",
+        "/Menu/Small/Manual_r.bin",
+        "/Menu/Small/Marker_b.bin",
+        "/Menu/Small/Marker_r.bin",
+        "/Menu/Small/Settings_b.bin",
+        "/Menu/Small/Settings_r.bin",
+        "/Menu/Label/Ball.bin",
+        "/Menu/Label/Line.bin",
+        "/Menu/Label/Manual.bin",
+        "/Menu/Label/Marker.bin",
+        "/Menu/Label/Settings.bin",
 };
 
 std::unordered_map<std::string, fs::File*> FSLVGL::cache;

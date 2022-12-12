@@ -22,7 +22,7 @@ public:
 	 * Sets function to be executed on Core #1 (Arduino core) when a frame has been received and decoded.
 	 * @param func Function to be executed on frame, receives DriveInfo and Color array for decoded frame.
 	 */
-	void onFrame(std::function<void(const DriveInfo&, const Color* frame)> callback);
+	void onFrame(std::function<void(std::shared_ptr<const DriveInfo>, const Color*)> callback);
 	void setPostProcCallback(std::function<void(const DriveInfo&, Color*)> callback);
 
 private:
@@ -33,7 +33,7 @@ private:
 	Mutex rxMut;
 
 	struct {
-		DriveInfo info;
+		std::shared_ptr<DriveInfo> info;
 		Color* img;
 	} frame;
 
@@ -50,7 +50,7 @@ private:
 	constexpr static size_t JpgMaxSize = 4500; //upper size limit for JPG quality 30 on Batmobile camera, approximately
 	constexpr static size_t RxBufSize = 3 * (sizeof(DriveInfo) + JpgMaxSize);
 
-	std::function<void(const DriveInfo&, const Color* frame)> frameCallback;
+	std::function<void(std::shared_ptr<const DriveInfo>, const Color* frame)> frameCallback;
 	std::function<void(const DriveInfo&, Color* frame)> postProcCallback;
 
 	bool findFrame(bool keepLock = false);
