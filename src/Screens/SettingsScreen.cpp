@@ -91,6 +91,8 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
 		lv_obj_add_state(lv_obj_get_parent(lv_event_get_target(event)), LV_STATE_FOCUSED);
+		auto screen = static_cast<SettingsScreen*>(event->user_data);
+		lv_obj_scroll_to_y(screen->obj,0,LV_ANIM_ON);
 	}, LV_EVENT_FOCUSED, this);
 
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
