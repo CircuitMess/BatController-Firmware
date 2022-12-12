@@ -396,7 +396,6 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 		nvs_flash_erase();
 		Settings.reset();
 		BatController.fadeOut();
-		ledcDetachPin(PIN_BUZZ);
 		ESP.restart();
 		//	}, EV_PROMPT_YES, nullptr);
 		//	prompt->start();
