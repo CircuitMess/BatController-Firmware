@@ -24,6 +24,7 @@ private:
 
     lv_obj_t* top;
     lv_obj_t* right;
+	lv_obj_t* midContainer;
     lv_obj_t* mid;
 
     std::vector<lv_obj_t*> bigContainers;
@@ -42,8 +43,11 @@ private:
 
     void setRed(uint8_t index, bool reverse = false);
 
+	void outro();
+	void clearInput();
+	bool launching = false;
+
     uint8_t selected = 0;
-    bool inited = false;
 
     GeneralInfoElement* infoElement = nullptr;
 

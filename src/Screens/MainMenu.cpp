@@ -4,7 +4,6 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 
-
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
         {"Line",     0},
@@ -26,26 +25,32 @@ MainMenu::MainMenu() : LVScreen() {
     lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 
     right = lv_obj_create(obj);
-    mid = lv_obj_create(obj);
     top = lv_obj_create(obj);
+
+	midContainer = lv_obj_create(obj);
+	mid = lv_obj_create(midContainer);
 
     lv_obj_set_pos(top, 0, 0);
     lv_obj_set_size(top, lv_pct(100), 8);
 
-    lv_obj_set_pos(right, 147, 8);
+	infoElement = new GeneralInfoElement(top, DriveMode::Idle);
+
+	lv_obj_set_pos(right, 147, 8);
     lv_obj_set_size(right, 13, 120);
     lv_obj_set_style_pad_top(right, 3, 0);
+    lv_obj_set_style_pad_left(right, 13, 0);
     lv_obj_set_scrollbar_mode(right, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_flex_flow(right, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(right, LV_FLEX_ALIGN_SPACE_AROUND, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
-    lv_obj_set_pos(mid, 0, 8);
+	lv_obj_set_pos(midContainer, 0, 8);
+	lv_obj_set_size(midContainer, 147, 120);
+	lv_obj_set_style_pad_top(midContainer, 120, 0);
+
     lv_obj_set_size(mid, 147, 120);
-//    lv_obj_set_style_pad_left(mid, 3,0);
     lv_obj_set_scrollbar_mode(mid, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_flex_flow(mid, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(mid, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-
 
 
     for (const auto &item: Items) {
@@ -68,10 +73,7 @@ MainMenu::MainMenu() : LVScreen() {
         lv_obj_set_style_translate_y(bigContainer, item.offset, LV_PART_MAIN | LV_STATE_DEFAULT);
 
         lv_group_add_obj(inputGroup, bigContainer);
-        lv_obj_add_event_cb(bigContainer, [](lv_event_t *e) {
-            auto *menu = static_cast<MainMenu *>(e->user_data);
-            menu->launch();
-        }, LV_EVENT_PRESSED, this);
+
         lv_obj_clear_flag(bigContainer, LV_OBJ_FLAG_CHECKABLE);
         lv_obj_clear_flag(bigContainer, LV_OBJ_FLAG_SCROLLABLE);
     }
@@ -84,17 +86,12 @@ MainMenu::MainMenu() : LVScreen() {
     inputGroup->user_data = this;
     lv_group_set_focus_cb(inputGroup, [](lv_group_t *group) {
         auto *menu = static_cast<MainMenu *>(group->user_data);
+		if(menu->launching) return;
+
         lv_obj_t *focused = lv_group_get_focused(group);
         uint8_t index = lv_obj_get_index(focused);
         menu->scrollTo(index);
     });
-
-
-    for (int i = 1; i < ItemCount; i++) {
-        lv_obj_add_flag(bigContainers[i], LV_OBJ_FLAG_HIDDEN);
-    }
-
-    lv_obj_scroll_by(mid, 0, 128, LV_ANIM_OFF);
 }
 
 MainMenu::~MainMenu() {
@@ -103,6 +100,7 @@ MainMenu::~MainMenu() {
 
 void MainMenu::loadGIFs() {
     if (!bigs.empty()) return;
+
     for (int i = 0; i < ItemCount; i++) {
         lv_obj_t *big = lv_gif_create(bigContainers[i]);
         bigs.push_back(big);
@@ -118,18 +116,9 @@ void MainMenu::loadGIFs() {
 
 void MainMenu::unloadGIFs() {
     for (int i = 0; i < bigs.size(); i++) {
-        if(i != selected)
         lv_obj_del(bigs[i]);
     }
-}
-
-
-void MainMenu::unloadLastGIF() {
-    lv_obj_del(bigs[selected]);
-    bigs.clear();
-
-    delete infoElement;
-    infoElement = nullptr;
+	bigs.clear();
 }
 
 void MainMenu::setRed(uint8_t index, bool reverse) {
@@ -146,8 +135,6 @@ void MainMenu::setRed(uint8_t index, bool reverse) {
 }
 
 void MainMenu::onStarting() {
-    infoElement = new GeneralInfoElement(top, DriveMode::Idle);
-
     if (bigs.empty()) {
         loadGIFs();
     } else {
@@ -156,33 +143,31 @@ void MainMenu::onStarting() {
         }
     }
 
-    if (inited) {
-        lv_group_focus_obj(bigs[selected]);
-        lv_obj_scroll_to_y(mid, selected * 128, LV_ANIM_OFF);
-    }
+	lv_group_focus_obj(bigs[selected]);
+	lv_obj_scroll_to_y(mid, selected * 120, LV_ANIM_OFF);
 
+	lv_obj_scroll_to_x(right, 0, LV_ANIM_OFF);
+	lv_obj_scroll_to_y(midContainer, 0, LV_ANIM_OFF);
+	setRed(selected);
 }
 
 void MainMenu::onStart() {
     lv_gif_start(bigs[selected]);
 
-    if (!inited) {
-        setRed(selected);
-
-        lv_obj_add_event_cb(mid, [](lv_event_t *e) {
-            auto *menu = static_cast<MainMenu *>(e->user_data);
-            lv_obj_remove_event_cb_with_user_data(menu->mid, nullptr, menu);
-
-            for (int i = 1; i < ItemCount; i++) {
-                lv_obj_clear_flag(menu->bigContainers[i], LV_OBJ_FLAG_HIDDEN);
-            }
-        }, LV_EVENT_SCROLL_END, this);
-
-        lv_obj_scroll_to(mid, 0, 0, LV_ANIM_ON);
-        inited = true;
-    }
-
     Input::getInstance()->addListener(this);
+
+	lv_obj_scroll_to_x(right, 13, LV_ANIM_ON);
+	lv_obj_scroll_to_y(midContainer, 120, LV_ANIM_ON);
+
+	clearInput();
+	for(auto bigContainer : bigContainers){
+		lv_obj_add_event_cb(bigContainer, [](lv_event_t *e) {
+			auto *menu = static_cast<MainMenu *>(e->user_data);
+			menu->launch();
+		}, LV_EVENT_PRESSED, this);
+	}
+
+	launching = false;
 }
 
 void MainMenu::onStop() {
@@ -190,7 +175,19 @@ void MainMenu::onStop() {
         lv_gif_stop(bigs[i]);
     }
     unloadGIFs();
+	clearInput();
     Input::getInstance()->removeListener(this);
+}
+
+void MainMenu::outro(){
+	lv_obj_scroll_to_x(right, 0, LV_ANIM_ON);
+	lv_obj_scroll_to_y(midContainer, 0, LV_ANIM_ON);
+}
+
+void MainMenu::clearInput(){
+	for(auto bigContainer : bigContainers){
+		lv_obj_remove_event_cb_with_user_data(bigContainer, nullptr, this);
+	}
 }
 
 void MainMenu::scrollTo(uint8_t index) {
@@ -202,27 +199,44 @@ void MainMenu::scrollTo(uint8_t index) {
 }
 
 void MainMenu::launch() {
-    stop();
+	if(launching) return;
+	launching = true;
 
-    static LVScreen *(*screens[])() = {
-            []() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
-            []() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
-            []() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
-            []() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
-            //[]() -> LVScreen * { return new DummyScreen(); }, TODO: add settings
-    };
+	clearInput();
+	outro();
 
-    LoopManager::defer([this](uint32_t) {
-        LVScreen *screen = screens[selected]();
-        if (!screen) return;
+	auto timer = lv_timer_create([](lv_timer_t* timer){
+		auto menu = static_cast<MainMenu*>(timer->user_data);
 
-        push(screen);
-        auto timer = lv_timer_create([](lv_timer_t* timer){
-            auto menu = static_cast<MainMenu*>(timer->user_data);
-            menu->unloadLastGIF();
-        }, 500, this);
-        lv_timer_set_repeat_count(timer, 1);
-    });
+		static LVScreen *(*screens[])() = {
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
+				[]() -> LVScreen * { return nullptr; }
+		};
+		volatile const auto selected = menu->selected;
+		volatile auto launcher = screens[selected];
+
+		menu->stop();
+
+		// Settings
+		if(selected == ItemCount-1){
+			auto screen = launcher();
+			if(screen == nullptr) return;
+
+			screen->setParent(menu);
+			screen->start();
+			return;
+		}
+
+		delete menu;
+
+		auto screen = launcher();
+		screen->start();
+
+	}, 500, this);
+	lv_timer_set_repeat_count(timer, 1);
 }
 
 void MainMenu::selectNext() {
