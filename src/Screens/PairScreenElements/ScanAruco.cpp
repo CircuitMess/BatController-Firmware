@@ -5,7 +5,7 @@
 #include <Display/Color.h>
 #include <Aruco/Aruco.h>
 
-ScanAruco::ScanAruco(lv_obj_t* obj) {
+ScanAruco::ScanAruco(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup) {
     scanAruco = lv_obj_create(obj);
     lv_obj_set_style_bg_color(scanAruco, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(scanAruco, LV_OPA_COVER, 0);
@@ -39,6 +39,7 @@ ScanAruco::ScanAruco(lv_obj_t* obj) {
 
 ScanAruco::~ScanAruco() {
     free(buffer);
+    callback = nullptr;
 }
 
 
@@ -63,8 +64,24 @@ void ScanAruco::start(uint16_t id) {
             }
         }
     }
+
+    lv_obj_add_event_cb(scanAruco, [](lv_event_t* e){
+        ScanAruco *scanA = static_cast<ScanAruco *>(lv_event_get_user_data(e));
+
+        if (!scanA->callback) return;
+        scanA->callback();
+    }, LV_EVENT_RELEASED, this);
+
+    lv_group_add_obj(inputGroup, scanAruco);
+    lv_group_focus_obj(scanAruco);
 }
 
 void ScanAruco::stop() {
     lv_obj_add_flag(scanAruco, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_event_cb_with_user_data(scanAruco, nullptr, this);
+    lv_group_remove_obj(scanAruco);
+}
+
+void ScanAruco::setCallback(std::function<void()> cb) {
+    callback = cb;
 }
