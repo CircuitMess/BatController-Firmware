@@ -38,4 +38,18 @@ void AutoControls::setDirection(float angle){
 	dirElement.setDirection(angle);
 }
 
+void AutoControls::setDirection(MotorInfo motors){
+	const float leftMotors = (float) (motors.frontLeft + motors.backLeft) / 2.0f;
+	const float rightMotors = (float) (motors.frontRight + motors.backRight) / 2.0f;
 
+	float angle = 0;
+
+	const float sum = abs(leftMotors) + abs(rightMotors);
+	if(leftMotors != 0 && rightMotors != 0){
+		angle = (leftMotors - rightMotors) / sum * 90;
+	}
+
+	if(leftMotors < 0 && rightMotors < 0) angle += 180;
+
+	setDirection(angle);
+}

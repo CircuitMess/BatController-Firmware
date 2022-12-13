@@ -33,8 +33,16 @@ void IntroScreen::loop(uint micros){
 			callback();
 		}
 
+        auto scr = lv_obj_create(nullptr);
+        lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
+        lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
+        lv_scr_load(scr);
+
 		auto pair = new PairScreen();
-		pair->start();
+        LoopManager::defer([pair](uint32_t){
+            lv_obj_del(lv_scr_act());
+            pair->start();
+        });
 		return;
 	}
 

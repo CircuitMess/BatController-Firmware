@@ -23,8 +23,8 @@ private:
 	void drawFill();
 	void drawRotation();
 
-	float angle;
-	uint8_t speed;
+	float angle = 0;
+	uint8_t speed = 0;
 
 	lv_obj_t* canvasMain;
 	lv_obj_t* canvasHelper;

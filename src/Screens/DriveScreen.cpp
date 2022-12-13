@@ -6,6 +6,7 @@
 #include "../Driver/BallDriver.h"
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
+#include "MainMenu.h"
 #include <Com/Communication.h>
 #include <Loop/LoopManager.h>
 
@@ -55,10 +56,11 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode), o
 
 DriveScreen::~DriveScreen(){
 	free(imgBuf);
+	setMode(DriveMode::Idle);
 }
 
 void DriveScreen::onStarting(){
-	memset(imgBuf, 0xff, 160 * 120 * 2);
+	memset(imgBuf, 0, 160 * 120 * 2);
 }
 
 void DriveScreen::onStart(){
@@ -108,27 +110,24 @@ void DriveScreen::setMode(DriveMode newMode){
 }
 
 void DriveScreen::buttonPressed(uint i){
-	switch(i){
-		case BTN_A:
-			Com.sendHonk();
-			break;
-		case BTN_MENU:
-			pop();
-			break;
-		case BTN_B:
+	if(i == BTN_B){
 			if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
 			LoopManager::addListener(this);
-			break;
+	}else if(i == BTN_MENU){
+		stop();
+		delete this;
+
+		auto mainMenu = new MainMenu();
+		mainMenu->start();
 	}
 }
 
 void DriveScreen::buttonReleased(uint i){
-	switch(i){
-		case BTN_B:
-			if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
-            LoopManager::removeListener(this);
-            hideOverrideElement();
-			break;
+	if(i == BTN_B){
+		if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
+		LoopManager::removeListener(this);
+		hideOverrideElement();
+
 	}
 }
 
