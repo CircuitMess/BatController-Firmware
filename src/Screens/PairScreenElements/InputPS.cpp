@@ -60,7 +60,7 @@ static const lv_btnmatrix_ctrl_t kb_ctrl_spec_map[] = {
 
 
 
-InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) {
+InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup){
 
     input = lv_obj_create(obj);
     lv_obj_set_style_bg_color(input, lv_color_white(), 0);
@@ -78,15 +78,15 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) {
     lv_obj_add_event_cb(taNetwork, [](lv_event_t *e) {
         lv_event_code_t code = lv_event_get_code(e);
         InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
+        input->toPassword();
+    }, LV_EVENT_READY, this);
+    lv_obj_add_event_cb(taNetwork, [](lv_event_t* e){
+        InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
 
-        if (code == LV_EVENT_READY) {
-            lv_obj_add_flag(input->taNetwork, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(input->taPassword, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_state(input->taPassword, LV_STATE_FOCUSED);
-            lv_keyboard_set_textarea(input->kb, input->taPassword);
-        }
+        if(!input->callbackBack) return;
+        input->callbackBack();
+    },LV_EVENT_CANCEL, this);
 
-    }, LV_EVENT_ALL, this);
 
     taPassword = lv_textarea_create(input);
     lv_obj_align(taPassword, LV_ALIGN_TOP_LEFT, 10, 10);
@@ -124,3 +124,12 @@ void InputPS::stop() {
     lv_obj_add_flag(input, LV_OBJ_FLAG_HIDDEN);
     InputLVGL::enableVerticalNavigation(true);
 }
+
+void InputPS::setCallbackDone(std::function<void()> cb) {
+    callbackDone = cb;
+}
+void InputPS::setCallbackBack(std::function<void()> cb) {
+    callbackBack = cb;
+}
+
+

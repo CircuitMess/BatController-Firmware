@@ -3,6 +3,8 @@
 #define BATCONTROLLER_FIRMWARE_INPUTPS_H
 
 #include <core/lv_obj.h>
+#include <functional>
+#include <string>
 
 class InputPS {
 public:
@@ -18,6 +20,9 @@ private:
     lv_obj_t* taNetwork;
     lv_obj_t* taPassword;
 
+    std::function<void()> callbackDone = nullptr;
+    std::function<void()> callbackBack = nullptr;
+    lv_group_t *inputGroup;
 };
 
 
