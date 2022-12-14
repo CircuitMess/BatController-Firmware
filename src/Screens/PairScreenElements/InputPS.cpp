@@ -63,11 +63,12 @@ static const lv_btnmatrix_ctrl_t kb_ctrl_spec_map[] = {
 InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup){
 
     input = lv_obj_create(obj);
-    lv_obj_set_style_bg_color(input, lv_color_white(), 0);
+    lv_obj_set_style_bg_color(input, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(input, LV_OPA_COVER, 0);
     lv_obj_set_size(input, 160, 128);
     lv_obj_set_pos(input, 0, 0);
     lv_obj_add_flag(input, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_set_scrollbar_mode(input, LV_SCROLLBAR_MODE_OFF);
 
     title = lv_label_create(input);
     lv_obj_set_size(title, 150, 15);
