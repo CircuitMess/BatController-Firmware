@@ -18,6 +18,15 @@
 #define COLOR_DIM     lv_palette_darken(LV_PALETTE_GREY, 2)
 #define PAD_DEF       LV_DPX(5)
 
+#define LIGHT_COLOR_SCR        lv_palette_lighten(LV_PALETTE_GREY, 4)
+#define LIGHT_COLOR_CARD       lv_color_white()
+#define LIGHT_COLOR_TEXT       lv_palette_darken(LV_PALETTE_GREY, 4)
+#define LIGHT_COLOR_GREY       lv_palette_lighten(LV_PALETTE_GREY, 2)
+#define DARK_COLOR_SCR         lv_color_hex(0x15171A)
+#define DARK_COLOR_CARD        lv_color_hex(0x282b30)
+#define DARK_COLOR_TEXT        lv_palette_lighten(LV_PALETTE_GREY, 5)
+#define DARK_COLOR_GREY        lv_color_hex(0x2f3237)
+
 
 #define RADIUS_DEFAULT (disp_size == DISP_LARGE ? lv_disp_dpx(theme.disp, 12) : lv_disp_dpx(theme.disp, 8))
 
@@ -161,13 +170,16 @@ static void style_init(void){
 
 	};
 
+    color_scr = theme.flags & MODE_DARK ? DARK_COLOR_SCR : LIGHT_COLOR_SCR;
+    color_text = theme.flags & MODE_DARK ? DARK_COLOR_TEXT : LIGHT_COLOR_TEXT;
+    color_card = theme.flags & MODE_DARK ? DARK_COLOR_CARD : LIGHT_COLOR_CARD;
+    color_grey = theme.flags & MODE_DARK ? DARK_COLOR_GREY : LIGHT_COLOR_GREY;
+
 	static lv_color_filter_dsc_t grey_filter;
 	lv_color_filter_dsc_init(&grey_filter, grey_filter_cb);
 
 	static lv_style_transition_dsc_t trans_normal;
 	lv_style_transition_dsc_init(&trans_normal, trans_props, lv_anim_path_linear, TRANSITION_TIME, 0, NULL);
-
-	color_text = theme.flags & MODE_DARK ? DARK_COLOR_TEXT : LIGHT_COLOR_TEXT;
 
 	style_init_reset(&styles->scrollbar);
 	lv_style_set_bg_color(&styles->scrollbar, (theme.flags & MODE_DARK) ? lv_palette_darken(LV_PALETTE_GREY, 2) : lv_palette_main(LV_PALETTE_GREY));
@@ -186,7 +198,7 @@ static void style_init(void){
 	lv_style_set_line_width(&styles->card, lv_disp_dpx(theme.disp, 1));
 
 	style_init_reset(&styles->ta_cursor);
-	lv_style_set_border_color(&styles->ta_cursor, color_text);
+	lv_style_set_border_color(&styles->ta_cursor, LIGHT_COLOR_CARD);
 	lv_style_set_border_width(&styles->ta_cursor, lv_disp_dpx(theme.disp, 1));
 	lv_style_set_pad_left(&styles->ta_cursor, -lv_disp_dpx(theme.disp, 1));
 	lv_style_set_translate_y(&styles->ta_cursor, 1);
