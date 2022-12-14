@@ -124,12 +124,28 @@ InputPS::~InputPS() {
 void InputPS::start() {
     lv_obj_clear_flag(input, LV_OBJ_FLAG_HIDDEN);
     InputLVGL::enableVerticalNavigation(false);
+    lv_obj_add_event_cb(kb, [](lv_event_t* e){
+        if (lv_indev_get_key(lv_indev_get_act()) != LV_KEY_ESC) return;
+        InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
 
+        if(lv_keyboard_get_textarea(input->kb) == input->taNetwork){
+            if(!input->callbackBack) return;
+            input->callbackBack();
+        }else{
+            input->toNetwork();
+        }
+
+    }, LV_EVENT_CANCEL, this);
+
+    lv_group_add_obj(inputGroup, kb);
+    lv_group_focus_obj(kb);
 }
 
 void InputPS::stop() {
     lv_obj_add_flag(input, LV_OBJ_FLAG_HIDDEN);
     InputLVGL::enableVerticalNavigation(true);
+    lv_obj_remove_event_cb_with_user_data(kb, nullptr, this);
+    lv_group_remove_obj(kb);
 }
 
 void InputPS::setCallbackDone(std::function<void()> cb) {
