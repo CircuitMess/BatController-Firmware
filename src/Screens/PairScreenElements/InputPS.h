@@ -13,6 +13,9 @@ public:
 
     void start();
     void stop();
+    void setCallbackDone(std::function<void()> cb);
+    void setCallbackBack(std::function<void()> cb);
+
 
 private:
     lv_obj_t* input;
