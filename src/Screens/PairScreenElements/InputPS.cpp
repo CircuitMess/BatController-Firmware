@@ -98,12 +98,26 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
 
 
     taPassword = lv_textarea_create(input);
-    lv_obj_align(taPassword, LV_ALIGN_TOP_LEFT, 10, 10);
-    lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
-    lv_textarea_set_password_mode(taPassword, true);
-    lv_textarea_set_placeholder_text(taPassword, "Password");
+    lv_obj_align(taPassword, LV_ALIGN_TOP_LEFT, 10, 30);
+    lv_obj_set_style_text_font(taPassword, &lv_font_unscii_8, 0);
     lv_textarea_set_one_line(taPassword, true);
-    lv_obj_set_size(taPassword, 120, 60);
+    lv_obj_set_style_text_color(taPassword, lv_color_white(), 0);
+    lv_obj_set_scrollbar_mode(taPassword, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_size(taPassword, 140, 20);
+    lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
+        InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
+        input->toNetwork();
+
+        if(!input->callbackDone) return;
+        input->callbackDone();
+    },LV_EVENT_READY, this);
+    lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
+        InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
+        input->toNetwork();
+    },LV_EVENT_CANCEL, this);
+
+
 
     auto oldGroup = lv_group_get_default();
     lv_group_set_default(inputGroup);
