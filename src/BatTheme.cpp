@@ -425,18 +425,20 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
 		lv_obj_add_style(obj, &styles->transition_normal, LV_PART_INDICATOR);
 
     }else if(lv_obj_check_type(obj, &lv_keyboard_class)) {
-        lv_obj_add_style(obj, &styles->light, 0);
+        lv_obj_add_style(obj, &styles->scr, 0);
+        lv_obj_add_style(obj, &styles->bg_color_grey, LV_PART_MAIN);
         lv_obj_add_style(obj, &styles->light, LV_PART_ITEMS);
-        lv_obj_add_style(obj, &styles->pressed, LV_PART_ITEMS | LV_STATE_PRESSED);
         lv_obj_add_style(obj, disp_size == DISP_LARGE ? &styles->pad_small : &styles->pad_tiny, 0);
         lv_obj_add_style(obj, &styles->outline_primary, LV_STATE_FOCUS_KEY);
-//        lv_obj_add_style(obj, &styles->outline_secondary, LV_STATE_EDITED);
-//        lv_obj_add_style(obj, &styles->disabled, LV_PART_ITEMS | LV_STATE_DISABLED);
-//        lv_obj_add_style(obj, &styles->bg_color_white, LV_PART_ITEMS);
-//        lv_obj_add_style(obj, &styles->keyboard_btn_bg, LV_PART_ITEMS);
+        lv_obj_add_style(obj, &styles->btn, LV_PART_ITEMS);
+        lv_obj_add_style(obj, &styles->outline_secondary, LV_STATE_EDITED);
+        lv_obj_add_style(obj, &styles->disabled, LV_PART_ITEMS | LV_STATE_DISABLED);
+        lv_obj_add_style(obj, &styles->bg_color_white, LV_PART_ITEMS);
+        lv_obj_add_style(obj, &styles->keyboard_btn_bg, LV_PART_ITEMS);
+        lv_obj_add_style(obj, &styles->pressed, LV_PART_ITEMS | LV_STATE_PRESSED);
 //        lv_obj_add_style(obj, &styles->bg_color_grey, LV_PART_ITEMS | LV_STATE_CHECKED);
-//        lv_obj_add_style(obj, &styles->bg_color_primary_muted, LV_PART_ITEMS | LV_STATE_FOCUS_KEY);
-//        lv_obj_add_style(obj, &styles->bg_color_secondary_muted, LV_PART_ITEMS | LV_STATE_EDITED);
+        lv_obj_add_style(obj, &styles->bg_color_primary_muted, LV_PART_ITEMS | LV_STATE_FOCUS_KEY);
+        lv_obj_add_style(obj, &styles->bg_color_secondary_muted, LV_PART_ITEMS | LV_STATE_EDITED);
     }
 
 }
