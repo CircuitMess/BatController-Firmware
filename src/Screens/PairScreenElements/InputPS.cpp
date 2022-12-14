@@ -157,5 +157,18 @@ void InputPS::toPassword() {
     lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
 }
 
+std::string InputPS::getNetwork() {
+    return lv_textarea_get_text(taNetwork);
+}
 
+std::string InputPS::getPassword() {
+    return lv_textarea_get_text(taPassword);
+}
+
+void InputPS::setNetwork(char* network) {
+    lv_textarea_set_text(taNetwork, network);
+}
+
+void InputPS::setPassword(char* password) {
+    lv_textarea_set_text(taPassword, password);
 

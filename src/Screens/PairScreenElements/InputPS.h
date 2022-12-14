@@ -16,6 +16,10 @@ public:
     void setCallbackDone(std::function<void()> cb);
     void setCallbackBack(std::function<void()> cb);
 
+    std::string getNetwork();
+    std::string getPassword();
+    void setNetwork(char* network);
+    void setPassword(char* password);
 
 private:
     void toNetwork();
