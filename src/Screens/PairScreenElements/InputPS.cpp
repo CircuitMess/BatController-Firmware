@@ -3,7 +3,7 @@
 #include "../../InputLVGL.h"
 #include <lvgl.h>
 
-#define LV_KB_BTN(width) LV_BTNMATRIX_CTRL_POPOVER | width
+#define LV_KB_BTN(width) width
 
 static const char *const kb_map_lc[] = {"1#", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", LV_SYMBOL_BACKSPACE,"\n",
                                         "ABC", "a", "s", "d", "f", "g", "h", "j", "k", "l", "\n",
