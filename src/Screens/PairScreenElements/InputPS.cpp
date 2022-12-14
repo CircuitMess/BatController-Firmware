@@ -69,6 +69,13 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
     lv_obj_set_pos(input, 0, 0);
     lv_obj_add_flag(input, LV_OBJ_FLAG_HIDDEN);
 
+    title = lv_label_create(input);
+    lv_obj_set_size(title, 150, 15);
+    lv_obj_set_pos(title, 10, 10);
+    lv_obj_set_style_text_color(title, lv_palette_lighten(LV_PALETTE_GREY,1), 0);
+    lv_obj_set_style_text_font(title, &lv_font_unscii_8, 0);
+    lv_label_set_text(title, "Enter WiFi name:");
+
     taNetwork = lv_textarea_create(input);
     lv_obj_align(taNetwork, LV_ALIGN_TOP_LEFT, 10, 10);
     lv_textarea_set_placeholder_text(taNetwork, "Network");

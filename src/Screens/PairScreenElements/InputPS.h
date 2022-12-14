@@ -20,6 +20,7 @@ public:
 private:
     lv_obj_t* input;
     lv_obj_t* kb;
+    lv_obj_t* title;
     lv_obj_t* taNetwork;
     lv_obj_t* taPassword;
 
