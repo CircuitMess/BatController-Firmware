@@ -78,13 +78,14 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
     lv_label_set_text(title, "Enter WiFi name:");
 
     taNetwork = lv_textarea_create(input);
-    lv_obj_align(taNetwork, LV_ALIGN_TOP_LEFT, 10, 10);
-    lv_textarea_set_placeholder_text(taNetwork, "Network");
+    lv_obj_align(taNetwork, LV_ALIGN_TOP_LEFT, 10, 30);
+    lv_obj_set_style_text_font(taNetwork, &lv_font_unscii_8, 0);
     lv_textarea_set_one_line(taNetwork, true);
-    lv_obj_set_size(taNetwork, 120, 60);
+    lv_obj_set_scrollbar_mode(taNetwork, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_size(taNetwork, 140, 20);
     lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
+    lv_obj_set_style_text_color(taNetwork,  lv_color_white(), 0);
     lv_obj_add_event_cb(taNetwork, [](lv_event_t *e) {
-        lv_event_code_t code = lv_event_get_code(e);
         InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
         input->toPassword();
     }, LV_EVENT_READY, this);
