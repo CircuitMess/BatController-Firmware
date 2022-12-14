@@ -127,8 +127,10 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
     lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_TEXT_UPPER, (const char * *)kb_map_uc, kb_ctrl_uc_map);
     lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_TEXT_LOWER, (const char * *)kb_map_lc, kb_ctrl_lc_map);
     lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_SPECIAL, (const char * *)kb_map_spec, kb_ctrl_spec_map);
+    lv_obj_set_scrollbar_mode(kb, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_style_text_font(kb, &lv_font_montserrat_10, 0);
 
-    lv_keyboard_set_textarea(kb, taNetwork);
+    toNetwork();
 
     lv_group_focus_obj(kb);
 }
