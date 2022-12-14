@@ -18,6 +18,9 @@ public:
 
 
 private:
+    void toNetwork();
+    void toPassword();
+
     lv_obj_t* input;
     lv_obj_t* kb;
     lv_obj_t* title;

@@ -139,4 +139,23 @@ void InputPS::setCallbackBack(std::function<void()> cb) {
     callbackBack = cb;
 }
 
+void InputPS::toNetwork() {
+    lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(taNetwork, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
+    lv_keyboard_set_textarea(kb, taNetwork);
+    lv_label_set_text(title, "Enter WiFi name:");
+    lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
+}
+
+void InputPS::toPassword() {
+    lv_obj_add_flag(taNetwork, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_state(taPassword, LV_STATE_FOCUSED);
+    lv_keyboard_set_textarea(kb, taPassword);
+    lv_label_set_text(title, "Enter password:");
+    lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
+}
+
+
 
