@@ -262,8 +262,12 @@ static void style_init(void){
     lv_color_filter_dsc_init(&dark_filter, dark_color_filter_cb);
 
     style_init_reset(&styles->pressed);
-    lv_style_set_color_filter_dsc(&styles->pressed, &dark_filter);
-    lv_style_set_color_filter_opa(&styles->pressed, 35);
+//    lv_style_set_color_filter_dsc(&styles->pressed, &dark_filter);
+//    lv_style_set_color_filter_opa(&styles->pressed, 40);
+    lv_style_set_bg_color(&styles->pressed, lv_color_black());
+    lv_style_set_bg_opa(&styles->pressed, LV_OPA_60);
+    lv_style_set_border_width(&styles->pressed, 0);
+    lv_style_set_text_color(&styles->pressed, lv_color_white());
 
     style_init_reset(&styles->bg_color_secondary_muted);
     lv_style_set_bg_color(&styles->bg_color_secondary_muted, theme.color_secondary);
