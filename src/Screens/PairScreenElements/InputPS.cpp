@@ -136,7 +136,10 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
 }
 
 InputPS::~InputPS() {
-
+    lv_obj_remove_event_cb_with_user_data(taNetwork, nullptr, this);
+    lv_obj_remove_event_cb_with_user_data(taPassword, nullptr, this);
+    callbackDone = nullptr;
+    callbackBack = nullptr;
 }
 
 void InputPS::start() {
