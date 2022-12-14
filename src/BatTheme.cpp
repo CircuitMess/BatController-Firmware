@@ -95,6 +95,8 @@ typedef struct {
 	lv_style_t tab_bg_focus, tab_btn;
 
 	lv_style_t led;
+
+    lv_style_t text_area;
 } my_theme_styles_t;
 
 typedef struct {
@@ -313,9 +315,13 @@ static void style_init(void){
 //    static lv_color_filter_dsc_t dark_filter;
     lv_color_filter_dsc_init(&dark_filter, dark_color_filter_cb);
 
-    style_init_reset(&styles->pressed);
-    lv_style_set_color_filter_dsc(&styles->pressed, &dark_filter);
-    lv_style_set_color_filter_opa(&styles->pressed, 35);
+    style_init_reset(&styles->text_area);
+    lv_style_set_border_color(&styles->text_area, lv_color_white());
+    lv_style_set_border_width(&styles->text_area, 2);
+    lv_style_set_border_side(&styles->text_area, LV_BORDER_SIDE_BOTTOM | LV_BORDER_SIDE_LEFT );
+    lv_style_set_border_opa(&styles->text_area, LV_OPA_80);
+    lv_style_set_pad_all(&styles->text_area, 2);
+    lv_style_set_pad_right(&styles->text_area,6);
 
 }
 /**********************
@@ -369,7 +375,7 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
 	if(lv_obj_check_type(obj, &lv_textarea_class)) {
 		lv_obj_add_style(obj, &styles->ta_cursor, LV_PART_CURSOR | LV_STATE_FOCUSED);
 		lv_obj_add_style(obj, &styles->ta_placeholder, LV_PART_TEXTAREA_PLACEHOLDER);
-
+        lv_obj_add_style(obj, &styles->text_area, 0);
     }
 
 	if(lv_obj_check_type(obj, &lv_obj_class)){
