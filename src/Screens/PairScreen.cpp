@@ -2,6 +2,8 @@
 #include <lvgl.h>
 #include <BatController.h>
 #include <Aruco/Aruco.h>
+#include <Com/Communication.h>
+#include <Settings.h>
 #include "DriveScreen.h"
 #include "MainMenu.h"
 
@@ -34,7 +36,7 @@ PairScreen::PairScreen() : LVScreen(){
 	lv_obj_set_size(text, 7 * Scale, 7 * Scale);
 	lv_obj_set_pos(text, 7 * Scale + 20, (128 - 7 * Scale) / 2);
 	lv_obj_set_style_text_color(text, lv_color_white(), 0);
-	lv_obj_set_style_text_font(text, &lv_font_unscii_8 ,0);
+	lv_obj_set_style_text_font(text, &lv_font_unscii_8, 0);
 	lv_label_set_text(text, "Scan\nwith\ncamera\nto begin\npairing");
 
 	anim_drop = new lv_anim_t();
@@ -81,7 +83,8 @@ void PairScreen::onStart(){
 		stop();
 		delete this;
 
-		Serial.printf("Paired\n");
+		Com.sendVolume(Settings.get().soundVolume);
+
 		auto mainMenu = new MainMenu();
 		mainMenu->start();
 	});

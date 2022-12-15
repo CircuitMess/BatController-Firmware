@@ -26,6 +26,7 @@ LVModal::~LVModal(){
 }
 
 void LVModal::start(){
+	lv_obj_move_foreground(container);
 	lv_obj_clear_flag(container, LV_OBJ_FLAG_HIDDEN);
 	lv_indev_set_group(InputLVGL::getInstance()->getIndev(), inputGroup);
 
