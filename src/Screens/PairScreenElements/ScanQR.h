@@ -17,7 +17,7 @@ public:
 
 private:
     lv_obj_t* scanQR;
-    lv_obj_t* canvas;
+    lv_obj_t* qr;
     lv_obj_t* text;
     lv_obj_t* title;
 

@@ -2,6 +2,7 @@
 #include "ScanQR.h"
 #include <lvgl.h>
 #include <Arduino.h>
+#include <extra/libs/qrcode/lv_qrcode.h>
 
 ScanQR::ScanQR(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup) {
     scanQR = lv_obj_create(obj);
@@ -23,7 +24,10 @@ ScanQR::ScanQR(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup) {
     lv_obj_set_pos(title, 5, 5);
     lv_obj_set_style_text_color(title, lv_color_white(), 0);
     lv_obj_set_style_text_font(title, &lv_font_unscii_8, 0);
-    lv_label_set_text(title, "Connected to..."); //TODO add a network and save it
+    lv_label_set_text(title, "Connected to...");
+
+    qr = lv_qrcode_create(scanQR, 58, lv_color_white(), lv_color_black());
+    lv_obj_set_pos(qr, 10, 45);
 }
 
 ScanQR::~ScanQR() {
