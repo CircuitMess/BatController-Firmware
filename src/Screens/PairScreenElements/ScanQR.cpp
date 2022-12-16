@@ -32,6 +32,7 @@ ScanQR::ScanQR(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup) {
 
 ScanQR::~ScanQR() {
     callback = nullptr;
+    delete data;
 }
 
 void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress) {
@@ -48,6 +49,20 @@ void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress) 
 
     lv_group_add_obj(inputGroup, scanQR);
     lv_group_focus_obj(scanQR);
+
+    data = new char[48];
+    uint8_t ssidLength = ssid.size();
+    uint8_t passLength = password.size();
+
+    for(int i = 0; i < 22; i++){
+        i >= ssidLength ? data[i] = '\0' : data[i] = ssid[i];
+        i >= passLength ? data[22+i] = '\0' : data[22+i] = password[i];
+    }
+    for(int i = 0; i < 4; i++){
+        data[44+i] = ipAddress[i];
+    }
+
+    lv_qrcode_update(qr, data, 48, 3, qrcodegen_Ecc_LOW);
 }
 
 void ScanQR::stop() {
