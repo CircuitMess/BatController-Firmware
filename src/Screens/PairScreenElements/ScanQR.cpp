@@ -42,7 +42,6 @@ ScanQR::ScanQR(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup) {
 }
 
 ScanQR::~ScanQR() {
-    free(buffer);
     callback = nullptr;
 }
 

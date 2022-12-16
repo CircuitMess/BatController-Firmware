@@ -21,7 +21,6 @@ private:
     lv_obj_t* text;
     lv_obj_t* title;
 
-    lv_color_t* buffer;
     static constexpr uint8_t Scale = 10;
     static constexpr uint8_t Multiplier = 8;
 
