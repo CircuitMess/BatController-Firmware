@@ -4,6 +4,8 @@
 #include <Aruco/Aruco.h>
 #include "DriveScreen.h"
 #include "MainMenu.h"
+#include <string.h>
+#include <Loop/LoopManager.h>
 
 PairScreen::PairScreen()
         : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
@@ -107,5 +109,17 @@ void PairScreen::onStart() {
 
 void PairScreen::onStop(){
 	pair.stop();
+}
+
+void PairScreen::loop(uint micros) {
+    microCounter += micros;
+    if (microCounter >= timeout) {
+        LoopManager::removeListener(this);
+        connecting.stop();
+        wifi.stop();
+
+        error.start("Couldn't connect to " + ssid + " press A to enter aruco scan screen");
+        return;
+    }
 }
 
