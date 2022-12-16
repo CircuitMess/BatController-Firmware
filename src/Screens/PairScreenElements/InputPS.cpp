@@ -81,10 +81,11 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
     lv_obj_align(taNetwork, LV_ALIGN_TOP_LEFT, 10, 30);
     lv_obj_set_style_text_font(taNetwork, &lv_font_unscii_8, 0);
     lv_textarea_set_one_line(taNetwork, true);
+    lv_obj_set_style_text_color(taNetwork,  lv_color_white(), 0);
+    lv_textarea_set_max_length(taNetwork, 21);
     lv_obj_set_scrollbar_mode(taNetwork, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_size(taNetwork, 140, 20);
     lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
-    lv_obj_set_style_text_color(taNetwork,  lv_color_white(), 0);
     lv_obj_add_event_cb(taNetwork, [](lv_event_t *e) {
         InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
         input->toPassword();
@@ -101,6 +102,7 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
     lv_obj_set_style_text_font(taPassword, &lv_font_unscii_8, 0);
     lv_textarea_set_one_line(taPassword, true);
     lv_obj_set_style_text_color(taPassword, lv_color_white(), 0);
+    lv_textarea_set_max_length(taPassword, 21);
     lv_obj_set_scrollbar_mode(taPassword, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_size(taPassword, 140, 20);
     lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
