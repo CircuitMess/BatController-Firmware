@@ -9,6 +9,7 @@
 #include "PairScreenElements/Error.h"
 #include "PairScreenElements/ScanQR.h"
 #include "PairScreenElements/InputPS.h"
+#include "../WiFiService.h"
 
 
 class PairScreen : public LVScreen, private LoopListener{

@@ -1,7 +1,6 @@
 #include "PairScreen.h"
 #include <lvgl.h>
 #include <BatController.h>
-#include <Aruco/Aruco.h>
 #include "DriveScreen.h"
 #include "MainMenu.h"
 #include <string.h>
@@ -86,24 +85,8 @@ PairScreen::~PairScreen() {
 }
 
 void PairScreen::onStart() {
-    int randID = rand() % 256;
-
-//    scanAruco.start(randID);
-//    connecting.start();
-//    error.start();
-//    scanQR.start();
-    input.start();
-
-	pair.setDoneCallback([this](){
-		stop();
-		delete this;
-
-		Serial.printf("Paired\n");
-		auto mainMenu = new MainMenu();
-		mainMenu->start();
-	});
-
-    pair.start(0);
+    scanAruco.start(randID);
+    pair.start(randID);
     lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
 }
 
