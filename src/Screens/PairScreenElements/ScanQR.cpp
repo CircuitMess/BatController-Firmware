@@ -34,8 +34,8 @@ ScanQR::~ScanQR() {
     callback = nullptr;
 }
 
-void ScanQR::start(String networkName) {
-    lv_label_set_text(title, ("Connected to " + networkName).c_str());
+void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress) {
+    lv_label_set_text(title, ("Connected to\n" + ssid).c_str());
     lv_obj_clear_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
 
     lv_obj_add_event_cb(scanQR, [](lv_event_t* e){
