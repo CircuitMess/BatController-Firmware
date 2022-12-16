@@ -110,7 +110,7 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
         input->toNetwork();
 
         if(!input->callbackDone) return;
-        input->callbackDone();
+        input->callbackDone(lv_textarea_get_text(input->taNetwork), lv_textarea_get_text(input->taPassword));
     },LV_EVENT_READY, this);
     lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
         InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
@@ -169,7 +169,7 @@ void InputPS::stop() {
     lv_group_remove_obj(kb);
 }
 
-void InputPS::setCallbackDone(std::function<void()> cb) {
+void InputPS::setCallbackDone(std::function<void(std::string, std::string)> cb) {
     callbackDone = cb;
 }
 void InputPS::setCallbackBack(std::function<void()> cb) {

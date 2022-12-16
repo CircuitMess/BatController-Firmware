@@ -13,7 +13,7 @@ public:
 
     void start();
     void stop();
-    void setCallbackDone(std::function<void()> cb);
+    void setCallbackDone(std::function<void(std::string, std::string)> cb);
     void setCallbackBack(std::function<void()> cb);
 
     std::string getNetwork();
@@ -31,7 +31,7 @@ private:
     lv_obj_t* taNetwork;
     lv_obj_t* taPassword;
 
-    std::function<void()> callbackDone = nullptr;
+    std::function<void(std::string ssid, std::string pass)> callbackDone = nullptr;
     std::function<void()> callbackBack = nullptr;
     lv_group_t *inputGroup;
 };
