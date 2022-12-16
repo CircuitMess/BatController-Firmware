@@ -11,21 +11,6 @@ ScanQR::ScanQR(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup) {
     lv_obj_set_pos(scanQR, 0, 0);
     lv_obj_add_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
 
-    buffer = static_cast<lv_color_t *>(malloc(sizeof(lv_color_t) * 58 * 58));
-
-    canvas = lv_canvas_create(scanQR);
-    lv_obj_set_size(canvas, 58, 58);
-    lv_obj_set_pos(canvas, 10, 50);
-    lv_obj_set_style_bg_color(canvas, lv_palette_darken(LV_PALETTE_BLUE, 2), 0);
-    lv_obj_set_style_bg_opa(canvas, LV_OPA_COVER, 0);
-    lv_canvas_set_buffer(canvas, buffer, 58, 58, LV_IMG_CF_INDEXED_1BIT);
-    lv_canvas_set_palette(canvas, 0, lv_color_white());
-    lv_canvas_set_palette(canvas, 1, lv_color_black());
-    lv_color_t white;
-    white.full = 0;
-
-    lv_canvas_fill_bg(canvas, white, LV_OPA_COVER);
-
     text = lv_label_create(scanQR);
     lv_obj_set_size(text, Multiplier * Scale, Multiplier * Scale);
     lv_obj_set_pos(text, Multiplier * Scale, 40);
