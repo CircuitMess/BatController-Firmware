@@ -96,7 +96,6 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
         input->callbackBack();
     },LV_EVENT_CANCEL, this);
 
-
     taPassword = lv_textarea_create(input);
     lv_obj_align(taPassword, LV_ALIGN_TOP_LEFT, 10, 30);
     lv_obj_set_style_text_font(taPassword, &lv_font_unscii_8, 0);
@@ -116,8 +115,6 @@ InputPS::InputPS(lv_obj_t *obj, lv_group_t *inputGroup) : inputGroup(inputGroup)
         InputPS *input = static_cast<InputPS *>(lv_event_get_user_data(e));
         input->toNetwork();
     },LV_EVENT_CANCEL, this);
-
-
 
     auto oldGroup = lv_group_get_default();
     lv_group_set_default(inputGroup);
@@ -192,14 +189,6 @@ void InputPS::toPassword() {
     lv_keyboard_set_textarea(kb, taPassword);
     lv_label_set_text(title, "Enter password:");
     lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
-}
-
-std::string InputPS::getNetwork() {
-    return lv_textarea_get_text(taNetwork);
-}
-
-std::string InputPS::getPassword() {
-    return lv_textarea_get_text(taPassword);
 }
 
 void InputPS::setNetwork(char* network) {
