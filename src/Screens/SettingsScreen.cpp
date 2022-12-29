@@ -1,16 +1,17 @@
 #include "SettingsScreen.h"
 #include <Settings.h>
 #include <string>
-#include <Input/Input.h>
 #include <Pins.hpp>
 #include <BatController.h>
 #include <Audio/Piezo.h>
 #include <nvs_flash.h>
 #include <Com/Communication.h>
 #include "PairScreen.h"
+#include "../InputLVGL.h"
+
+SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you sure?\n\nThis will erase ALL data!"){
 
 
-SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 
@@ -32,33 +33,45 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_style_set_border_color(&style_pressed, lv_color_hex(0x892eff));
 	lv_style_set_border_opa(&style_pressed, LV_OPA_COVER);
 
-	lv_obj_set_size(obj, lv_pct(100), LV_SIZE_CONTENT);
+
 	lv_obj_set_layout(obj, LV_LAYOUT_FLEX);
 	lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_COLUMN);
 	lv_obj_set_flex_align(obj, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
-	lv_obj_set_style_pad_gap(obj, 2, 0);
-	lv_obj_set_style_pad_all(obj, 3, 0);
-
-	//Version
-	version = lv_obj_create(obj);
-	lv_obj_set_height(version, LV_SIZE_CONTENT);
-	lv_obj_set_width(version, lv_pct(100));
-	lv_obj_set_layout(version, LV_LAYOUT_FLEX);
-	lv_obj_set_flex_flow(version, LV_FLEX_FLOW_ROW);
-	lv_obj_set_flex_align(version, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-	lv_obj_set_style_pad_gap(version, 8, 0);
-	lv_obj_set_style_pad_all(version, 3, 0);
-	lv_obj_set_style_bg_opa(version, 0, 0);
+	lv_obj_set_height(obj, lv_pct(100));
 
 
-	lv_obj_t* versionLabel = lv_label_create(version);
-	lv_obj_set_style_text_font(versionLabel, &lv_font_montserrat_10, 0);
-	lv_obj_set_style_text_color(versionLabel, lv_color_white(), 0);
-	lv_label_set_text(versionLabel, "Batcontroller Settings");
+	//Title
+	title = lv_obj_create(obj);
+	lv_obj_set_height(title, LV_SIZE_CONTENT);
+	lv_obj_set_layout(title, LV_LAYOUT_FLEX);
+	lv_obj_set_flex_flow(title, LV_FLEX_FLOW_ROW);
+	lv_obj_set_flex_align(title, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+	lv_obj_set_style_pad_gap(title, 8, 0);
+	lv_obj_set_style_pad_all(title, 3, 0);
+	lv_obj_set_style_bg_opa(title, 0, 0);
+
+
+	lv_obj_t* titleLabel = lv_label_create(title);
+	lv_obj_set_style_text_font(titleLabel, &lv_font_montserrat_10, 0);
+	lv_obj_set_style_text_color(titleLabel, lv_color_white(), 0);
+	lv_label_set_text(titleLabel, "Batcontroller Settings");
+
+	lv_obj_update_layout(title);
+
+	//scrollable container
+	flexContainer = lv_obj_create(obj);
+	lv_obj_set_width(flexContainer, lv_pct(100));
+	lv_obj_set_height(flexContainer, lv_obj_get_height(obj) - lv_obj_get_height(title));
+	lv_obj_set_layout(flexContainer, LV_LAYOUT_FLEX);
+	lv_obj_set_flex_flow(flexContainer, LV_FLEX_FLOW_COLUMN);
+	lv_obj_set_flex_align(flexContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+	lv_obj_set_scrollbar_mode(flexContainer, LV_SCROLLBAR_MODE_OFF);
+	lv_obj_set_style_pad_gap(flexContainer, 2, 0);
+	lv_obj_set_style_pad_all(flexContainer, 3, 0);
 
 	//sound slider
-	sound = lv_obj_create(obj);
+	sound = lv_obj_create(flexContainer);
 	lv_obj_set_height(sound, LV_SIZE_CONTENT);
 	lv_obj_set_width(sound, lv_pct(100));
 	lv_obj_set_layout(sound, LV_LAYOUT_FLEX);
@@ -92,7 +105,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
 		lv_obj_add_state(lv_obj_get_parent(lv_event_get_target(event)), LV_STATE_FOCUSED);
 		auto screen = static_cast<SettingsScreen*>(event->user_data);
-		lv_obj_scroll_to_y(screen->obj,0,LV_ANIM_ON);
+		lv_obj_scroll_to_y(screen->flexContainer, 0, LV_ANIM_ON);
 	}, LV_EVENT_FOCUSED, this);
 
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
@@ -131,7 +144,8 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
 		lv_obj_t* slider = static_cast<lv_obj_t*>(event->user_data);
 		Com.sendVolume(lv_slider_get_value(slider) * 2);
-		Serial.printf("Slider value: %d\n", lv_slider_get_value(slider));
+		Com.sendSettingsSound();
+		Settings.get().soundVolume = lv_slider_get_value(slider) * 2;
 	}, LV_EVENT_VALUE_CHANGED, soundSlider);
 
 	lv_style_init(&style_main);
@@ -151,7 +165,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_style(soundSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//shutdownTime
-	shutdownTime = lv_obj_create(obj);
+	shutdownTime = lv_obj_create(flexContainer);
 	lv_obj_set_height(shutdownTime, LV_SIZE_CONTENT);
 	lv_obj_set_width(shutdownTime, lv_pct(100));
 	lv_obj_set_layout(shutdownTime, LV_LAYOUT_FLEX);
@@ -191,6 +205,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
 
 		lv_label_set_text(settings->shutdownTimeLabel, ShutdownText[lv_slider_get_value(event->target)]);
+		Settings.get().shutdownTime = lv_slider_get_value(event->target);
 	}, LV_EVENT_VALUE_CHANGED, this);
 
 	lv_obj_add_event_cb(shutdownSlider, [](lv_event_t* event){
@@ -244,7 +259,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//screenBrightness
-	screenBrightness = lv_obj_create(obj);
+	screenBrightness = lv_obj_create(flexContainer);
 	lv_obj_set_height(screenBrightness, LV_SIZE_CONTENT);
 	lv_obj_set_width(screenBrightness, lv_pct(100));
 	lv_obj_set_layout(screenBrightness, LV_LAYOUT_FLEX);
@@ -314,6 +329,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(brightnessSlider, [](lv_event_t* event){
 		lv_obj_t* slider = static_cast<lv_obj_t*>(event->user_data);
+		Settings.get().screenBrightness = lv_slider_get_value(slider) * 5;
 		BatController.setBrightness(lv_slider_get_value(slider) * 5);
 	}, LV_EVENT_VALUE_CHANGED, brightnessSlider);
 
@@ -334,7 +350,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_add_style(brightnessSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//pairBatmobile
-	pairBatmobile = lv_obj_create(obj);
+	pairBatmobile = lv_obj_create(flexContainer);
 	lv_obj_set_height(pairBatmobile, LV_SIZE_CONTENT);
 	lv_obj_set_width(pairBatmobile, lv_pct(100));
 	lv_obj_set_layout(pairBatmobile, LV_LAYOUT_FLEX);
@@ -351,25 +367,31 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_obj_t* pairBatmobileLabel = lv_label_create(pairBatmobile);
 	lv_obj_set_style_text_font(pairBatmobileLabel, &lv_font_montserrat_10, 0);
 	lv_obj_set_style_text_color(pairBatmobileLabel, lv_color_white(), 0);
-	lv_label_set_text(pairBatmobileLabel, "Enter pair screen");
+	lv_label_set_text(pairBatmobileLabel, "Pair another Batmobile");
 	lv_obj_clear_flag(pairBatmobile, LV_OBJ_FLAG_CLICK_FOCUSABLE);
 	lv_obj_clear_flag(pairBatmobile, LV_OBJ_FLAG_CHECKABLE);
 	lv_obj_clear_flag(pairBatmobile, LV_OBJ_FLAG_SCROLLABLE);
 
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
-		//TODO: switch scene to PairScreen
+		delete settings->parent;
+
+		settings->stop();
+		Com.sendDisconnectRequest();
+		Com.setClient(nullptr);
+
+		(new PairScreen())->start();
 	}, LV_EVENT_CLICKED, this);
 
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
-		SettingsScreen* factory = static_cast<SettingsScreen*>(event->user_data);
-		factory->backToMain();
+		SettingsScreen* screen = static_cast<SettingsScreen*>(event->user_data);
+		screen->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, pairBatmobile);
 
 	//factoryReset
-	factoryReset = lv_obj_create(obj);
+	factoryReset = lv_obj_create(flexContainer);
 	lv_obj_set_height(factoryReset, LV_SIZE_CONTENT);
 	lv_obj_set_width(factoryReset, lv_pct(100));
 	lv_obj_set_layout(factoryReset, LV_LAYOUT_FLEX);
@@ -388,17 +410,15 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(factoryReset, [](lv_event_t* event){
 		auto hw = static_cast<SettingsScreen*>(event->user_data);
-		//auto prompt = new Prompt(hw, "Are you sure?\n\nThis will erase ALL data!");
-		//	lv_obj_add_event_cb(prompt->getLvObj(), [](lv_event_t* e){
-		//Storage.Friends.clear();
-		//Storage.Convos.clear();
-		//Storage.Messages.clear();
-		nvs_flash_erase();
-		Settings.reset();
-		BatController.fadeOut();
-		ESP.restart();
-		//	}, EV_PROMPT_YES, nullptr);
-		//	prompt->start();
+		auto& prompt = hw->factoryResetPrompt;
+		lv_obj_add_event_cb(prompt.getLvObj(), [](lv_event_t* e){
+			Com.sendDisconnectRequest();
+			nvs_flash_erase();
+			Settings.reset();
+			BatController.fadeOut();
+			ESP.restart();
+		}, EV_PROMPT_YES, nullptr);
+		prompt.start();
 	}, LV_EVENT_CLICKED, this);
 
 	lv_obj_add_event_cb(factoryReset, [](lv_event_t* event){
@@ -414,7 +434,7 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 	lv_label_set_text(factoryResetLabel, "Factory reset");
 
 	//HWtest
-	HWTest = lv_obj_create(obj);
+	HWTest = lv_obj_create(flexContainer);
 	lv_obj_set_height(HWTest, LV_SIZE_CONTENT);
 	lv_obj_set_width(HWTest, lv_pct(100));
 	lv_obj_set_layout(HWTest, LV_LAYOUT_FLEX);
@@ -438,19 +458,51 @@ SettingsScreen::SettingsScreen() : LVScreen(){
 
 	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
+		//TODO - dodati UserHWTest kada se on završi
+
 		//	settings->push(new UserHWTest());
 	}, LV_EVENT_CLICKED, this);
 
 	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
-		SettingsScreen* factory = static_cast<SettingsScreen*>(event->user_data);
-		factory->backToMain();
+		SettingsScreen* settings = static_cast<SettingsScreen*>(event->user_data);
+		settings->backToMain();
+	}, LV_EVENT_CANCEL, this);
+
+	lv_group_add_obj(inputGroup, HWTest);
+
+
+	//Save and exit
+	saveBtn = lv_btn_create(flexContainer);
+	lv_obj_set_height(HWTest, LV_SIZE_CONTENT);
+	lv_obj_set_width(HWTest, lv_pct(100));
+	lv_obj_set_style_pad_all(HWTest, 3, 0);
+	lv_obj_set_style_bg_opa(HWTest, 0, 0);
+	lv_obj_add_style(HWTest, &style_focused, selFocus);
+	lv_obj_add_style(HWTest, &style_def, sel);
+	lv_obj_add_flag(HWTest, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+
+	lv_obj_t* saveLabel = lv_label_create(saveBtn);
+	lv_obj_set_style_text_font(HWTestLabel, &lv_font_montserrat_10, 0);
+	lv_obj_set_style_text_color(HWTestLabel, lv_color_white(), 0);
+	lv_label_set_text(HWTestLabel, "Save and exit");
+	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_CLICK_FOCUSABLE);
+	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_CHECKABLE);
+	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_SCROLLABLE);
+
+	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
+		auto* screen = static_cast<SettingsScreen*>(event->user_data);
+		screen->backToMain();
+	}, LV_EVENT_CLICKED, this);
+
+	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
+		SettingsScreen* screen = static_cast<SettingsScreen*>(event->user_data);
+		screen->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, HWTest);
 }
 
 SettingsScreen::~SettingsScreen(){
-	Input::getInstance()->removeListener(this);
 	lv_style_reset(&style_knob);
 	lv_style_reset(&style_def);
 	lv_style_reset(&style_focused);
@@ -467,53 +519,10 @@ void SettingsScreen::onStarting(){
 }
 
 void SettingsScreen::onStart(){
-	Input::getInstance()->addListener(this);
 }
 
 void SettingsScreen::onStop(){
-	Settings.get().shutdownTime = lv_slider_get_value(shutdownSlider);
-	Settings.get().screenBrightness = lv_slider_get_value(brightnessSlider) * 5;
-	Settings.get().soundVolume = lv_slider_get_value(soundSlider) * 2;
 	Settings.store();
-	Input::getInstance()->removeListener(this);
-}
-
-void SettingsScreen::buttonHeldRepeat(uint i, uint repeatCount){
-	if(!lv_obj_has_state(brightnessSlider, LV_STATE_EDITED) || !heldThresh) return;
-
-	if(i == BTN_LEFT && lv_slider_get_value(brightnessSlider) > 0){
-		lv_slider_set_value(brightnessSlider, lv_slider_get_value(brightnessSlider) - 1, LV_ANIM_ON);
-	}else if(i == BTN_RIGHT && lv_slider_get_value(brightnessSlider) < 51){
-		lv_slider_set_value(brightnessSlider, lv_slider_get_value(brightnessSlider) + 1, LV_ANIM_ON);
-	}
-	BatController.setBrightness(lv_slider_get_value(brightnessSlider) * 5);
-}
-
-void SettingsScreen::buttonReleased(uint i){
-	if(!lv_obj_has_state(brightnessSlider, LV_STATE_EDITED) && heldThresh) return;
-
-	if(i == BTN_LEFT || i == BTN_RIGHT){
-		heldThresh = false;
-	}
-}
-
-void SettingsScreen::buttonHeld(uint i){
-	if(!lv_obj_has_state(brightnessSlider, LV_STATE_EDITED) && !heldThresh) return;
-
-	if(i == BTN_LEFT || i == BTN_RIGHT){
-		heldThresh = true;
-	}
-}
-
-void SettingsScreen::buttonPressed(uint i){
-	if(lv_obj_has_state(brightnessSlider, LV_STATE_EDITED)
-	   //	   || lv_obj_has_state(sleepSlider, LV_STATE_EDITED)
-	   || lv_obj_has_state(shutdownSlider, LV_STATE_EDITED))
-		return;
-
-	if(i == BTN_A){
-//			LockScreen::activate(this);
-	}
 }
 
 void SettingsScreen::backToMain(){

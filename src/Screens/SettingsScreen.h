@@ -3,6 +3,7 @@
 
 #include "../Interface/LVScreen.h"
 #include <Input/InputListener.h>
+#include "../Elements/Prompt.h"
 
 class SettingsScreen : public LVScreen, private InputListener {
 public:
@@ -16,13 +17,17 @@ public:
 	void onStart() override;
 
 private:
+	lv_obj_t* flexContainer;
+
 	lv_obj_t* sound;
 	lv_obj_t* shutdownTime;
 	lv_obj_t* screenBrightness;
 	lv_obj_t* factoryReset;
+	Prompt factoryResetPrompt;
 	lv_obj_t* HWTest;
-	lv_obj_t* version;
+	lv_obj_t* title;
 	lv_obj_t* pairBatmobile;
+	lv_obj_t* saveBtn;
 
 	lv_obj_t* soundSlider;
 	lv_obj_t* shutdownTimeLabel;
@@ -34,12 +39,6 @@ private:
 	lv_style_t style_focused;
 	lv_style_t style_main;
 	lv_style_t style_pressed;
-
-	bool heldThresh = false;
-	void buttonPressed(uint i) override;
-	void buttonHeldRepeat(uint i, uint repeatCount) override;
-	void buttonHeld(uint i) override;
-	void buttonReleased(uint i) override;
 
 	void backToMain();
 
