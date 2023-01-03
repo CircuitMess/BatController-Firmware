@@ -11,6 +11,7 @@
 #include <WiFi.h>
 #include "src/BatTheme.h"
 #include "src/Screens/IntroScreen.h"
+#include "src/ShutdownService.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
@@ -62,6 +63,7 @@ void setup(){
 	auto intro = new IntroScreen([](){
 		WiFi.begin();
 		Com.begin();
+		AutoShutdown.begin();
 	});
 	intro->start();
 	lv_timer_handler();

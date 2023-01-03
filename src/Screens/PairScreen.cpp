@@ -1,6 +1,9 @@
 #include "PairScreen.h"
 #include <lvgl.h>
 #include <BatController.h>
+#include <Aruco/Aruco.h>
+#include <Com/Communication.h>
+#include <Settings.h>
 #include "DriveScreen.h"
 #include "MainMenu.h"
 #include <string.h>
@@ -74,12 +77,11 @@ PairScreen::PairScreen()
         stop();
         delete this;
 
-        Serial.printf("Paired\n");
-        auto mainMenu = new MainMenu();
-        mainMenu->start();
-    });
-}
+		Com.sendVolume(Settings.get().soundVolume);
 
+		auto mainMenu = new MainMenu();
+		mainMenu->start();
+	});
 
 PairScreen::~PairScreen() {
 }
