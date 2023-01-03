@@ -5,22 +5,22 @@
 #include <functional>
 #include <Loop/LoopListener.h>
 
-class WiFiService : LoopListener{
+class WiFiService : LoopListener {
 public:
-    WiFiService();
-    ~WiFiService();
+	WiFiService();
+	~WiFiService() override = default;
 
-    void start();
-    void stop();
+	void start();
+	void stop();
 
-    void setDoneCallback(std::function<void()> cb);
-    IPAddress getIPAddress();
+	void setDoneCallback(std::function<void()> cb);
+	IPAddress getIPAddress();
 
 private:
-    void loop(uint micros) override;
+	void loop(uint micros) override;
 
-    std::function<void()> doneCallback;
- };
+	std::function<void()> doneCallback;
+};
 
 
 #endif //BATCONTROLLER_FIRMWARE_WIFISERVICE_H

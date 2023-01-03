@@ -1,4 +1,3 @@
-
 #ifndef BATCONTROLLER_FIRMWARE_CONNECTING_H
 #define BATCONTROLLER_FIRMWARE_CONNECTING_H
 
@@ -7,16 +6,16 @@
 
 class Connecting {
 public:
-    Connecting(lv_obj_t* obj);
-    ~Connecting();
+	Connecting(lv_obj_t* obj);
+	~Connecting();
 
-    void start();
-    void stop();
+	void start();
+	void stop();
 
 private:
-    lv_obj_t* connecting;
-    lv_obj_t* gif;
-    lv_obj_t* text;
+	lv_obj_t* connecting;
+	lv_obj_t* gif;
+	lv_obj_t* text;
 
 };
 

@@ -12,7 +12,7 @@
 #include "../WiFiService.h"
 
 
-class PairScreen : public LVScreen, private LoopListener{
+class PairScreen : public LVScreen, private LoopListener {
 public:
 	PairScreen();
 	~PairScreen() override;
@@ -21,24 +21,24 @@ public:
 	void onStop() override;
 
 private:
-    void loop(uint micros) override;
+	void loop(uint micros) override;
 
-    ScanAruco scanAruco;
-    Connecting connecting;
-    Error error;
-    ScanQR scanQR;
-    InputPS input;
+	ScanAruco scanAruco;
+	Connecting connecting;
+	Error error;
+	ScanQR scanQR;
+	InputPS input;
 
 	PairService pair;
-    WiFiService wifi;
+	WiFiService wifi;
 
-    std::string ssid;
-    std::string password;
+	std::string ssid;
+	std::string password;
 
-    uint16_t randID;
+	uint16_t randID;
 
-    uint32_t microCounter;
-    static constexpr uint32_t timeout = 5000000;
+	uint32_t microCounter;
+	static constexpr uint32_t timeout = 5000000;
 };
 
 
