@@ -53,7 +53,6 @@ void ShutdownService::shutdown(){
 	adc_power_off();
 	WiFi.disconnect(true);
 	WiFi.mode(WIFI_OFF);
-	btStop();
 
 	ledcDetachPin(PIN_BL);
 
