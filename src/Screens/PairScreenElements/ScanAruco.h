@@ -15,7 +15,8 @@ public:
 private:
 	lv_obj_t* scanAruco;
 	lv_obj_t* canvas;
-	lv_obj_t* text;
+	lv_obj_t* top;
+	lv_obj_t* bot;
 
 	lv_color_t* buffer;
 	lv_color_t black;
@@ -25,7 +26,7 @@ private:
 	lv_group_t* inputGroup;
 
 	static constexpr uint8_t Scale = 10;
-	static constexpr uint8_t Multiplier = 8;
+	static constexpr uint8_t ArucoSize = 7;
 };
 
 
