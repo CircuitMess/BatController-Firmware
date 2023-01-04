@@ -45,18 +45,6 @@ ScanAruco::ScanAruco(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGr
 	lv_label_set_long_mode(bot, LV_LABEL_LONG_WRAP);
 	lv_label_set_text(bot, "Or press A for\nhome WiFi mode");
 
-/*
-	lv_obj_set_style_border_width(top, 1, 0);
-	lv_obj_set_style_border_width(bot, 1, 0);
-	lv_obj_set_style_border_color(top, lv_palette_main(LV_PALETTE_RED), 0);
-	lv_obj_set_style_border_color(bot, lv_palette_main(LV_PALETTE_RED), 0);
-	lv_obj_set_style_border_opa(top, LV_OPA_COVER, 0);
-	lv_obj_set_style_border_opa(bot, LV_OPA_COVER, 0);
-	lv_obj_set_style_border_width(canvas, 1, 0);
-	lv_obj_set_style_border_color(canvas, lv_palette_main(LV_PALETTE_RED), 0);
-	lv_obj_set_style_border_opa(canvas, LV_OPA_COVER, 0);
-*/
-
 	lv_obj_update_layout(scanAruco);
 
 	lv_obj_set_width(top, lv_obj_get_width(scanAruco));

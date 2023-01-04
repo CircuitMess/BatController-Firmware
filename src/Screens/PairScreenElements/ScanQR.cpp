@@ -11,23 +11,33 @@ ScanQR::ScanQR(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup){
 	lv_obj_set_size(scanQR, 160, 128);
 	lv_obj_set_pos(scanQR, 0, 0);
 	lv_obj_add_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_set_scrollbar_mode(scanQR, LV_SCROLLBAR_MODE_OFF);
+	lv_obj_set_style_pad_all(scanQR, 5, 0);
+	lv_obj_set_layout(scanQR, LV_LAYOUT_FLEX);
+	lv_obj_set_flex_flow(scanQR, LV_FLEX_FLOW_COLUMN);
+	lv_obj_set_flex_align(scanQR, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+	lv_obj_set_style_pad_row(scanQR, Scale, 0);
 
-	text = lv_label_create(scanQR);
-	lv_obj_set_size(text, Multiplier * Scale, Multiplier * Scale);
-	lv_obj_set_pos(text, Multiplier * Scale, 40);
-	lv_obj_set_style_text_color(text, lv_color_white(), 0);
-	lv_obj_set_style_text_font(text, &lv_font_unscii_8, 0);
-	lv_label_set_text(text, "Scan with\ncamera\nto begin\npairing\nor press\nA to use\ndirect connection");
-
-	title = lv_label_create(scanQR);
-	lv_obj_set_size(title, 150, 15);
-	lv_obj_set_pos(title, 5, 5);
-	lv_obj_set_style_text_color(title, lv_color_white(), 0);
-	lv_obj_set_style_text_font(title, &lv_font_unscii_8, 0);
-	lv_label_set_text(title, "Connected to...");
+	top = lv_label_create(scanQR);
+	lv_obj_set_style_text_color(top, lv_color_white(), 0);
+	lv_obj_set_style_text_font(top, &lv_font_unscii_8, 0);
+	lv_label_set_long_mode(top, LV_LABEL_LONG_WRAP);
 
 	qr = lv_qrcode_create(scanQR, 58, lv_color_white(), lv_color_black());
-	lv_obj_set_pos(qr, 10, 45);
+
+	bot = lv_label_create(scanQR);
+	lv_obj_set_style_text_color(bot, lv_color_white(), 0);
+	lv_obj_set_style_text_font(bot, &lv_font_unscii_8, 0);
+	lv_label_set_long_mode(bot, LV_LABEL_LONG_WRAP);
+	lv_label_set_text(bot, "Scan with Batmobile\nPress B to cancel");
+
+	lv_obj_update_layout(scanQR);
+	lv_obj_set_width(top, lv_obj_get_width(scanQR));
+	lv_obj_set_width(bot, lv_obj_get_width(scanQR));
+	lv_obj_set_style_pad_hor(top, 4, 0);
+	lv_obj_set_style_pad_hor(bot, 4, 0);
+	lv_obj_set_style_text_align(top, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_set_style_text_align(bot, LV_TEXT_ALIGN_CENTER, 0);
 }
 
 ScanQR::~ScanQR(){
@@ -36,16 +46,14 @@ ScanQR::~ScanQR(){
 }
 
 void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress){
-	lv_label_set_text(title, ("Connected to\n" + ssid).c_str());
+	lv_label_set_text(top, ("Connected to\n" + ssid).c_str());
 	lv_obj_clear_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
 
 	lv_obj_add_event_cb(scanQR, [](lv_event_t* e){
-		if(lv_indev_get_key(lv_indev_get_act()) != LV_KEY_ENTER) return;
 		auto scanQR = static_cast<ScanQR*>(lv_event_get_user_data(e));
 
-		if(!scanQR->callback) return;
-		scanQR->callback();
-	}, LV_EVENT_RELEASED, this);
+		if(scanQR->callback) scanQR->callback();
+	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, scanQR);
 	lv_group_focus_obj(scanQR);

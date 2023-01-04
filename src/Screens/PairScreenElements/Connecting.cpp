@@ -15,7 +15,6 @@ Connecting::Connecting(lv_obj_t* obj){
 	lv_obj_set_style_opa(gif, LV_OPA_COVER, 0);
 	lv_obj_set_style_bg_opa(gif, LV_OPA_TRANSP, 0);
 	lv_gif_set_loop(gif, LV_GIF_LOOP_ON);
-	lv_gif_start(gif);
 
 	text = lv_label_create(connecting);
 	lv_obj_set_size(text, 80, 30);
@@ -31,8 +30,11 @@ Connecting::~Connecting(){
 
 void Connecting::start(){
 	lv_obj_clear_flag(connecting, LV_OBJ_FLAG_HIDDEN);
+	lv_gif_restart(gif);
+	lv_gif_start(gif);
 }
 
 void Connecting::stop(){
 	lv_obj_add_flag(connecting, LV_OBJ_FLAG_HIDDEN);
+	lv_gif_stop(gif);
 }

@@ -85,12 +85,14 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 	lv_obj_set_scrollbar_mode(taNetwork, LV_SCROLLBAR_MODE_OFF);
 	lv_obj_set_size(taNetwork, 140, 20);
 	lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
+
 	lv_obj_add_event_cb(taNetwork, [](lv_event_t* e){
-		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
+		auto input = static_cast<InputPS*>(lv_event_get_user_data(e));
 		input->toPassword();
 	}, LV_EVENT_READY, this);
+
 	lv_obj_add_event_cb(taNetwork, [](lv_event_t* e){
-		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
+		auto input = static_cast<InputPS*>(lv_event_get_user_data(e));
 
 		if(!input->callbackBack) return;
 		input->callbackBack();
@@ -105,6 +107,7 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 	lv_obj_set_scrollbar_mode(taPassword, LV_SCROLLBAR_MODE_OFF);
 	lv_obj_set_size(taPassword, 140, 20);
 	lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
+
 	lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
 		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
 		input->toNetwork();
@@ -112,6 +115,8 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 		if(!input->callbackDone) return;
 		input->callbackDone(lv_textarea_get_text(input->taNetwork), lv_textarea_get_text(input->taPassword));
 	}, LV_EVENT_READY, this);
+
+
 	lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
 		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
 		input->toNetwork();
@@ -182,6 +187,7 @@ void InputPS::toNetwork(){
 	lv_keyboard_set_textarea(kb, taNetwork);
 	lv_label_set_text(title, "Enter WiFi name:");
 	lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
+	lv_btnmatrix_set_selected_btn((lv_obj_t*) &(((lv_keyboard_t*) kb)->btnm), 0);
 }
 
 void InputPS::toPassword(){
@@ -191,6 +197,7 @@ void InputPS::toPassword(){
 	lv_keyboard_set_textarea(kb, taPassword);
 	lv_label_set_text(title, "Enter password:");
 	lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
+	lv_btnmatrix_set_selected_btn((lv_obj_t*) &(((lv_keyboard_t*) kb)->btnm), 0);
 }
 
 void InputPS::setNetwork(char* network){
