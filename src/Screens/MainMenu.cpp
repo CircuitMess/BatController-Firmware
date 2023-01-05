@@ -211,7 +211,7 @@ void MainMenu::launch() {
 
 		static LVScreen *(*screens[])() = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
-				[]() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); }, //TODO: add an icon for Dance
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
 				[]() -> LVScreen * { return new SettingsScreen(); }
