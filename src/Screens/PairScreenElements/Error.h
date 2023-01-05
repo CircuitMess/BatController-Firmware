@@ -10,7 +10,7 @@ public:
 	Error(lv_obj_t* obj, lv_group_t* inputGroup);
 	~Error();
 
-	void start(std::string errorMessage = "Connection broke press A to go back to input screen");
+	void start(const std::string& errorMessage = "Connection broke press A to go back to input screen");
 	void stop();
 	void setCallback(std::function<void()> cb);
 

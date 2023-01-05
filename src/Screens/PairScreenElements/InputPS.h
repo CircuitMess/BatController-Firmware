@@ -15,8 +15,8 @@ public:
 	void setCallbackDone(std::function<void(std::string, std::string)> cb);
 	void setCallbackBack(std::function<void()> cb);
 
-	void setNetwork(char* network);
-	void setPassword(char* password);
+	void setNetwork(const char* network);
+	void setPassword(const char* password);
 
 private:
 	void toNetwork();
@@ -31,6 +31,9 @@ private:
 	std::function<void(std::string ssid, std::string pass)> callbackDone = nullptr;
 	std::function<void()> callbackBack = nullptr;
 	lv_group_t* inputGroup;
+
+	const char* ssid = nullptr;
+	const char* pass = nullptr;
 };
 
 

@@ -43,7 +43,7 @@ static const lv_btnmatrix_ctrl_t kb_ctrl_uc_map[] = {
 
 static const char* const kb_map_spec[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", LV_SYMBOL_BACKSPACE, "\n",
 										   "abc", "+", "-", "/", "*", "=", "%", "!", "?", "#", "<", ">", "\n",
-										   "\\", "@", "$", "(", ")", "{", "}", "[", "]", ";", "\"", "'", "\n",
+										   "&", "@", "$", "(", ")", "{", "}", "[", "]", ";", "\"", "'", "\n",
 										   LV_SYMBOL_CLOSE, LV_SYMBOL_LEFT, " ", LV_SYMBOL_RIGHT, LV_SYMBOL_OK, ""
 };
 
@@ -81,7 +81,7 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 	lv_obj_set_style_text_font(taNetwork, &lv_font_unscii_8, 0);
 	lv_textarea_set_one_line(taNetwork, true);
 	lv_obj_set_style_text_color(taNetwork, lv_color_white(), 0);
-	lv_textarea_set_max_length(taNetwork, 21);
+	lv_textarea_set_max_length(taNetwork, 32);
 	lv_obj_set_scrollbar_mode(taNetwork, LV_SCROLLBAR_MODE_OFF);
 	lv_obj_set_size(taNetwork, 140, 20);
 	lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
@@ -103,17 +103,19 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 	lv_obj_set_style_text_font(taPassword, &lv_font_unscii_8, 0);
 	lv_textarea_set_one_line(taPassword, true);
 	lv_obj_set_style_text_color(taPassword, lv_color_white(), 0);
-	lv_textarea_set_max_length(taPassword, 21);
+	lv_textarea_set_max_length(taPassword, 63);
 	lv_obj_set_scrollbar_mode(taPassword, LV_SCROLLBAR_MODE_OFF);
 	lv_obj_set_size(taPassword, 140, 20);
 	lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
 
 	lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
 		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
-		input->toNetwork();
 
-		if(!input->callbackDone) return;
-		input->callbackDone(lv_textarea_get_text(input->taNetwork), lv_textarea_get_text(input->taPassword));
+		if(input->callbackDone){
+			input->callbackDone(lv_textarea_get_text(input->taNetwork), lv_textarea_get_text(input->taPassword));
+		}
+
+		input->toNetwork();
 	}, LV_EVENT_READY, this);
 
 
@@ -133,7 +135,6 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 	lv_obj_set_scrollbar_mode(kb, LV_SCROLLBAR_MODE_OFF);
 	lv_obj_set_style_text_font(kb, &lv_font_montserrat_10, 0);
 
-	toNetwork();
 
 	lv_group_focus_obj(kb);
 }
@@ -163,6 +164,7 @@ void InputPS::start(){
 
 	lv_group_add_obj(inputGroup, kb);
 	lv_group_focus_obj(kb);
+	toNetwork();
 }
 
 void InputPS::stop(){
@@ -181,6 +183,8 @@ void InputPS::setCallbackBack(std::function<void()> cb){
 }
 
 void InputPS::toNetwork(){
+	lv_textarea_set_text(taNetwork, ssid);
+
 	lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_clear_flag(taNetwork, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
@@ -191,6 +195,8 @@ void InputPS::toNetwork(){
 }
 
 void InputPS::toPassword(){
+	lv_textarea_set_text(taPassword, pass);
+
 	lv_obj_add_flag(taNetwork, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_clear_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_state(taPassword, LV_STATE_FOCUSED);
@@ -200,10 +206,12 @@ void InputPS::toPassword(){
 	lv_btnmatrix_set_selected_btn((lv_obj_t*) &(((lv_keyboard_t*) kb)->btnm), 0);
 }
 
-void InputPS::setNetwork(char* network){
-	lv_textarea_set_text(taNetwork, network);
+void InputPS::setNetwork(const char* network){
+	ssid = network;
+	lv_textarea_set_text(taNetwork, ssid);
 }
 
-void InputPS::setPassword(char* password){
-	lv_textarea_set_text(taPassword, password);
+void InputPS::setPassword(const char* password){
+	pass = password;
+	lv_textarea_set_text(taPassword, pass);
 }

@@ -21,8 +21,6 @@ private:
 	lv_obj_t* qr;
 	lv_obj_t* top;
 	lv_obj_t* bot;
-	static constexpr uint8_t Scale = 10;
-	static constexpr uint8_t Multiplier = 8;
 
 	std::function<void()> callback = nullptr;
 	lv_group_t* inputGroup;

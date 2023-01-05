@@ -37,14 +37,15 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	});
 
 	input.setCallbackDone([this](std::string ssidInput, std::string passInput){
+
+		ssid = std::move(ssidInput);
+		password = std::move(passInput);
+
 		memset(Settings.get().ssid, 0, sizeof(Settings.get().ssid));
 		memset(Settings.get().password, 0, sizeof(Settings.get().password));
-		memcpy(Settings.get().ssid, ssidInput.c_str(), ssidInput.size());
-		memcpy(Settings.get().password, passInput.c_str(), passInput.size());
+		memcpy(Settings.get().ssid, ssid.c_str(), ssid.size());
+		memcpy(Settings.get().password, password.c_str(), password.size());
 		Settings.store();
-
-		ssid = ssidInput;
-		password = passInput;
 
 		wifi.start();
 
@@ -102,7 +103,7 @@ void PairScreen::loop(uint micros){
 		connecting.stop();
 		wifi.stop();
 
-		error.start("Couldn't connect to " + ssid + " press A to enter aruco scan screen");
+		error.start("Couldn't connect to network.\n\nPress any key.");
 		return;
 	}
 }

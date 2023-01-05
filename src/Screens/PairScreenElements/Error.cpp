@@ -8,33 +8,48 @@ Error::Error(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup){
 	lv_obj_set_size(error, 160, 128);
 	lv_obj_set_pos(error, 0, 0);
 	lv_obj_add_flag(error, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_set_scrollbar_mode(error, LV_SCROLLBAR_MODE_OFF);
+	lv_obj_set_style_pad_all(error, 5, 0);
+	lv_obj_set_layout(error, LV_LAYOUT_FLEX);
+	lv_obj_set_flex_flow(error, LV_FLEX_FLOW_COLUMN);
+	lv_obj_set_flex_align(error, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+	lv_obj_set_style_pad_row(error, 7, 0);
 
 	img = lv_img_create(error);
 	lv_img_set_src(img, "S:/Pairing/WiFiOff.bin");
-	lv_obj_set_pos(img, 59, 36);
 
 	text = lv_label_create(error);
-	lv_obj_set_size(text, 120, 40);
-	lv_obj_set_pos(text, 20, 80);
+
 	lv_obj_set_style_text_color(text, lv_color_white(), 0);
 	lv_obj_set_style_text_font(text, &lv_font_unscii_8, 0);
+	lv_label_set_long_mode(text, LV_LABEL_LONG_WRAP);
+
+	lv_obj_update_layout(error);
+	lv_obj_set_width(text, lv_obj_get_width(error));
+	lv_obj_set_style_pad_hor(text, 4, 0);
+	lv_obj_set_style_text_align(text, LV_TEXT_ALIGN_CENTER, 0);
 }
 
 Error::~Error(){
 	callback = nullptr;
 }
 
-void Error::start(std::string errorMessage){
+void Error::start(const std::string& errorMessage){
 	lv_label_set_text(text, errorMessage.c_str());
 	lv_obj_clear_flag(error, LV_OBJ_FLAG_HIDDEN);
 
 	lv_obj_add_event_cb(error, [](lv_event_t* e){
-		if(lv_indev_get_key(lv_indev_get_act()) != LV_KEY_ENTER) return;
-		Error* error = static_cast<Error*>(lv_event_get_user_data(e));
-
+		auto error = static_cast<Error*>(lv_event_get_user_data(e));
 		if(!error->callback) return;
 		error->callback();
 	}, LV_EVENT_RELEASED, this);
+
+	lv_obj_add_event_cb(error, [](lv_event_t* e){
+		auto error = static_cast<Error*>(lv_event_get_user_data(e));
+		if(!error->callback) return;
+		error->callback();
+	}, LV_EVENT_CANCEL, this);
+
 	lv_group_add_obj(inputGroup, error);
 	lv_group_focus_obj(error);
 }

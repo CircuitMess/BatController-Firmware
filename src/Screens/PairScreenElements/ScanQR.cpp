@@ -16,14 +16,16 @@ ScanQR::ScanQR(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup){
 	lv_obj_set_layout(scanQR, LV_LAYOUT_FLEX);
 	lv_obj_set_flex_flow(scanQR, LV_FLEX_FLOW_COLUMN);
 	lv_obj_set_flex_align(scanQR, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-	lv_obj_set_style_pad_row(scanQR, Scale, 0);
+	lv_obj_set_style_pad_row(scanQR, 7, 0);
 
 	top = lv_label_create(scanQR);
 	lv_obj_set_style_text_color(top, lv_color_white(), 0);
 	lv_obj_set_style_text_font(top, &lv_font_unscii_8, 0);
 	lv_label_set_long_mode(top, LV_LABEL_LONG_WRAP);
+	lv_label_set_text(top, "Connected!");
 
-	qr = lv_qrcode_create(scanQR, 58, lv_color_white(), lv_color_black());
+//Note: QR is version 6 with ECC M, 41x41 but enlarged 2x to 82x82
+	qr = lv_qrcode_create(scanQR, 82, lv_color_white(), lv_color_black());
 
 	bot = lv_label_create(scanQR);
 	lv_obj_set_style_text_color(bot, lv_color_white(), 0);
@@ -46,7 +48,6 @@ ScanQR::~ScanQR(){
 }
 
 void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress){
-	lv_label_set_text(top, ("Connected to\n" + ssid).c_str());
 	lv_obj_clear_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
 
 	lv_obj_add_event_cb(scanQR, [](lv_event_t* e){
@@ -58,19 +59,27 @@ void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress){
 	lv_group_add_obj(inputGroup, scanQR);
 	lv_group_focus_obj(scanQR);
 
-	data = new char[48];
-	uint8_t ssidLength = ssid.size();
-	uint8_t passLength = password.size();
+	/*
+	 * QR data is consisted of:
+	 * 32 bytes for SSID + 1 null terminator
+	 * 63 bytes for pass + 1 null terminator
+	 * 4 bytes for IP address of controller
+	 *
+	 * Total of 101 bytes
+	 */
 
-	for(int i = 0; i < 22; i++){
-		i >= ssidLength ? data[i] = '\0' : data[i] = ssid[i];
-		i >= passLength ? data[22 + i] = '\0' : data[22 + i] = password[i];
-	}
+	data = new char[101];
+
+	uint8_t cursor = 0;
+	strcpy(data, ssid.c_str());
+	cursor += 33;
+	strcpy(data + cursor, password.c_str());
+	cursor += 64;
 	for(int i = 0; i < 4; i++){
-		data[44 + i] = ipAddress[i];
+		data[cursor + i] = ipAddress[i];
 	}
 
-	lv_qrcode_update(qr, data, 48);
+	lv_qrcode_update(qr, data, 101);
 }
 
 void ScanQR::stop(){
