@@ -2,11 +2,12 @@
 #include "../Screens/PairScreen.h"
 #include <Loop/LoopManager.h>
 
-static const uint16_t FrameDurations[] = { 200, 150, 150, 50, 50, 50, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 800 };
+static const uint16_t FrameDurations[] = {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+                                          100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
 
 IntroScreen::IntroScreen(void (* callback)()) : callback(callback){
 	img = lv_img_create(obj);
-	lv_img_set_src(img, "S:/Intro/1.bin");
+	lv_img_set_src(img, "S:/Intro/0.bin");
 	lv_obj_set_size(img, 160, 128);
 }
 
