@@ -6,7 +6,6 @@
 #include "DriveScreen.h"
 #include "MainMenu.h"
 #include <string.h>
-#include <Loop/LoopManager.h>
 
 PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
 						   input(obj, inputGroup){
@@ -20,15 +19,27 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 
 	randID = rand() % 256;
+	randID = 123;
+
+	memcpy(directSSID, "Batmobile ", 10);
+	directSSID[10] = (randID / 100) + '0';
+	directSSID[11] = ((randID / 10) % 10) + '0';
+	directSSID[12] = (randID % 10) + '0';
+	directSSID[13] = '\0';
+
+	memset(directPass, 0, 10);
+	const char* batmobile = "Batmobile";
+	for(int i = 0; i < 9; i++){
+		char temp = batmobile[i];
+		temp = temp + randID * 5 + 16;
+		temp = temp % ('z' - 'A') + 'A';
+		directPass[i] = temp;
+	}
+	directPass[9] = '\0';
 
 	input.setNetwork(Settings.get().ssid);
 	input.setPassword(Settings.get().password);
 
-	wifi.setDoneCallback([this](){
-		LoopManager::removeListener(this);
-		connecting.stop();
-		scanQR.start(ssid, password, wifi.getIPAddress());
-	});
 
 	scanAruco.setCallback([this](){
 		scanAruco.stop();
@@ -47,10 +58,8 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 		memcpy(Settings.get().password, password.c_str(), password.size());
 		Settings.store();
 
-		wifi.start();
 
-		microCounter = 0;
-		LoopManager::addListener(this);
+		pair.start(ssid.c_str(), password.c_str(), false);
 
 		input.stop();
 		connecting.start();
@@ -59,27 +68,60 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	input.setCallbackBack([this](){
 		input.stop();
 		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
 	});
 
 	error.setCallback([this](){
 		error.stop();
 		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
 	});
 
 	scanQR.setCallback([this](){
-		pair.start(randID);
 		scanQR.stop();
 		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
 	});
 
-	pair.setDoneCallback([this](){
-		stop();
-		delete this;
+	pair.setDoneCallback([this](PairError pairError){
+		switch(pairError){
+			case PairError::PairOk:{
+				stop();
+				delete this;
 
-		Com.sendVolume(Settings.get().soundVolume);
+				Com.sendVolume(Settings.get().soundVolume);
 
-		auto mainMenu = new MainMenu();
-		mainMenu->start();
+				auto mainMenu = new MainMenu();
+				mainMenu->start();
+				break;
+			}
+
+			case PairError::ExternalWiFiTimeout:
+				connecting.stop();
+				scanQR.stop();
+				error.start("Couldn't connect to network.\n\nPress any key.");
+				break;
+
+
+			case PairError::ServerError:
+				connecting.stop();
+				error.start("Couldn't start Com server.\n\nPress any key.");
+				break;
+
+
+			case PairError::ExternalWiFiConnected:
+				connecting.stop();
+				Serial.printf("connected, ip is:\n");
+				Serial.println(WiFiService::getIPAddress());
+				scanQR.start(ssid, password, WiFiService::getIPAddress());
+				break;
+		}
 	});
 }
 
@@ -88,22 +130,10 @@ PairScreen::~PairScreen(){
 
 void PairScreen::onStart(){
 	scanAruco.start(randID);
-	pair.start(randID);
+	pair.start(directSSID, directPass, true);
 	lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
 }
 
 void PairScreen::onStop(){
 	pair.stop();
-}
-
-void PairScreen::loop(uint micros){
-	microCounter += micros;
-	if(microCounter >= timeout){
-		LoopManager::removeListener(this);
-		connecting.stop();
-		wifi.stop();
-
-		error.start("Couldn't connect to network.\n\nPress any key.");
-		return;
-	}
 }

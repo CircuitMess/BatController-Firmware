@@ -7,48 +7,56 @@
 #include <NetworkConfig.h>
 #include <Loop/LoopManager.h>
 
-PairService::PairService(){ }
+PairService::PairService(){}
 
 PairService::~PairService(){
 	stop();
 }
 
-void PairService::start(uint16_t id){
+void PairService::start(const char* ssid, const char* pass, bool directConnection){
+	Serial.printf("PairService start with %d direct connection\n", directConnection);
+	this->directConnection = directConnection;
+
 	if(server) return;
 
+	Com.setMode(directConnection ? ComMode::Direct : ComMode::External);
+
 	server = Com.getServer();
-	if(!server || !server->status()) return;
+	if(!server || !server->status()){
+		if(doneCallback) doneCallback(PairError::ServerError);
+		stop();
+		return;
+	}
 
 	server->onClient([this](void* arg, AsyncClient* client){
 		this->client = std::unique_ptr<AsyncClient>(client);
 		this->server->onClient(nullptr, nullptr);
 	}, nullptr);
 
-	memcpy(ssid, "Batmobile ", 10);
-	ssid[10] = (id / 100) + '0';
-	ssid[11] = ((id / 10) % 10) + '0';
-	ssid[12] = (id % 10) + '0';
-	ssid[13] = '\0';
+	if(directConnection){
+		WiFi.mode(WIFI_AP);
+		WiFi.softAP(ssid, pass, 1);
+		delay(100);
+		WiFi.softAPConfig(controllerIP, gateway, subnet);
+		LoopManager::addListener(this);
 
-	memset(password, 0, 10);
-	char batmobile[] = "Batmobile";
-	for(int i = 0; i < 9; i++){
-		char temp = batmobile[i];
-		temp = temp + id * 5 + 16;
-		temp = temp % ('z' - 'A') + 'A';
-		password[i] = temp;
+	}else if(!directConnection){
+		wifi.start(ssid, pass);
+		wifi.setDoneCallback([this](bool wifiConnected){
+			if(wifiConnected){
+				LoopManager::addListener(this);
+				if(doneCallback) doneCallback(PairError::ExternalWiFiConnected);
+			}else{
+				if(doneCallback) doneCallback(PairError::ExternalWiFiTimeout);
+				stop();
+			}
+		});
 	}
-	password[9] = '\0';
-
-	WiFi.mode(WIFI_AP);
-	WiFi.softAP(ssid, password, 1);
-	delay(100);
-	WiFi.softAPConfig(controllerIP, gateway, subnet);
-
-	LoopManager::addListener(this);
 }
 
 void PairService::stop(){
+	Serial.printf("PairService stop\n");
+
 	LoopManager::removeListener(this);
 
 	if(!server) return;
@@ -58,16 +66,20 @@ void PairService::stop(){
 }
 
 void PairService::loop(uint micros){
+	if(!directConnection && !WiFiService::isConnected()){
+		if(doneCallback) doneCallback(PairError::ExternalWiFiTimeout);
+		stop();
+	}
 	if(!client) return;
 
 	stop();
 	Com.setClient(std::move(client));
 
 	if(doneCallback){
-		doneCallback();
+		doneCallback(PairError::PairOk);
 	}
 }
 
-void PairService::setDoneCallback(std::function<void()> doneCallback){
+void PairService::setDoneCallback(std::function<void(PairError)> doneCallback){
 	PairService::doneCallback = std::move(doneCallback);
 }

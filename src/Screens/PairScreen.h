@@ -9,10 +9,9 @@
 #include "PairScreenElements/Error.h"
 #include "PairScreenElements/ScanQR.h"
 #include "PairScreenElements/InputPS.h"
-#include "../WiFiService.h"
 
 
-class PairScreen : public LVScreen, private LoopListener {
+class PairScreen : public LVScreen {
 public:
 	PairScreen();
 	~PairScreen() override;
@@ -21,7 +20,6 @@ public:
 	void onStop() override;
 
 private:
-	void loop(uint micros) override;
 
 	ScanAruco scanAruco;
 	Connecting connecting;
@@ -30,15 +28,13 @@ private:
 	InputPS input;
 
 	PairService pair;
-	WiFiService wifi;
 
 	std::string ssid;
 	std::string password;
 
 	uint16_t randID;
-
-	uint32_t microCounter;
-	static constexpr uint32_t timeout = 5000000;
+	char directSSID[14];
+	char directPass[10];
 };
 
 

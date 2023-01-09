@@ -29,9 +29,9 @@ Connecting::~Connecting(){
 }
 
 void Connecting::start(){
-	lv_obj_clear_flag(connecting, LV_OBJ_FLAG_HIDDEN);
 	lv_gif_restart(gif);
 	lv_gif_start(gif);
+	lv_obj_clear_flag(connecting, LV_OBJ_FLAG_HIDDEN);
 }
 
 void Connecting::stop(){
