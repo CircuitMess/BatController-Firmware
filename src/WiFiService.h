@@ -8,7 +8,7 @@
 class WiFiService : private LoopListener {
 public:
 	WiFiService();
-	~WiFiService() override = default;
+	~WiFiService() override;
 
 	void start(const char* ssid, const char* pass);
 	void stop();

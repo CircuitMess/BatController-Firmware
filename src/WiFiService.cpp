@@ -8,6 +8,10 @@ WiFiService::WiFiService(){
 	WiFi.disconnect();
 }
 
+WiFiService::~WiFiService(){
+	stop();
+}
+
 void WiFiService::start(const char* ssid, const char* pass){
 	this->ssid = ssid;
 	this->pass = pass;
@@ -58,3 +62,4 @@ IPAddress WiFiService::getIPAddress(){
 bool WiFiService::isConnected(){
 	return WiFi.status() == WL_CONNECTED;
 }
+

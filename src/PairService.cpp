@@ -54,6 +54,7 @@ void PairService::start(const char* ssid, const char* pass, bool directConnectio
 }
 
 void PairService::stop(){
+	wifi.stop();
 	LoopManager::removeListener(this);
 
 	if(!server) return;
