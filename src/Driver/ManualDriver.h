@@ -30,8 +30,8 @@ private:
 	bool boostActive = false;
 	uint32_t boostTimer = 0;
 	bool boostPressed = false;
-	static constexpr uint boostFillRate = 40000; //increment boost by 1 every 40ms when recharging boost
-	static constexpr uint boostConsumptionRate = 20000; //decrease by 1 every 10ms when using boost
+	static constexpr uint boostFillRate = 30000; //increment boost by 1 every 30ms when recharging boost
+	static constexpr uint boostConsumptionRate = 60000; //decrease by 1 every 60ms when using boost
 
 	void sendDriveDir();
 
