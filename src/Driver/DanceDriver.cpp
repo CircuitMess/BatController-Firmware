@@ -4,6 +4,7 @@
 #include <Com/Communication.h>
 
 DanceDriver::DanceDriver(lv_obj_t *elementContainer) : dance(new DanceElement(elementContainer)){
+    dance->setCurrentDance((DanceType)danceIndex);
 }
 
 DanceDriver::~DanceDriver() {

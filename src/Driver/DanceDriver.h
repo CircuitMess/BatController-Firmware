@@ -20,7 +20,6 @@ private:
     void buttonPressed(uint i) override;
 
     DanceElement* dance;
-//    DanceType  danceIndex = DanceType::Idle;
     uint8_t danceIndex = 0;
 };
 
