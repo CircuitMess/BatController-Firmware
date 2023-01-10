@@ -14,7 +14,6 @@ PairService::~PairService(){
 }
 
 void PairService::start(const char* ssid, const char* pass, bool directConnection){
-	Serial.printf("PairService start with %d direct connection\n", directConnection);
 	this->directConnection = directConnection;
 
 	if(server) return;
@@ -55,8 +54,6 @@ void PairService::start(const char* ssid, const char* pass, bool directConnectio
 }
 
 void PairService::stop(){
-	Serial.printf("PairService stop\n");
-
 	LoopManager::removeListener(this);
 
 	if(!server) return;

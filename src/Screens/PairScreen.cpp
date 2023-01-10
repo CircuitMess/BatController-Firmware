@@ -117,8 +117,6 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 
 			case PairError::ExternalWiFiConnected:
 				connecting.stop();
-				Serial.printf("connected, ip is:\n");
-				Serial.println(WiFiService::getIPAddress());
 				scanQR.start(ssid, password, WiFiService::getIPAddress());
 				break;
 		}
