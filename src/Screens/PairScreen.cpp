@@ -19,7 +19,6 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 
 	randID = rand() % 256;
-	randID = 123;
 
 	memcpy(directSSID, "Batmobile ", 10);
 	directSSID[10] = (randID / 100) + '0';
