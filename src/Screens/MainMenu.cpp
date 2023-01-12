@@ -3,7 +3,9 @@
 #include "DriveScreen.h"
 #include <Pins.hpp>
 #include <Input/Input.h>
+#include <Com/Communication.h>
 #include "SettingsScreen.h"
+#include "PairScreen.h"
 
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
@@ -156,7 +158,7 @@ void MainMenu::onStart() {
     lv_gif_start(bigs[selected]);
 
     Input::getInstance()->addListener(this);
-
+    Com.addDcListener(this);
 	lv_obj_scroll_to_x(right, 13, LV_ANIM_ON);
 	lv_obj_scroll_to_y(midContainer, 120, LV_ANIM_ON);
 
@@ -178,6 +180,7 @@ void MainMenu::onStop() {
     unloadGIFs();
 	clearInput();
     Input::getInstance()->removeListener(this);
+    Com.removeDcListener(this);
 }
 
 void MainMenu::outro(){
@@ -263,4 +266,11 @@ void MainMenu::selectPrev() {
 void MainMenu::buttonPressed(uint i) {
 //    if(i != BTN_BACK && i != BTN_R) return; TODO: I have no idea what to do with this
 //    LockScreen::activate(this);
+}
+
+void MainMenu::onDisconnected() {
+    stop();
+    delete this;
+    auto pair = new PairScreen();
+    pair->start();
 }

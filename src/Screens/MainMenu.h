@@ -2,12 +2,13 @@
 #define BATCONTROLLER_FIRMWARE_MAINMENU_H
 
 #include <Input/InputListener.h>
+#include <DisconnectListener.h>
 #include "../Interface/LVScreen.h"
 #include "../Elements/GeneralInfoElement.h"
 
 
 
-class MainMenu: public LVScreen, private InputListener{
+class MainMenu: public LVScreen, private InputListener,  private DisconnectListener{
 public:
     MainMenu();
     ~MainMenu() override;
@@ -51,6 +52,7 @@ private:
 
     GeneralInfoElement* infoElement = nullptr;
 
+    void onDisconnected() override;
     void buttonPressed(uint i) override;
 };
 
