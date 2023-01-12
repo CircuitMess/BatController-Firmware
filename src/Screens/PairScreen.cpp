@@ -88,11 +88,13 @@ void PairScreen::onStart(){
 		auto mainMenu = new MainMenu();
 		mainMenu->start();
 	});
+    BatController.setBrightness(200);
 
 	pair.start(randID);
 }
 
 void PairScreen::onStop(){
 	pair.stop();
+    BatController.setBrightness(Settings.get().screenBrightness);
 }
 
