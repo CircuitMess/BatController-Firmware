@@ -84,10 +84,12 @@ void GeneralInfoElement::onBattery(uint8_t percent, bool charging){
 			mobBat->setLevel(3);
 		}else if(percent > 30){
 			mobBat->setLevel(2);
-		}else if(percent >= 10){
+		}else if(percent > 15){
 			mobBat->setLevel(1);
-		}else if(percent < 10){
+		}else if(percent > 5){
 			mobBat->setLevel(0);
-		}
+		}else if(percent <= 5){
+            mobBat->setBlinking(true);
+        }
 	}
 }
