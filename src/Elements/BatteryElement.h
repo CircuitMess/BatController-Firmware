@@ -26,7 +26,9 @@ private:
 	lv_obj_t* img;
 	lv_obj_t* device;
 
-	bool charging = false;
+    bool blinking = false;
+    bool hidden = false;
+    bool charging = false;
 	uint8_t picIndex = 0;
 	uint32_t microCounter = 0;
 	static const uint32_t  checkInterval = 500000;
