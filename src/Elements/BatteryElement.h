@@ -29,7 +29,7 @@ private:
 	bool charging = false;
 	uint8_t picIndex = 0;
 	uint32_t microCounter = 0;
-	static const uint32_t  checkInterval = 400000;
+	static const uint32_t  checkInterval = 500000;
 };
 
 
