@@ -58,7 +58,11 @@ void GeneralInfoElement::loop(uint micros){
 			conBat->setCharging(false);
 			if(conBatIndex == Battery.getLevel()) return;
 			conBatIndex = Battery.getLevel();
-			conBat->setLevel(conBatIndex);
+            if(conBatIndex == 8){
+                conBat->setBlinking(true);
+            }else{
+                conBat->setLevel(conBatIndex);
+            }
 		}
 	}
 }
