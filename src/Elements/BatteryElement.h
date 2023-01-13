@@ -19,6 +19,7 @@ public:
 	 */
 	void setLevel(uint8_t index);
 	void setCharging(bool charging);
+    void setBlinking(bool blinking);
 
 private:
 	void loop(uint micros) override;

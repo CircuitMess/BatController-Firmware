@@ -29,6 +29,7 @@ void BatteryElement::setCharging(bool charging){
 	if(this->charging == charging) return; // we don't want to add the same listener multiple times
 	this->charging = charging;
 	if(charging){
+        setBlinking(false);
 		LoopManager::addListener(this);
 	}else{
 		LoopManager::removeListener(this);
@@ -39,12 +40,37 @@ void BatteryElement::loop(uint micros){
 	microCounter += micros;
 	if(microCounter >= checkInterval){
 		microCounter = 0;
-		setLevel(picIndex);
-		picIndex++;
-		if(picIndex == 8) picIndex = 0;
+
+        if(charging){
+            setLevel(picIndex);
+            picIndex++;
+            if(picIndex == 8) picIndex = 0;
+        }else if(blinking){
+            hidden = !hidden;
+            if(hidden){
+                lv_obj_add_flag(img, LV_OBJ_FLAG_HIDDEN);
+            }else{
+                lv_obj_clear_flag(img, LV_OBJ_FLAG_HIDDEN);
+            }
+        }
+
 	}
 }
 
 BatteryElement::~BatteryElement(){
 	setCharging(false);
+    setBlinking(false);
+}
+
+
+void BatteryElement::setBlinking(bool blinking) {
+    if(this->blinking == blinking) return;
+    this->blinking = blinking;
+    if(blinking){
+        setLevel(0);
+        LoopManager::addListener(this);
+    }else{
+        LoopManager::removeListener(this);
+        lv_obj_clear_flag(img, LV_OBJ_FLAG_HIDDEN);
+    }
 }
