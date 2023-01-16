@@ -2,6 +2,8 @@
 #include <SPIFFS.h>
 #include <set>
 
+static const char* tag = "SimpleProgStorage";
+
 Simple::Storage::Storage(){
 	if(SPIFFS.exists(filePath)){
 		readProgs();
@@ -43,7 +45,7 @@ void Simple::Storage::updateProg(uint8_t index, const Program& program){
 void Simple::Storage::readProgs(){
 	File progsFile = SPIFFS.open(filePath, "r");
 	if(!progsFile){
-		Serial.printf("Error opening SimpleProgs.bin\n");
+		ESP_LOGE(tag, "Error opening SimpleProgs.bin\n");
 		return;
 	}
 	uint8_t numProgs;
@@ -75,7 +77,7 @@ void Simple::Storage::readProgs(){
 void Simple::Storage::writeProgs(){
 	File progsFile = SPIFFS.open(filePath, "w");
 	if(!progsFile){
-		Serial.printf("Error opening SimpleProgs.bin\n");
+		ESP_LOGE(tag, "Error opening SimpleProgs.bin\n");
 		return;
 	}
 	uint8_t numProgs = programs.size();

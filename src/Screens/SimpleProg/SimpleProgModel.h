@@ -8,7 +8,7 @@
 namespace Simple {
 	struct Action {
 		enum class Type : uint8_t {
-			Drive, Frontlights, Backlights, Underlights, Sound, Delay
+			Drive, Headlights, Taillights, Underlights, Sound, Delay
 		} type;
 
 		union {
@@ -22,7 +22,7 @@ namespace Simple {
 
 			struct {
 				bool toggle;
-			} FrontBacklightData;
+			} HeadTaillightData;
 
 			struct {
 				uint8_t colorID;

@@ -7,9 +7,11 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include "MainMenu.h"
+#include "../Driver/SimpleProgDriver.h"
+#include "SimpleProg/SimpleProgScreen.h"
 #include <Com/Communication.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
+DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) : LVScreen(), infoElement(obj, mode){
 	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_set_pos(infoElement.getLvObj(), 0, 0);
 
@@ -45,7 +47,16 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 	});
 
 	// If mode is idle, do nothing (setMode returns early)
-	setMode(mode);
+	if(customDriver){
+		currentMode = mode;
+		driver = std::move(customDriver);
+		if(mode == DriveMode::SimpleProgramming){
+			static_cast<SimpleProgDriver&>(*driver).setContainer(driverLayer);
+		}
+		Com.sendDriveMode(currentMode);
+	}else{
+		setMode(mode);
+	}
 }
 
 DriveScreen::~DriveScreen(){
@@ -104,11 +115,18 @@ void DriveScreen::setMode(DriveMode newMode){
 void DriveScreen::buttonPressed(uint i){
 	if(i != BTN_MENU) return;
 
+	bool backToMenu = currentMode != DriveMode::SimpleProgramming;
+
 	stop();
 	delete this;
 
-	auto mainMenu = new MainMenu();
-	mainMenu->start();
+	if(backToMenu){
+		auto mainMenu = new MainMenu();
+		mainMenu->start();
+	}else{
+		auto simple = new SimpleProgScreen();
+		simple->start();
+	}
 }
 
 void DriveScreen::onDisconnected(){
