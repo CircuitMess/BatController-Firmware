@@ -12,7 +12,7 @@ namespace Simple {
 		Storage();
 		~Storage();
 
-		uint8_t getNumProgs();
+		[[nodiscard]] uint8_t getNumProgs() const;
 		const Program& getProg(uint8_t index);
 		void addProg(const Program& program);
 		void removeProg(uint8_t index);

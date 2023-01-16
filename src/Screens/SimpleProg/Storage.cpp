@@ -16,7 +16,7 @@ Simple::Storage::~Storage(){
 
 }
 
-uint8_t Simple::Storage::getNumProgs(){
+uint8_t Simple::Storage::getNumProgs() const{
 	return programs.size();
 }
 

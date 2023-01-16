@@ -9,7 +9,9 @@ const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Manual.bin",
 		"S:/DriveMode/Ball.bin",
 		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin"
+		"S:/DriveMode/Marker.bin",
+		"",
+		"S:/DriveMode/SimpleProg.bin",
 };
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
