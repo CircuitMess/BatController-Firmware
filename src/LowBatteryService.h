@@ -9,11 +9,14 @@ class LowBatteryService : private LoopListener, ComListener {
 public:
     LowBatteryService();
     ~LowBatteryService();
-
+    void begin();
+    void stop();
+    bool isBatteryLow();
 
 private:
     void loop(uint micros) override;
     void onBattery(uint8_t percent, bool charging) override;
+    void checkBattery();
 
     LowBatteryModal* batModal = nullptr;
 

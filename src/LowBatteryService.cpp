@@ -6,13 +6,11 @@
 #include <Com/Communication.h>
 
 LowBatteryService::LowBatteryService() {
-    LoopManager::addListener(this);
-    Com.addListener(this);
+
 }
 
 LowBatteryService::~LowBatteryService() {
-    LoopManager::removeListener(this);
-    Com.removeListener(this);
+    stop();
 }
 void LowBatteryService::loop(uint micros) {
     checkTimer += micros;
@@ -36,6 +34,7 @@ void LowBatteryService::loop(uint micros) {
         }
     }else if(checkTimer >= checkInterval){
         checkTimer = 0;
+        checkBattery();
     }
 }
 
@@ -47,4 +46,29 @@ void LowBatteryService::onBattery(uint8_t percent, bool charging) {
         modalShowing = true;
         shutdownBattery = BatType::Batmobile;
     }
+}
+
+void LowBatteryService::begin() {
+    LoopManager::addListener(this);
+    Com.addListener(this);
+    checkBattery();
+}
+
+void LowBatteryService::stop() {
+    LoopManager::removeListener(this);
+    Com.removeListener(this);
+}
+
+void LowBatteryService::checkBattery() {
+    if(isBatteryLow()){
+        delete batModal;
+        batModal = new LowBatteryModal(LVScreen().getCurrent(), BatType::Controller);
+        batModal->start();
+        modalShowing = true;
+        shutdownBattery = BatType::Controller;
+    }
+}
+
+bool LowBatteryService::isBatteryLow() {
+    return (Battery.getPercentage() <= 2 && !Battery.charging());
 }
