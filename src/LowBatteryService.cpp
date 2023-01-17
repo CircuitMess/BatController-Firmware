@@ -15,7 +15,7 @@ LowBatteryService::~LowBatteryService() {
     Com.removeListener(this);
 }
 void LowBatteryService::loop(uint micros) {
-    timer += micros;
+    checkTimer += micros;
 
     if(modalShowing){
         shutdownTimer += micros;
@@ -34,15 +34,8 @@ void LowBatteryService::loop(uint micros) {
                 pair->start();
             }
         }
-    }else if(timer >= checkInterval){
-        timer = 0;
-        if(Battery.getPercentage() <= 2 && !Battery.charging()){
-            delete batModal;
-            batModal = new LowBatteryModal(LVScreen().getCurrent(), BatType::Controller);
-            batModal->start();
-            modalShowing = true;
-            shutdownBattery = BatType::Controller;
-        }
+    }else if(checkTimer >= checkInterval){
+        checkTimer = 0;
     }
 }
 

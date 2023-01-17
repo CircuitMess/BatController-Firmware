@@ -20,7 +20,7 @@ private:
     BatType shutdownBattery;
     bool modalShowing = false;
     uint32_t shutdownTimer = 0;
-    uint32_t timer = 0;
+    uint32_t checkTimer = 0;
     static constexpr uint32_t checkInterval = 5000000;
     static constexpr uint32_t shutdownDelay = 3000000;
 };
