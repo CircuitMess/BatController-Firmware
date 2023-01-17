@@ -23,7 +23,6 @@ void LowBatteryService::loop(uint micros) {
             modalShowing = false;
 
             if(shutdownBattery == BatType::Controller){
-                //TODO: Send shutdown packet to batmobile
                 BatController.shutdown();
             }else if(shutdownBattery == BatType::Batmobile){
                 //TODO: Send shutdown packet to batmobile
