@@ -60,14 +60,25 @@ void setup(){
 
 	BatController.getInput()->addListener(new InputLVGL());
 
-	auto intro = new IntroScreen([](){
-		WiFi.begin();
-		Com.begin();
-		AutoShutdown.begin();
-	});
-	intro->start();
-	lv_timer_handler();
-	BatController.fadeIn();
+    lowBatteryService = new LowBatteryService();
+
+    if(lowBatteryService->isBatteryLow()){
+        BatController.setBrightness(75);
+        auto blackScreen = new LVScreen();
+        lv_obj_set_style_bg_color(blackScreen->getLvObj(), lv_color_black(), 0);
+        lv_obj_set_style_bg_opa(blackScreen->getLvObj(), LV_OPA_COVER, 0);
+        blackScreen->start();
+        lowBatteryService->begin();
+        return;
+    }
+
+    auto intro = new IntroScreen([]() {
+        WiFi.begin();
+        Com.begin();
+    });
+    intro->start();
+    lowBatteryService->begin();
+
 }
 
 void loop(){
