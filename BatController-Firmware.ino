@@ -11,10 +11,11 @@
 #include <WiFi.h>
 #include "src/BatTheme.h"
 #include "src/Screens/IntroScreen.h"
-#include "src/ShutdownService.h"
+#include "src/LowBatteryService.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
+LowBatteryService* lowBatteryService;
 
 void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 	uint32_t w = (area->x2 - area->x1 + 1);
