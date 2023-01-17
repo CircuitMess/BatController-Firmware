@@ -1,5 +1,6 @@
 #include <Loop/LoopManager.h>
 #include "LowBatteryService.h"
+#include "Screens/PairScreen.h"
 #include <BatteryService.h>
 #include <BatController.h>
 #include <Com/Communication.h>
@@ -29,7 +30,8 @@ void LowBatteryService::loop(uint micros) {
             }else if(shutdownBattery == BatType::Batmobile){
                 //TODO: Send shutdown packet to batmobile
                 //Com.sendShutdown([](bool temp){});
-                //TODO: Go to pairing
+                auto pair = new PairScreen();
+                pair->start();
             }
         }
     }else if(timer >= checkInterval){
