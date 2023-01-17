@@ -53,6 +53,15 @@ void Simple::Storage::readProgs(){
 
 	for(uint8_t i = 0; i < numProgs; i++){
 		Program program;
+
+		uint8_t nameLength;
+		progsFile.read(&nameLength, 1);
+		char temp[nameLength + 1];
+		progsFile.read((uint8_t*)temp, nameLength);
+		temp[nameLength] = '\0';
+
+		program.name = temp;
+
 		uint8_t numActions;
 		progsFile.read(&numActions, 1);
 
@@ -83,7 +92,12 @@ void Simple::Storage::writeProgs(){
 	uint8_t numProgs = programs.size();
 	progsFile.write(numProgs);
 	for(auto& prog: programs){
-		//write prog to file
+
+		uint8_t length = prog.name.length();
+		progsFile.write(length);
+		progsFile.write((const uint8_t*)prog.name.c_str(), length);
+
+
 		uint8_t numActions = prog.actions.size();
 		progsFile.write(numActions);
 		for(int j = 0; j < numActions; j++){
@@ -91,4 +105,10 @@ void Simple::Storage::writeProgs(){
 		}
 	}
 	progsFile.close();
+}
+
+void Simple::Storage::clearAll(){
+	SPIFFS.remove(filePath);
+	programs.clear();
+	writeProgs();
 }

@@ -17,6 +17,7 @@ namespace Simple {
 		void addProg(const Program& program);
 		void removeProg(uint8_t index);
 		void updateProg(uint8_t index, const Program& program);
+		void clearAll();
 
 	private:
 		void readProgs();
