@@ -2,6 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_MAINMENU_H
 
 #include <Input/InputListener.h>
+#include <memory>
 #include "../Interface/LVScreen.h"
 #include "../Elements/GeneralInfoElement.h"
 
@@ -49,7 +50,7 @@ private:
 
     uint8_t selected = 0;
 
-    GeneralInfoElement* infoElement = nullptr;
+    std::unique_ptr<GeneralInfoElement> infoElement;
 
     void buttonPressed(uint i) override;
 };

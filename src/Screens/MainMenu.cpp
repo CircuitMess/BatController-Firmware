@@ -34,8 +34,6 @@ MainMenu::MainMenu() : LVScreen() {
     lv_obj_set_pos(top, 0, 0);
     lv_obj_set_size(top, lv_pct(100), 8);
 
-	infoElement = new GeneralInfoElement(top, DriveMode::Idle);
-
 	lv_obj_set_pos(right, 147, 8);
     lv_obj_set_size(right, 13, 120);
     lv_obj_set_style_pad_top(right, 3, 0);
