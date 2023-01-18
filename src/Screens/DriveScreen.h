@@ -38,7 +38,7 @@ private:
 	lv_img_dsc_t imgDsc {};
 	Color* imgBuf = nullptr;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
 };
 
 
