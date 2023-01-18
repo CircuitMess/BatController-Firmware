@@ -229,10 +229,18 @@ void MainMenu::launch() {
 			return;
 		}
 
+        auto info = std::move(menu->infoElement);
+        auto tempScreen = new LVScreen();
+        lv_obj_set_parent(info->getLvObj(), tempScreen->getLvObj());
+
 		delete menu;
 
 		auto screen = launcher();
-		screen->start();
+        auto ds = reinterpret_cast<DriveScreen*>(screen);
+        lv_obj_set_parent(info->getLvObj(), ds->getLvObj());
+        delete tempScreen;
+        ds->setInfoElement(std::move(info));
+        screen->start();
 
 	}, 500, this);
 	lv_timer_set_repeat_count(timer, 1);
