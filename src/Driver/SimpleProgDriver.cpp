@@ -15,11 +15,6 @@ void SimpleProgDriver::setContainer(lv_obj_t* container){
 void SimpleProgDriver::onStart(){
 	if(!inited) return;
 
-	if(program->actions.empty()){
-		exit();
-		return;
-	}
-
 	actionTimer = 0;
 	actionCursor = 0;
 
@@ -31,10 +26,6 @@ void SimpleProgDriver::onStop(){
 }
 
 void SimpleProgDriver::loop(uint micros){
-	if(actionCursor >= program->actions.size()){
-		exit();
-		return;
-	}
 
 	auto currentAction = program->actions[actionCursor];
 
@@ -94,12 +85,3 @@ void SimpleProgDriver::loop(uint micros){
 		}
 	}
 }
-
-void SimpleProgDriver::exit(){
-	stop();
-	auto simple = new SimpleProgScreen();
-	simple->start();
-}
-
-
-

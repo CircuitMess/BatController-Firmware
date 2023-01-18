@@ -19,7 +19,6 @@ protected:
 
 private:
 	void loop(uint micros) override;
-	void exit();
 	std::unique_ptr<Simple::Program> program;
 
 	bool inited = false;
