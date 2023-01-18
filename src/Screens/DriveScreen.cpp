@@ -115,3 +115,8 @@ void DriveScreen::onDisconnected(){
 	auto pair = new PairScreen();
 	pair->start();
 }
+
+void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+    this->infoElement = std::move(infoElement);
+    this->infoElement->setMode(currentMode);
+}

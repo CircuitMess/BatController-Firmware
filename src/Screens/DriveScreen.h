@@ -21,6 +21,8 @@ public:
 	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
+    void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
+
 
 private:
 	void onDisconnected() override;
