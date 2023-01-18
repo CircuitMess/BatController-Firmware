@@ -101,11 +101,17 @@ void DriveScreen::setMode(DriveMode newMode){
 void DriveScreen::buttonPressed(uint i){
 	if(i != BTN_MENU) return;
 
+    auto info = std::move(infoElement);
+    auto tempScreen = new LVScreen();
+    lv_obj_set_parent(info->getLvObj(), tempScreen->getLvObj());
+
 	stop();
 	delete this;
 
 	auto mainMenu = new MainMenu();
-	mainMenu->start();
+    mainMenu->setInfoElement(std::move(info));
+    delete tempScreen;
+    mainMenu->start();
 }
 
 void DriveScreen::onDisconnected(){
