@@ -262,3 +262,8 @@ void MainMenu::buttonPressed(uint i) {
 //    if(i != BTN_BACK && i != BTN_R) return; TODO: I have no idea what to do with this
 //    LockScreen::activate(this);
 }
+
+void MainMenu::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+    this->infoElement = std::move(infoElement);
+    this->infoElement->setMode(DriveMode::Idle);
+}
