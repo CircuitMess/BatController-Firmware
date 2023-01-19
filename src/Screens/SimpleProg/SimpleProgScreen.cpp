@@ -2,9 +2,13 @@
 #include "../../Driver/SimpleProgDriver.h"
 #include "../DriveScreen.h"
 #include "../PairScreen.h"
+#include "ProgEditScreen.h"
+#include "../MainMenu.h"
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
+
+uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
 SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgramming){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
@@ -98,7 +102,10 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 
 			lv_obj_set_width(bg, map(millis() - t, 0, holdTime, 0, programWidth));
 			if(millis() - t >= holdTime){
+				//Playback program
 				auto index = lv_obj_get_index(e->target);
+				SimpleProgScreen::lastProgramIndex = index;
+
 				std::unique_ptr<Simple::Program> program = std::make_unique<Simple::Program>(p->storage.getProg(index));
 				std::unique_ptr<SimpleProgDriver> driver = std::make_unique<SimpleProgDriver>(std::move(program));
 
@@ -109,6 +116,19 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 
 			}
 		}, LV_EVENT_PRESSING, this);
+
+		lv_obj_add_event_cb(progElement, [](lv_event_t* e){
+			//Editing existing program
+			auto& screen = *(SimpleProgScreen*) e->user_data;
+			auto index = lv_obj_get_index(lv_group_get_focused(screen.inputGroup));
+
+			SimpleProgScreen::lastProgramIndex = index;
+			screen.currentProgram = screen.storage.getProg(index);
+			auto next = new ProgEditScreen(screen.currentProgram, [&screen](){
+				screen.storage.updateProg(SimpleProgScreen::lastProgramIndex, screen.currentProgram);
+			});
+			next->start(true);
+		}, LV_EVENT_SHORT_CLICKED, this);
 	}
 
 	newProg = lv_obj_create(progView);
@@ -117,15 +137,39 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_obj_set_style_bg_img_src(newProg, "S:/SimpleProg/newFocused.bin", LV_STATE_FOCUSED);
 	lv_group_add_obj(inputGroup, newProg);
 
-	lv_obj_scroll_to_view(lv_group_get_focused(inputGroup), LV_ANIM_OFF);
+	lv_obj_scroll_to_view(lv_obj_get_child(progView, lastProgramIndex), LV_ANIM_OFF);
 
 	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
 		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_ON);
 	});
 
 	lv_obj_add_event_cb(newProg, [](lv_event_t* e){
-		//TODO - change screen, create prog
-	}, LV_EVENT_PRESSED, nullptr);
+		//Adding new program
+		auto& screen = *(SimpleProgScreen*) e->user_data;
+		auto& prog = screen.currentProgram;
+
+		prog = Simple::Program{};
+		prog.name = "Program ";
+		prog.name.push_back((char) ((lv_obj_get_index(e->target) + 1) + '0'));
+		auto progEdit = new ProgEditScreen(prog, [&screen](){
+			screen.storage.addProg(screen.currentProgram);
+		});
+		progEdit->start(true);
+	}, LV_EVENT_PRESSED, this);
+
+	for(int j = 0; j < lv_obj_get_child_cnt(progView); ++j){
+		lv_obj_add_event_cb(lv_obj_get_child(progView, j), [](lv_event_t* e){
+			if(lv_event_get_key(e) != LV_KEY_HOME) return;
+
+			auto screen = (SimpleProgScreen*) e->user_data;
+			SimpleProgScreen::lastProgramIndex = 0;
+			screen->stop();
+			delete screen;
+
+			auto mainMenu = new MainMenu();
+			mainMenu->start();
+		}, LV_EVENT_KEY, this);
+	}
 }
 
 void SimpleProgScreen::onStart(){

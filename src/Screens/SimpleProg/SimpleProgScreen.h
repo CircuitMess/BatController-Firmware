@@ -18,6 +18,9 @@ private:
 	void onDisconnected() override;
 	Simple::Storage storage;
 
+	Simple::Program currentProgram;
+	static uint8_t lastProgramIndex;
+
 	GeneralInfoElement infoElement;
 	lv_obj_t* progView;
 	lv_obj_t* footer;

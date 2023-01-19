@@ -27,6 +27,11 @@ void SimpleProgDriver::onStop(){
 
 void SimpleProgDriver::loop(uint micros){
 
+	if(actionCursor >= program->actions.size()){
+		stop();
+		return;
+	}
+
 	auto currentAction = program->actions[actionCursor];
 
 	//timekeeping for actions with durations (Drive and Delay)
