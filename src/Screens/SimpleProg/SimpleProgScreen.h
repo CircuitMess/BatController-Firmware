@@ -11,12 +11,14 @@ class SimpleProgScreen : public LVScreen, private DisconnectListener, private In
 public:
 	SimpleProgScreen();
 
+	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
 
 private:
 	void onDisconnected() override;
 	Simple::Storage storage;
+	void buildProgView();
 
 	Simple::Program currentProgram;
 	static uint8_t lastProgramIndex;

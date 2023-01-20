@@ -44,6 +44,50 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 		}
 	}, 1, this);
 	lv_timer_pause(progDeleteTimer);
+}
+
+void SimpleProgScreen::onStart(){
+	Input::getInstance()->addListener(this);
+}
+
+void SimpleProgScreen::onStop(){
+	Input::getInstance()->removeListener(this);
+}
+
+void SimpleProgScreen::onDisconnected(){
+	stop();
+	delete this;
+
+	auto pair = new PairScreen();
+	pair->start();
+}
+
+void SimpleProgScreen::buttonPressed(uint i){
+	if(i != BTN_B) return;
+	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
+	auto bg = lv_obj_get_child(lv_group_get_focused(inputGroup), 0);
+
+	if(progDeleteTimer->paused){
+		lv_obj_set_style_bg_color(bg, lv_color_make(255, 0, 0), LV_STATE_DEFAULT);
+		lv_timer_reset(progDeleteTimer);
+		lv_timer_resume(progDeleteTimer);
+		holdStartTime = millis();
+	}
+}
+
+void SimpleProgScreen::buttonReleased(uint i){
+	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
+
+	auto bg = lv_obj_get_child(lv_group_get_focused(inputGroup), 0);
+	lv_obj_set_width(bg, 0);
+	holdStartTime = millis();
+	lv_timer_pause(progDeleteTimer);
+}
+
+void SimpleProgScreen::buildProgView(){
+	for(int j = lv_obj_get_child_cnt(progView) - 1; j >= 0; --j){
+		lv_obj_del(lv_obj_get_child(progView, j));
+	}
 
 	lv_obj_t* progElement;
 	for(int i = 0; i < storage.getNumProgs(); ++i){
@@ -127,7 +171,7 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 			auto next = new ProgEditScreen(screen.currentProgram, [&screen](){
 				screen.storage.updateProg(SimpleProgScreen::lastProgramIndex, screen.currentProgram);
 			});
-			next->start(true);
+			screen.push(next);
 		}, LV_EVENT_SHORT_CLICKED, this);
 	}
 
@@ -136,12 +180,6 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_obj_set_style_bg_img_src(newProg, "S:/SimpleProg/new.bin", LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_img_src(newProg, "S:/SimpleProg/newFocused.bin", LV_STATE_FOCUSED);
 	lv_group_add_obj(inputGroup, newProg);
-
-	lv_obj_scroll_to_view(lv_obj_get_child(progView, lastProgramIndex), LV_ANIM_OFF);
-
-	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
-		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_ON);
-	});
 
 	lv_obj_add_event_cb(newProg, [](lv_event_t* e){
 		//Adding new program
@@ -154,7 +192,7 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 		auto progEdit = new ProgEditScreen(prog, [&screen](){
 			screen.storage.addProg(screen.currentProgram);
 		});
-		progEdit->start(true);
+		screen.push(progEdit);
 	}, LV_EVENT_PRESSED, this);
 
 	for(int j = 0; j < lv_obj_get_child_cnt(progView); ++j){
@@ -172,40 +210,11 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	}
 }
 
-void SimpleProgScreen::onStart(){
-	Input::getInstance()->addListener(this);
-}
+void SimpleProgScreen::onStarting(){
+	buildProgView();
+	lv_obj_scroll_to_view(lv_obj_get_child(progView, lastProgramIndex), LV_ANIM_OFF);
 
-void SimpleProgScreen::onStop(){
-	Input::getInstance()->removeListener(this);
-}
-
-void SimpleProgScreen::onDisconnected(){
-	stop();
-	delete this;
-
-	auto pair = new PairScreen();
-	pair->start();
-}
-
-void SimpleProgScreen::buttonPressed(uint i){
-	if(i != BTN_B) return;
-	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
-	auto bg = lv_obj_get_child(lv_group_get_focused(inputGroup), 0);
-
-	if(progDeleteTimer->paused){
-		lv_obj_set_style_bg_color(bg, lv_color_make(255, 0, 0), LV_STATE_DEFAULT);
-		lv_timer_reset(progDeleteTimer);
-		lv_timer_resume(progDeleteTimer);
-		holdStartTime = millis();
-	}
-}
-
-void SimpleProgScreen::buttonReleased(uint i){
-	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
-
-	auto bg = lv_obj_get_child(lv_group_get_focused(inputGroup), 0);
-	lv_obj_set_width(bg, 0);
-	holdStartTime = millis();
-	lv_timer_pause(progDeleteTimer);
+	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
+		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_ON);
+	});
 }

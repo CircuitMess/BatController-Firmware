@@ -6,6 +6,8 @@
 #include "../../Interface/LVScreen.h"
 #include "SimpleProgModel.h"
 #include "ActionEditModal.h"
+#include "ActionPickModal.h"
+#include "../../Elements/GeneralInfoElement.h"
 #include <functional>
 
 class ProgEditScreen : public LVScreen, private DisconnectListener, private InputListener{
@@ -13,13 +15,28 @@ public:
 	ProgEditScreen(Simple::Program& program, std::function<void()> saveCallback);
 	void onStart() override;
 	void onStop() override;
+
 private:
-	void buttonReleased(uint i) override;
 	Simple::Program& program;
+	void addAction(Simple::Action& action);
+	void addNewActionButton();
+	void buttonReleased(uint i) override;
+	void buttonPressed(uint i) override;
 
 	std::function<void()> saveCallback;
 
-	ActionEditModal modal;
+	ActionEditModal editModal;
+	ActionPickModal pickModal;
+
+	GeneralInfoElement infoElement;
+	lv_obj_t* newAction;
+	lv_obj_t* actionView;
+	lv_obj_t* footer;
+
+	static constexpr uint32_t holdTime = 800; //0.8s hold to confirm erase
+	static constexpr uint8_t rowLength = 7;
+	lv_timer_t* progDeleteTimer;
+	uint32_t holdStartTime = 0;
 };
 
 
