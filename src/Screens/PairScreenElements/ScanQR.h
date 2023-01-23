@@ -24,7 +24,6 @@ private:
 
 	std::function<void()> callback = nullptr;
 	lv_group_t* inputGroup;
-	char* data = nullptr;
 };
 
 
