@@ -36,17 +36,24 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	}
 	directPass[9] = '\0';
 
-	input.setNetwork(Settings.get().ssid);
-	input.setPassword(Settings.get().password);
-
-
 	scanAruco.setCallback([this](){
 		scanAruco.stop();
 		pair.stop();
+
+		input.setNetwork(Settings.get().ssid);
+		input.setPassword(Settings.get().password);
+
 		input.start();
 	});
 
 	input.setCallbackDone([this](std::string ssidInput, std::string passInput){
+		if(ssidInput.size() > 24){
+			ssidInput.resize(24);
+		}
+
+		if(passInput.size() > 23){
+			passInput.resize(23);
+		}
 
 		ssid = std::move(ssidInput);
 		password = std::move(passInput);
