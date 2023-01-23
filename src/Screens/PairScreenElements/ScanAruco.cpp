@@ -4,6 +4,8 @@
 #include <lvgl.h>
 #include <Display/Color.h>
 #include <Aruco/Aruco.h>
+#include <BatController.h>
+#include <Settings.h>
 
 ScanAruco::ScanAruco(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup){
 	scanAruco = lv_obj_create(obj);
@@ -93,12 +95,16 @@ void ScanAruco::start(uint16_t id){
 
 	lv_group_add_obj(inputGroup, scanAruco);
 	lv_group_focus_obj(scanAruco);
+
+	BatController.setBrightness(40);
 }
 
 void ScanAruco::stop(){
 	lv_obj_add_flag(scanAruco, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_remove_event_cb_with_user_data(scanAruco, nullptr, this);
 	lv_group_remove_obj(scanAruco);
+
+	BatController.setBrightness(Settings.get().screenBrightness);
 }
 
 void ScanAruco::setCallback(std::function<void()> cb){

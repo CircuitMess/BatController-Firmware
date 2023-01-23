@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <extra/libs/qrcode/lv_qrcode.h>
 #include <extra/libs/qrcode/qrcodegen.h>
+#include <BatController.h>
+#include <Settings.h>
 
 ScanQR::ScanQR(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup){
 	scanQR = lv_obj_create(obj);
@@ -52,6 +54,8 @@ ScanQR::~ScanQR(){
 }
 
 void ScanQR::start(std::string ssid, std::string password, IPAddress ipAddress){
+	BatController.setBrightness(20);
+
 	lv_obj_clear_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
 
 	lv_obj_add_event_cb(scanQR, [](lv_event_t* e){
@@ -96,6 +100,8 @@ void ScanQR::stop(){
 	lv_obj_add_flag(scanQR, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_remove_event_cb_with_user_data(scanQR, nullptr, this);
 	lv_group_remove_obj(scanQR);
+
+	BatController.setBrightness(Settings.get().screenBrightness);
 }
 
 void ScanQR::setCallback(std::function<void()> cb){
