@@ -5,8 +5,8 @@
 
 BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : autoControls(container, screen), hueElement(container, 120),
 																hueModal(screen, [this](uint8_t hue){
+                                                                    hueElement.setHue(hue);
 																	Com.sendBallHue(hue);
-																	hueElement.setHue(hue);
 																}, 120){
 }
 
