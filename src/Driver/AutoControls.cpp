@@ -4,7 +4,6 @@
 
 AutoControls::AutoControls(lv_obj_t* container, LVScreen* parentScreen) : dirElement(container), speedModal(parentScreen, [this](uint8_t speed){
 	Com.sendDriveSpeed(speed);
-	dirElement.setSpeed(speed);
 }, 0){
 	lv_obj_update_layout(container);
 	auto dirElementX = lv_obj_get_width(container) - lv_obj_get_width(dirElement.getLvObj()) - 3;
@@ -32,6 +31,12 @@ void AutoControls::buttonPressed(uint i){
 
 void AutoControls::setSpeed(uint8_t speed){
 	dirElement.setSpeed(speed);
+
+	if(speed == 0){
+		lv_obj_add_flag(dirElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+	}else{
+		lv_obj_clear_flag(dirElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+	}
 }
 
 void AutoControls::setDirection(float angle){
@@ -52,4 +57,7 @@ void AutoControls::setDirection(MotorInfo motors){
 	if(leftMotors < 0 && rightMotors < 0) angle += 180;
 
 	setDirection(angle);
+
+	const uint8_t speed = (abs(motors.frontRight) + abs(motors.frontLeft) + abs(motors.backRight) + abs(motors.backLeft)) / 4;
+	setSpeed(speed);
 }
