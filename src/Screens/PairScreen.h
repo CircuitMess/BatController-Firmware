@@ -35,6 +35,9 @@ private:
 	uint16_t randID;
 	char directSSID[14];
 	char directPass[10];
+
+	void resetDirect();
+
 };
 
 

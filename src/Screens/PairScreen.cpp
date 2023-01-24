@@ -18,23 +18,7 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	lv_obj_set_style_pad_top(obj, 128, 0);
 	lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 
-	randID = rand() % 256;
-
-	memcpy(directSSID, "Batmobile ", 10);
-	directSSID[10] = (randID / 100) + '0';
-	directSSID[11] = ((randID / 10) % 10) + '0';
-	directSSID[12] = (randID % 10) + '0';
-	directSSID[13] = '\0';
-
-	memset(directPass, 0, 10);
-	const char* batmobile = "Batmobile";
-	for(int i = 0; i < 9; i++){
-		char temp = batmobile[i];
-		temp = temp + randID * 5 + 16;
-		temp = temp % ('z' - 'A') + 'A';
-		directPass[i] = temp;
-	}
-	directPass[9] = '\0';
+	resetDirect();
 
 	scanAruco.setCallback([this](){
 		scanAruco.stop();
@@ -73,6 +57,8 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 
 	input.setCallbackBack([this](){
 		input.stop();
+
+		resetDirect();
 		scanAruco.start(randID);
 
 		pair.stop();
@@ -81,6 +67,8 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 
 	error.setCallback([this](){
 		error.stop();
+
+		resetDirect();
 		scanAruco.start(randID);
 
 		pair.stop();
@@ -89,6 +77,8 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 
 	scanQR.setCallback([this](){
 		scanQR.stop();
+
+		resetDirect();
 		scanAruco.start(randID);
 
 		pair.stop();
@@ -133,6 +123,7 @@ PairScreen::~PairScreen(){
 }
 
 void PairScreen::onStart(){
+	resetDirect();
 	scanAruco.start(randID);
 	pair.start(directSSID, directPass, true);
 	lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
@@ -140,4 +131,25 @@ void PairScreen::onStart(){
 
 void PairScreen::onStop(){
 	pair.stop();
+}
+
+void PairScreen::resetDirect(){
+	randID = rand() % 512;
+	printf("Rand ID: %d\n", randID);
+
+	memcpy(directSSID, "Batmobile ", 10);
+	directSSID[10] = (randID / 100) + '0';
+	directSSID[11] = ((randID / 10) % 10) + '0';
+	directSSID[12] = (randID % 10) + '0';
+	directSSID[13] = '\0';
+
+	memset(directPass, 0, 10);
+	const char* batmobile = "Batmobile";
+	for(int i = 0; i < 9; i++){
+		char temp = batmobile[i];
+		temp = temp + randID * 5 + 16;
+		temp = temp % ('z' - 'A') + 'A';
+		directPass[i] = temp;
+	}
+	directPass[9] = '\0';
 }
