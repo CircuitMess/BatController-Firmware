@@ -75,6 +75,9 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
+	if(driver){
+		driver->stop();
+	}
 	driver.reset();
 
 	if(newMode == DriveMode::Idle){
