@@ -33,6 +33,8 @@ void PairService::start(const char* ssid, const char* pass, bool directConnectio
 	}, nullptr);
 
 	if(directConnection){
+		controllerIP = defaultControllerIP;
+
 		WiFi.mode(WIFI_AP);
 		WiFi.softAP(ssid, pass, 1);
 		delay(100);
@@ -43,6 +45,7 @@ void PairService::start(const char* ssid, const char* pass, bool directConnectio
 		wifi.start(ssid, pass);
 		wifi.setDoneCallback([this](bool wifiConnected){
 			if(wifiConnected){
+				controllerIP = WiFi.localIP();
 				LoopManager::addListener(this);
 				if(doneCallback) doneCallback(PairError::ExternalWiFiConnected);
 			}else{
