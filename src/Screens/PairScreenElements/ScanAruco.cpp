@@ -78,6 +78,7 @@ void ScanAruco::start(uint16_t id){
 		}
 	};
 
+	lv_canvas_fill_bg(this->canvas, this->black, LV_OPA_COVER);
 	for(uint8_t y = 0; y < 7; y++){
 		for(uint8_t x = 0; x < 7; x++){
 			if(tempBuffer[y * 7 + x] == 0x0000){
