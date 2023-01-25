@@ -5,15 +5,16 @@
 #include <lvgl.h>
 
 const std::map<uint8_t, lv_key_t> InputLVGL::keyMap = {{ BTN_UP,    LV_KEY_PREV },
-												 { BTN_DOWN,  LV_KEY_NEXT },
-												 { BTN_LEFT,  LV_KEY_LEFT },
-												 { BTN_RIGHT, LV_KEY_RIGHT },
-												 { BTN_A,     LV_KEY_ENTER },
-												 { BTN_B,     LV_KEY_ESC },
-												 { BTN_MENU,  LV_KEY_ESC }};
+													   { BTN_DOWN,  LV_KEY_NEXT },
+													   { BTN_LEFT,  LV_KEY_LEFT },
+													   { BTN_RIGHT, LV_KEY_RIGHT },
+													   { BTN_A,     LV_KEY_ENTER },
+													   { BTN_B,     LV_KEY_ESC },
+													   { BTN_MENU,  LV_KEY_ESC }};
 
 InputLVGL* InputLVGL::instance = nullptr;
 bool InputLVGL::verticalNavigation = true;
+bool InputLVGL::horizontalNavigation = false;
 
 InputLVGL::InputLVGL(){
 	instance = this;
@@ -32,8 +33,14 @@ void InputLVGL::read(lv_indev_drv_t* drv, lv_indev_data_t* data){
 
 	data->key = keyMap.at(lastKey);
 	data->state = pressed ? LV_INDEV_STATE_PRESSED : LV_INDEV_STATE_RELEASED;
+
+	//vertical navigation
 	if(data->key == LV_KEY_PREV && !verticalNavigation) data->key = LV_KEY_UP;
 	if(data->key == LV_KEY_NEXT && !verticalNavigation) data->key = LV_KEY_DOWN;
+
+	//horizontal navigation
+	if(data->key == LV_KEY_LEFT && horizontalNavigation) data->key = LV_KEY_PREV;
+	if(data->key == LV_KEY_RIGHT && horizontalNavigation) data->key = LV_KEY_NEXT;
 }
 
 void InputLVGL::buttonReleased(uint i){
@@ -60,6 +67,10 @@ lv_indev_t* InputLVGL::getIndev(){
 
 void InputLVGL::enableVerticalNavigation(bool enable){
 	verticalNavigation = enable;
+}
+
+void InputLVGL::enableHorizontalNavigation(bool enable){
+	horizontalNavigation = enable;
 }
 
 

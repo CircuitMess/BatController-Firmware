@@ -7,12 +7,12 @@
 
 static const uint directions[] = { BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT };
 
-ManualDriver::ManualDriver(lv_obj_t* elementContainer) : boost(new BoostElement(elementContainer)){
+ManualDriver::ManualDriver(lv_obj_t* elementContainer) : Driver(DriveMode::Manual){
 	lv_obj_set_pos(boost->getLvObj(), 2, 10);
 }
 
-ManualDriver::~ManualDriver() {
-    stop();
+ManualDriver::~ManualDriver(){
+	stop();
 }
 
 void ManualDriver::onStart(){
@@ -29,11 +29,20 @@ void ManualDriver::onStop(){
 
 void ManualDriver::buttonPressed(uint i){
 	if(i == BTN_A){
-		if(boostGauge > 0) boostActive = true;
-		Com.sendBoost(boostActive);
+		boostPressed = true;
+		if(dir != 0b0000){
+			if(boostGauge > 0) boostActive = true;
+			Com.sendBoost(boostActive);
+		}
 	}else if(i == BTN_B){
 		Com.sendHonk();
+	}else if(i == BTN_MENU){
+		return;
 	}else{
+		if(boostPressed){
+			if(boostGauge > 0) boostActive = true;
+			Com.sendBoost(boostActive);
+		}
 		switch(i){
 			case BTN_UP:
 				dir |= 0b0001;
@@ -57,8 +66,11 @@ void ManualDriver::buttonPressed(uint i){
 
 void ManualDriver::buttonReleased(uint i){
 	if(i == BTN_A){
-		boostActive = false;
-		Com.sendBoost(boostActive);
+		boostPressed = false;
+		if(boostActive){
+			boostActive = false;
+			Com.sendBoost(boostActive);
+		}
 	}else{
 		switch(i){
 			case BTN_UP:
@@ -76,8 +88,12 @@ void ManualDriver::buttonReleased(uint i){
 			default:
 				break;
 		}
-
 		sendDriveDir();
+	}
+
+	if(dir == 0b0000 && boostActive){
+		boostActive = false;
+		Com.sendBoost(boostActive);
 	}
 }
 

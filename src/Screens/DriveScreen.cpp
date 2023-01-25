@@ -38,7 +38,7 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode), o
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
-		if(driver){
+		if(driver && info->mode == driver->getMode()){
 			driver->onFrame(*info, imgBuf);
 		}
 
@@ -81,6 +81,9 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
+	if(driver){
+		driver->stop();
+	}
 	driver.reset();
 
 	if(newMode == DriveMode::Idle){

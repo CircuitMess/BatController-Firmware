@@ -1,95 +1,155 @@
 #include "PairScreen.h"
 #include <lvgl.h>
 #include <BatController.h>
-#include <Aruco/Aruco.h>
+#include <Com/Communication.h>
+#include <Settings.h>
 #include "DriveScreen.h"
 #include "MainMenu.h"
+#include <string.h>
 
-PairScreen::PairScreen() : LVScreen(){
+PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
+						   input(obj, inputGroup){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
+	lv_obj_set_size(obj, 160, 128);
 
-	bg = lv_obj_create(obj);
-	lv_obj_set_style_bg_color(bg, lv_color_black(), 0);
-	lv_obj_set_style_bg_opa(bg, LV_OPA_COVER, 0);
-	lv_obj_set_size(bg, 160, 128);
-	lv_obj_set_pos(bg, 0, -128);
 
-	buffer = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 49 * Scale * Scale));
+	lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+	lv_obj_set_style_pad_top(obj, 128, 0);
+	lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 
-	canvas = lv_canvas_create(bg);
-	lv_obj_set_pos(canvas, 10, (128 - 7 * Scale) / 2);
-	lv_obj_set_size(canvas, 7 * Scale, 7 * Scale);
-	lv_obj_set_style_bg_color(canvas, lv_palette_darken(LV_PALETTE_BLUE, 2), 0);
-	lv_obj_set_style_bg_opa(canvas, LV_OPA_COVER, 0);
-	lv_canvas_set_buffer(canvas, buffer, 7 * Scale, 7 * Scale, LV_IMG_CF_INDEXED_1BIT);
-	lv_canvas_set_palette(canvas, 0, lv_color_white());
-	lv_canvas_set_palette(canvas, 1, lv_color_black());
+	resetDirect();
 
-	white.full = 0;
-	black.full = 1;
-	lv_canvas_fill_bg(canvas, black, LV_OPA_COVER);
+	scanAruco.setCallback([this](){
+		scanAruco.stop();
+		pair.stop();
 
-	text = lv_label_create(bg);
-	lv_obj_set_size(text, 7 * Scale, 7 * Scale);
-	lv_obj_set_pos(text, 7 * Scale + 20, (128 - 7 * Scale) / 2);
-	lv_obj_set_style_text_color(text, lv_color_white(), 0);
-	lv_obj_set_style_text_font(text, &lv_font_unscii_8 ,0);
-	lv_label_set_text(text, "Scan\nwith\ncamera\nto begin\npairing");
+		input.setNetwork(Settings.get().ssid);
+		input.setPassword(Settings.get().password);
 
-	anim_drop = new lv_anim_t();
-	lv_anim_init(anim_drop);
-	lv_anim_set_var(anim_drop, bg);
-	lv_anim_set_values(anim_drop, -128, 0);
-	lv_anim_set_time(anim_drop, 500);
-	lv_anim_set_repeat_count(anim_drop, 0);
-	lv_anim_set_exec_cb(anim_drop, [](void* var, int32_t v){
-		lv_obj_set_y((_lv_obj_t*) var, v);
+		input.start();
 	});
 
+	input.setCallbackDone([this](std::string ssidInput, std::string passInput){
+		if(ssidInput.size() > 24){
+			ssidInput.resize(24);
+		}
+
+		if(passInput.size() > 23){
+			passInput.resize(23);
+		}
+
+		ssid = std::move(ssidInput);
+		password = std::move(passInput);
+
+		memset(Settings.get().ssid, 0, sizeof(Settings.get().ssid));
+		memset(Settings.get().password, 0, sizeof(Settings.get().password));
+		memcpy(Settings.get().ssid, ssid.c_str(), ssid.size());
+		memcpy(Settings.get().password, password.c_str(), password.size());
+		Settings.store();
+
+
+		pair.start(ssid.c_str(), password.c_str(), false);
+
+		input.stop();
+		connecting.start();
+	});
+
+	input.setCallbackBack([this](){
+		input.stop();
+
+		resetDirect();
+		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
+	});
+
+	error.setCallback([this](){
+		error.stop();
+
+		resetDirect();
+		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
+	});
+
+	scanQR.setCallback([this](){
+		scanQR.stop();
+
+		resetDirect();
+		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
+	});
+
+	pair.setDoneCallback([this](PairError pairError){
+		switch(pairError){
+			case PairError::PairOk:{
+				stop();
+				delete this;
+
+				Com.sendVolume(Settings.get().soundVolume);
+
+				auto mainMenu = new MainMenu();
+				mainMenu->start();
+				break;
+			}
+
+			case PairError::ExternalWiFiTimeout:
+				connecting.stop();
+				scanQR.stop();
+				error.start("Couldn't connect to network.\n\nPress any key.");
+				break;
+
+
+			case PairError::ServerError:
+				connecting.stop();
+				error.start("Couldn't start Com server.\n\nPress any key.");
+				break;
+
+
+			case PairError::ExternalWiFiConnected:
+				connecting.stop();
+				scanQR.start(ssid, password, WiFiService::getIPAddress());
+				break;
+		}
+	});
 }
 
-
 PairScreen::~PairScreen(){
-	free(buffer);
 }
 
 void PairScreen::onStart(){
-	int randID = rand() % 256;
-	Color tempBuffer[7 * 7];
-
-	Aruco::generate(randID, tempBuffer);
-	auto drawRect = [this](uint8_t x, uint8_t y){
-		for(uint32_t locY = y * Scale; locY < y * Scale + Scale; locY++){
-			for(uint32_t locX = x * Scale; locX < x * Scale + Scale; locX++){
-				lv_canvas_set_px(this->canvas, locX, locY, this->white);
-			}
-		}
-	};
-
-	for(uint8_t y = 0; y < 7; y++){
-		for(uint8_t x = 0; x < 7; x++){
-			if(tempBuffer[y * 7 + x] == TFT_BLACK){
-				drawRect(x, y);
-			}
-		}
-	}
-
-	lv_anim_start(anim_drop);
-
-	pair.setDoneCallback([this](){
-		stop();
-		delete this;
-
-		Serial.printf("Paired\n");
-		auto mainMenu = new MainMenu();
-		mainMenu->start();
-	});
-
-	pair.start(randID);
+	resetDirect();
+	scanAruco.start(randID);
+	pair.start(directSSID, directPass, true);
+	lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
 }
 
 void PairScreen::onStop(){
 	pair.stop();
 }
 
+void PairScreen::resetDirect(){
+	randID = rand() % 512;
+	printf("Rand ID: %d\n", randID);
+
+	memcpy(directSSID, "Batmobile ", 10);
+	directSSID[10] = (randID / 100) + '0';
+	directSSID[11] = ((randID / 10) % 10) + '0';
+	directSSID[12] = (randID % 10) + '0';
+	directSSID[13] = '\0';
+
+	memset(directPass, 0, 10);
+	const char* batmobile = "Batmobile";
+	for(int i = 0; i < 9; i++){
+		char temp = batmobile[i];
+		temp = temp + randID * 5 + 16;
+		temp = temp % ('z' - 'A') + 'A';
+		directPass[i] = temp;
+	}
+	directPass[9] = '\0';
+}

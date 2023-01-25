@@ -11,6 +11,7 @@
 #include <WiFi.h>
 #include "src/BatTheme.h"
 #include "src/Screens/IntroScreen.h"
+#include "src/ShutdownService.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
@@ -55,13 +56,14 @@ void setup(){
 	displayDriver.flush_cb = lvglFlush;
 	displayDriver.draw_buf = &drawBuffer;
 	lv_disp_t * disp = lv_disp_drv_register(&displayDriver);
-//	BatThemeInit(disp);
+	BatThemeInit(disp);
 
 	BatController.getInput()->addListener(new InputLVGL());
 
 	auto intro = new IntroScreen([](){
 		WiFi.begin();
 		Com.begin();
+		AutoShutdown.begin();
 	});
 	intro->start();
 	lv_timer_handler();
