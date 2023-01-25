@@ -108,7 +108,7 @@ void SimpleProgDriver::loop(uint micros){
 	if(currentAction.type == Simple::Action::Type::Drive && actionExecuted){
 		actionTimer += micros;
 		if(actionTimer >= currentAction.DriveData.duration * 100000){
-			actionCursor++;
+            nextAction();
 			actionTimer = 0;
 			actionExecuted = false;
 			Com.sendDriveDir((uint8_t) DriveDirection::None);
@@ -117,7 +117,7 @@ void SimpleProgDriver::loop(uint micros){
 	}else if(currentAction.type == Simple::Action::Type::Delay && actionExecuted){
 		actionTimer += micros;
 		if(actionTimer >= currentAction.DelayData.duration * 100000){
-			actionCursor++;
+            nextAction();
 			actionTimer = 0;
 			actionExecuted = false;
 			return;
@@ -136,17 +136,17 @@ void SimpleProgDriver::loop(uint micros){
 
 			case Simple::Action::Type::Headlights:
 				Com.sendHeadlights(currentAction.HeadTaillightData.toggle ? 255 : 0);
-				actionCursor++;
+                nextAction();
 				break;
 
 			case Simple::Action::Type::Taillights:
 				Com.sendTaillights(currentAction.HeadTaillightData.toggle ? 255 : 0);
-				actionCursor++;
+                nextAction();
 				break;
 
 			case Simple::Action::Type::Underlights:
 				Com.sendUnderlights(currentAction.RGBData.colorID);
-				actionCursor++;
+                nextAction();
 				break;
 
 			case Simple::Action::Type::Sound:
@@ -159,4 +159,16 @@ void SimpleProgDriver::loop(uint micros){
 				break;
 		}
 	}
+}
+
+void SimpleProgDriver::nextAction() {
+    lv_obj_t* tmp = lv_obj_get_child(panel, actionCursor);
+    lv_obj_set_style_text_color(lv_obj_get_child(tmp, 1), lv_color_white(), 0);
+    lv_obj_remove_style(lv_obj_get_child(tmp, 0), &border, 0);
+
+    actionCursor++;
+    lv_obj_scroll_to(panel,0, actionCursor * 20, LV_ANIM_ON);
+    tmp = lv_obj_get_child(panel, actionCursor);
+    lv_obj_set_style_text_color(lv_obj_get_child(tmp, 1), lv_color_make(255,0,0), 0);
+    lv_obj_add_style(lv_obj_get_child(tmp, 0), &border, 0);
 }

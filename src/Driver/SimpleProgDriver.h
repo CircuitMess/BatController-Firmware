@@ -19,6 +19,7 @@ protected:
 
 private:
 	void loop(uint micros) override;
+    void nextAction();
 
     lv_obj_t* panel;
     lv_style_t border;
