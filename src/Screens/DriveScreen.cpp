@@ -37,7 +37,7 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
-		if(driver){
+		if(driver && info->mode == driver->getMode()){
 			driver->onFrame(*info, imgBuf);
 		}
 
