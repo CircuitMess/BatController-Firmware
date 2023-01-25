@@ -29,5 +29,27 @@ private:
 
 };
 
+static const char* DirectionSymbols[4] = { LV_SYMBOL_UP, LV_SYMBOL_DOWN, LV_SYMBOL_LEFT, LV_SYMBOL_RIGHT };
+static const uint8_t SoundsNum = 14;
+static const char* SoundNames[SoundsNum] = {
+        "autopilot",
+        "autopilotSlow",
+        "beep",
+        "boostOff",
+        "boostOn",
+        "boostTurn",
+        "disconnect",
+        "driverExit",
+        "driverStart",
+        "honk",
+        "manual",
+        "manualSlow",
+        "paired",
+        "scan"
+};
+static const uint8_t ColorsNum = 5;
+static const char* ColorNames[ColorsNum] = {
+        "Off", "Red", "Green", "Blue", "White"
+};
 
 #endif //BATCONTROLLER_FIRMWARE_ACTIONEDITMODAL_H
