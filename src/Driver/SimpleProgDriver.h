@@ -19,6 +19,9 @@ protected:
 
 private:
 	void loop(uint micros) override;
+
+    lv_obj_t* panel;
+    lv_style_t border;
 	std::unique_ptr<Simple::Program> program;
 
 	bool inited = false;
