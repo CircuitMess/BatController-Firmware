@@ -7,12 +7,13 @@
 #include "MainMenu.h"
 #include <string.h>
 
-PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
+PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
 						   input(obj, inputGroup){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 	lv_obj_set_size(obj, 160, 128);
 
+	this->disconnect = disconnect;
 
 	lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
 
