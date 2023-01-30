@@ -235,16 +235,14 @@ void MainMenu::launch() {
 		}
 
         auto info = std::move(menu->infoElement);
-        auto tempScreen = new LVScreen();
-        lv_obj_set_parent(info->getLvObj(), tempScreen->getLvObj());
+		auto tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
 
 		delete menu;
 
-		auto screen = launcher();
-        auto ds = reinterpret_cast<DriveScreen*>(screen);
-        lv_obj_set_parent(info->getLvObj(), ds->getLvObj());
-        delete tempScreen;
-        ds->setInfoElement(std::move(info));
+		DriveScreen* screen = reinterpret_cast<DriveScreen*>(launcher());
+        screen->setInfoElement(std::move(info));
+		lv_obj_del(tmpScr);
         screen->start();
 
 	}, 500, this);
@@ -277,6 +275,12 @@ void MainMenu::buttonPressed(uint i) {
 }
 
 void MainMenu::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
     this->infoElement = std::move(infoElement);
     this->infoElement->setMode(DriveMode::Idle);
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }

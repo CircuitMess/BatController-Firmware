@@ -110,15 +110,15 @@ void DriveScreen::buttonPressed(uint i){
 	if(i != BTN_MENU) return;
 
     auto info = std::move(infoElement);
-    auto tempScreen = new LVScreen();
-    lv_obj_set_parent(info->getLvObj(), tempScreen->getLvObj());
+	auto tmpScr = lv_obj_create(nullptr);
+	lv_obj_set_parent(info->getLvObj(), tmpScr);
 
 	stop();
 	delete this;
 
 	auto mainMenu = new MainMenu();
     mainMenu->setInfoElement(std::move(info));
-    delete tempScreen;
+    lv_obj_del(tmpScr);
     mainMenu->start();
 }
 
@@ -131,6 +131,13 @@ void DriveScreen::onDisconnected(){
 }
 
 void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
     this->infoElement = std::move(infoElement);
     this->infoElement->setMode(currentMode);
+	this->infoElement->getLvObj();
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }
