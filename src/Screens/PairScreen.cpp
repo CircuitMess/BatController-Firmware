@@ -92,6 +92,7 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 				Com.sendVolume(Settings.get().soundVolume);
 
 				auto mainMenu = new MainMenu();
+				mainMenu->setInfoElement(std::make_unique<GeneralInfoElement>(mainMenu->getLvObj()));
 				mainMenu->start();
 				break;
 			}

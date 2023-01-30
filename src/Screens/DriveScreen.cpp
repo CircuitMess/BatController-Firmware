@@ -10,10 +10,7 @@
 #include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
-	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
-	lv_obj_set_pos(infoElement.getLvObj(), 0, 0);
-
+DriveScreen::DriveScreen(DriveMode mode) : LVScreen(){
 	img = lv_img_create(obj);
 	lv_obj_set_size(img, 160, 120);
 	lv_obj_add_flag(img, LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -55,6 +52,10 @@ DriveScreen::~DriveScreen(){
 }
 
 void DriveScreen::onStarting(){
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), currentMode);
+	}
+
 	memset(imgBuf, 0, 160 * 120 * 2);
 }
 
@@ -108,11 +109,17 @@ void DriveScreen::setMode(DriveMode newMode){
 void DriveScreen::buttonPressed(uint i){
 	if(i != BTN_MENU) return;
 
+    auto info = std::move(infoElement);
+	auto tmpScr = lv_obj_create(nullptr);
+	lv_obj_set_parent(info->getLvObj(), tmpScr);
+
 	stop();
 	delete this;
 
 	auto mainMenu = new MainMenu();
-	mainMenu->start();
+    mainMenu->setInfoElement(std::move(info));
+    lv_obj_del(tmpScr);
+    mainMenu->start();
 }
 
 void DriveScreen::onDisconnected(){
@@ -121,4 +128,16 @@ void DriveScreen::onDisconnected(){
 
 	auto pair = new PairScreen();
 	pair->start();
+}
+
+void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
+    this->infoElement = std::move(infoElement);
+    this->infoElement->setMode(currentMode);
+	this->infoElement->getLvObj();
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }

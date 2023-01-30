@@ -21,6 +21,8 @@ public:
 	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
+    void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
+
 
 private:
 	void onDisconnected() override;
@@ -38,7 +40,7 @@ private:
 	lv_img_dsc_t imgDsc {};
 	Color* imgBuf = nullptr;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
 };
 
 
