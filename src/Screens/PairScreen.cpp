@@ -15,8 +15,6 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 
 
 	lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
-	lv_obj_set_style_pad_top(obj, 128, 0);
-	lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 
 	resetDirect();
 
@@ -122,11 +120,13 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 PairScreen::~PairScreen(){
 }
 
-void PairScreen::onStart(){
+void PairScreen::onStarting(){
 	resetDirect();
 	scanAruco.start(randID);
+}
+
+void PairScreen::onStart(){
 	pair.start(directSSID, directPass, true);
-	lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
 }
 
 void PairScreen::onStop(){

@@ -40,9 +40,10 @@ void IntroScreen::loop(uint micros){
         lv_scr_load(scr);
 
 		auto pair = new PairScreen();
-        LoopManager::defer([pair](uint32_t){
-            lv_obj_del(lv_scr_act());
-            pair->start();
+        LoopManager::defer([pair, scr](uint32_t){
+            pair->start(true, LV_SCR_LOAD_ANIM_FADE_ON);
+			auto timer = lv_timer_create([](lv_timer_t* timer){ lv_obj_del((lv_obj_t*) timer->user_data); }, 600, scr);
+			lv_timer_set_repeat_count(timer, 1);
         });
 		return;
 	}
