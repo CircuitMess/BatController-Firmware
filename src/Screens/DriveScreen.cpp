@@ -7,6 +7,7 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include "MainMenu.h"
+#include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 
 DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode){
@@ -90,7 +91,7 @@ void DriveScreen::setMode(DriveMode newMode){
 			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
 			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
 			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer, screen); }},
-			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
+			{ DriveMode::Dance,  [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<DanceDriver>(elementContainer); }}
 	};
 
 	auto starter = Starters.at(newMode);
