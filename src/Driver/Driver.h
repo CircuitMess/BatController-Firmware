@@ -14,9 +14,17 @@ public:
 
 	virtual void onFrame(const DriveInfo& frame, Color* pixels);
 
+	DriveMode getMode() const;
+
 protected:
+	Driver(DriveMode mode);
+
 	virtual void onStart(){};
 	virtual void onStop(){};
+
+private:
+	DriveMode mode;
+
 };
 
 

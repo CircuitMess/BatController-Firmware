@@ -7,6 +7,7 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include "MainMenu.h"
+#include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 
 DriveScreen::DriveScreen(DriveMode mode) : LVScreen(){
@@ -34,7 +35,7 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(){
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
-		if(driver){
+		if(driver && info->mode == driver->getMode()){
 			driver->onFrame(*info, imgBuf);
 		}
 
@@ -72,6 +73,9 @@ void DriveScreen::onStop(){
 
 void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == currentMode) return;
+	if(driver){
+		driver->stop();
+	}
 	driver.reset();
 
 	if(newMode == DriveMode::Idle){
@@ -84,7 +88,7 @@ void DriveScreen::setMode(DriveMode newMode){
 			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
 			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
 			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer, screen); }},
-			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
+			{ DriveMode::Dance,  [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<DanceDriver>(elementContainer); }}
 	};
 
 	auto starter = Starters.at(newMode);

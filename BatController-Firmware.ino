@@ -56,7 +56,7 @@ void setup(){
 	displayDriver.flush_cb = lvglFlush;
 	displayDriver.draw_buf = &drawBuffer;
 	lv_disp_t * disp = lv_disp_drv_register(&displayDriver);
-//	BatThemeInit(disp);
+	BatThemeInit(disp);
 
 	BatController.getInput()->addListener(new InputLVGL());
 

@@ -194,8 +194,11 @@ start:
 		}
 
 		jpeg.openRAM((uint8_t*) (frame->frame.data), frame->frame.size, [](JPEGDRAW* data) -> int{
-			size_t offset = (data->x + data->y * 160) * (data->iBpp / 8);
-			memcpy((uint8_t*) data->pUser + offset, data->pPixels, data->iWidth * data->iHeight * (data->iBpp / 8));
+			for(int y = data->y, iy = 0; y < data->y + data->iHeight; y++, iy++){
+				size_t offset = y * 160 + data->x;
+				size_t ioffset = iy * data->iWidth;
+				memcpy((uint8_t*) data->pUser + offset*2, (uint8_t*) data->pPixels + ioffset*2, data->iWidth * 2);
+			}
 			return 1;
 		});
 

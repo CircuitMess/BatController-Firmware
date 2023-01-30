@@ -7,7 +7,7 @@
 
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
-        {"Line",     0},
+        {"Dance",     0},
         {"Ball",     0},
         {"Marker",   0},
         {"Settings", 0},
@@ -45,6 +45,7 @@ MainMenu::MainMenu() : LVScreen() {
 	lv_obj_set_pos(midContainer, 0, 8);
 	lv_obj_set_size(midContainer, 147, 120);
 	lv_obj_set_style_pad_top(midContainer, 120, 0);
+	lv_obj_set_scrollbar_mode(midContainer, LV_SCROLLBAR_MODE_OFF);
 
     lv_obj_set_size(mid, 147, 120);
     lv_obj_set_scrollbar_mode(mid, LV_SCROLLBAR_MODE_OFF);
@@ -209,7 +210,7 @@ void MainMenu::launch() {
 
 		static LVScreen *(*screens[])() = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
-				[]() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
 				[]() -> LVScreen * { return new SettingsScreen(); }

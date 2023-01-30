@@ -13,10 +13,6 @@ public:
 	void stop();
 
 	/**
-	* @param speed [0-100]
-	*/
-	void setSpeed(uint8_t speed);
-	/**
 	 * @param angle [0-360]
 	 * it could be any number, positive or negative
 	 * or out of the range, the code will set it
@@ -32,6 +28,11 @@ private:
 	SpeedModal speedModal;
 
 	void buttonPressed(uint i) override;
+
+	/**
+	* @param speed [0-100]
+	*/
+	void setSpeed(uint8_t speed);
 };
 
 
