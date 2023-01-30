@@ -4,8 +4,6 @@
 DanceElement::DanceElement(lv_obj_t *parent) : LVObject(parent) {
     lv_obj_set_size(obj, 110, 20);
     lv_obj_set_pos(obj, 25, 95);
-    lv_obj_set_style_bg_opa(obj, LV_OPA_60, LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
 
     arrowL = lv_img_create(obj);
     lv_img_set_src(arrowL, LV_SYMBOL_LEFT);
