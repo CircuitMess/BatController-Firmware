@@ -7,7 +7,7 @@
 
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
-        {"Line",     0},
+        {"Dance",     0},
         {"Ball",     0},
         {"Marker",   0},
         {"Settings", 0},
@@ -212,7 +212,7 @@ void MainMenu::launch() {
 
 		static LVScreen *(*screens[])() = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
-				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); }, //TODO: add an icon for Dance
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
 				[]() -> LVScreen * { return new SettingsScreen(); }
