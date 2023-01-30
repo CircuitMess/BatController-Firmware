@@ -3,12 +3,12 @@
 #include <Input/Input.h>
 #include <Com/Communication.h>
 
-DanceDriver::DanceDriver(lv_obj_t *elementContainer) : dance(new DanceElement(elementContainer)){
+DanceDriver::DanceDriver(lv_obj_t *elementContainer) : Driver(DriveMode::Dance), dance(new DanceElement(elementContainer)){
     dance->setCurrentDance((DanceType)danceIndex);
 }
 
 DanceDriver::~DanceDriver() {
-
+	stop();
 }
 
 void DanceDriver::onStart() {
