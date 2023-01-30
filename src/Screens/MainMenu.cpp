@@ -47,6 +47,7 @@ MainMenu::MainMenu() : LVScreen() {
 	lv_obj_set_pos(midContainer, 0, 8);
 	lv_obj_set_size(midContainer, 147, 120);
 	lv_obj_set_style_pad_top(midContainer, 120, 0);
+	lv_obj_set_scrollbar_mode(midContainer, LV_SCROLLBAR_MODE_OFF);
 
     lv_obj_set_size(mid, 147, 120);
     lv_obj_set_scrollbar_mode(mid, LV_SCROLLBAR_MODE_OFF);
