@@ -135,6 +135,10 @@ void MainMenu::setRed(uint8_t index, bool reverse) {
 }
 
 void MainMenu::onStarting() {
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj());
+	}
+
     if (bigs.empty()) {
         loadGIFs();
     } else {

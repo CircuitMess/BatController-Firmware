@@ -52,6 +52,10 @@ DriveScreen::~DriveScreen(){
 }
 
 void DriveScreen::onStarting(){
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), currentMode);
+	}
+
 	memset(imgBuf, 0, 160 * 120 * 2);
 }
 
