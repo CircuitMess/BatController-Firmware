@@ -6,6 +6,7 @@
 #include "DriveScreen.h"
 #include "MainMenu.h"
 #include <string.h>
+#include "../Elements/MessageModal.h"
 
 PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
 						   input(obj, inputGroup){
@@ -129,6 +130,10 @@ void PairScreen::onStarting(){
 
 void PairScreen::onStart(){
 	pair.start(directSSID, directPass, true);
+	if(disconnect){
+		auto modal  = new MessageModal(this, "Connection\n   lost");
+		modal->start();
+	}
 }
 
 void PairScreen::onStop(){
