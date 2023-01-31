@@ -131,7 +131,7 @@ void PairScreen::onStarting(){
 void PairScreen::onStart(){
 	pair.start(directSSID, directPass, true);
 	if(disconnect){
-		auto modal  = new MessageModal(this, "Connection\n   lost");
+		auto modal  = new MessageModal(this, "LINK\nERROR");
 		modal->start();
 	}
 }
