@@ -37,10 +37,6 @@ private:
 	DriveMode currentMode = DriveMode::Idle;
 	std::unique_ptr<Driver> driver;
 
-	DriveMode previousMode = DriveMode::Idle;
-	void hideOverrideElement();
-	void showOverrideElement();
-
 	Feed feed;
 	lv_obj_t* driverLayer;
 
@@ -52,13 +48,15 @@ private:
 
 	OverrideElement overrideElement;
 
-	uint8_t overridePercent = 0;
-	uint32_t overrideCounter = 0;
-	static constexpr uint32_t OverrideTime = 100000;
+	DriveMode originalMode = DriveMode::Idle;
+	void hideOverrideElement();
+	void showOverrideElement();
 
-	uint32_t showElementCounter = 0;
-	static constexpr uint32_t ShowElementTime = 500000;
-	bool elementHidden = true;
+	static constexpr uint32_t OverrideDuration = 3000; // [ms]
+	static constexpr uint32_t OverrideShowDuration = 600; // [ms]
+	uint32_t overrideTime = 0;
+	bool overrideShown = false;
+	bool overrideDone = false;
 };
 
 

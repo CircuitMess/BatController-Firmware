@@ -43,6 +43,10 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
 		lv_obj_invalidate(img);
 	});
 
+	if(mode != DriveMode::Manual && mode != DriveMode::Idle){
+		originalMode = mode;
+	}
+
 	// If mode is idle, do nothing (setMode returns early)
 	setMode(mode);
 
@@ -115,8 +119,10 @@ void DriveScreen::setMode(DriveMode newMode){
 
 void DriveScreen::buttonPressed(uint i){
 	if(i == BTN_B){
-		if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
+		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
 		LoopManager::addListener(this);
+		overrideTime = millis();
+		overrideDone = false;
 	}else if(i == BTN_MENU){
 		auto info = std::move(infoElement);
 		auto tmpScr = lv_obj_create(nullptr);
@@ -134,10 +140,11 @@ void DriveScreen::buttonPressed(uint i){
 
 void DriveScreen::buttonReleased(uint i){
 	if(i == BTN_B){
-		if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
+		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
 		LoopManager::removeListener(this);
 		hideOverrideElement();
-
+		overrideTime = 0;
+		overrideDone = false;
 	}
 }
 
@@ -162,27 +169,42 @@ void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement
 }
 
 void DriveScreen::loop(uint micros){
-	overrideCounter += micros;
-	if(elementHidden){
-		showElementCounter += micros;
-		if(showElementCounter >= ShowElementTime){
+	if(overrideTime == 0){
+		LoopManager::removeListener(this);
+		hideOverrideElement();
+		return;
+	}
+
+	uint32_t t = millis();
+	const uint8_t perc = constrain(100 * (t - (overrideTime + OverrideShowDuration)) / (OverrideDuration - OverrideShowDuration), 0, 100);
+
+	if(t - overrideTime >= OverrideShowDuration){
+		if(!overrideShown){
 			showOverrideElement();
 		}
+
+		overrideElement.fill(perc);
 	}
-	if(overrideCounter >= OverrideTime){
-		overrideCounter = 0;
-		overridePercent += 5;
-		overrideElement.fill(overridePercent);
-		if(overridePercent >= 115){
-            LoopManager::removeListener(this);
-            if(currentMode != DriveMode::Manual){
-                previousMode = currentMode;
-                setMode(DriveMode::Manual);
-            }else{
-                setMode(previousMode);
-            }
-            hideOverrideElement();
-            return;
+
+	if(t - overrideTime >= (OverrideDuration + 100) && perc >= 100){
+		if(!overrideDone){
+			overrideDone = true;
+			return;
+		}
+
+		hideOverrideElement();
+		overrideTime = 0;
+		overrideDone = false;
+		LoopManager::removeListener(this);
+
+		if(currentMode == DriveMode::Manual){
+			setMode(originalMode);
+		}else{
+			setMode(DriveMode::Manual);
+		}
+
+		if(driver){
+			driver->start();
 		}
 	}
 }
@@ -193,14 +215,12 @@ void DriveScreen::showOverrideElement() {
     }else{
         overrideElement.setText(overrideText::Manual);
     }
+
     lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
-    elementHidden = false;
+    overrideShown = true;
 }
 
 void DriveScreen::hideOverrideElement(){
-	overridePercent = 0;
-	overrideElement.fill(overridePercent);
 	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
-	elementHidden = true;
-	showElementCounter = 0;
+	overrideShown = false;
 }
