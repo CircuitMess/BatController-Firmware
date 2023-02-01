@@ -1,7 +1,7 @@
 #include "MarkerDriver.h"
 
-MarkerDriver::MarkerDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode::Marker), autoControls(container, screen),
-																	markerElement(container, MarkerAction::None){
+MarkerDriver::MarkerDriver(lv_obj_t* container) : Driver(DriveMode::Marker), autoControls(container), markerElement(container, MarkerAction::None){
+
 }
 
 MarkerDriver::~MarkerDriver(){
