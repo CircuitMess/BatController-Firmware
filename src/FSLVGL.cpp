@@ -19,6 +19,8 @@ const char* FSLVGL::cached[] = {
         "/Menu/Label/Manual.bin",
         "/Menu/Label/Marker.bin",
         "/Menu/Label/Settings.bin",
+		"/DriveScreen/SpeedBar.bin",
+		"/DriveScreen/SpeedBarFill.bin"
 };
 
 std::unordered_map<std::string, fs::File*> FSLVGL::cache;
