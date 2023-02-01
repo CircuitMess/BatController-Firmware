@@ -38,6 +38,9 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	conBatIndex = Battery.getLevel();
 	conBat->setLevel(conBatIndex);
 
+	lv_obj_add_flag(obj, LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_set_pos(obj, 0, 0);
+
 	Com.addListener(this);
 	LoopManager::addListener(this);
 }
