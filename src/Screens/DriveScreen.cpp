@@ -95,6 +95,9 @@ void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == DriveMode::Idle){
 		currentMode = newMode;
 		Com.sendDriveMode(DriveMode::Idle);
+		if(infoElement){
+			infoElement->setMode(DriveMode::Idle);
+		}
 		return;
 	}
 
@@ -109,12 +112,17 @@ void DriveScreen::setMode(DriveMode newMode){
 	if(!starter || (driver = starter(driverLayer, this)) == nullptr){
 		currentMode = DriveMode::Idle;
 		Com.sendDriveMode(currentMode);
+		if(infoElement){
+			infoElement->setMode(DriveMode::Idle);
+		}
 		return;
 	}
 
 	currentMode = newMode;
 	Com.sendDriveMode(currentMode);
-    infoElement.setMode(currentMode);
+	if(infoElement){
+		infoElement->setMode(currentMode);
+	}
 }
 
 void DriveScreen::buttonPressed(uint i){
@@ -164,7 +172,6 @@ void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement
 
     this->infoElement = std::move(infoElement);
     this->infoElement->setMode(currentMode);
-	this->infoElement->getLvObj();
 	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }
 
