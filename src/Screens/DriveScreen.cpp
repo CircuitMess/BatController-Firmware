@@ -9,8 +9,9 @@
 #include "MainMenu.h"
 #include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
+#include <Loop/LoopManager.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(){
+DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
 	img = lv_img_create(obj);
 	lv_obj_set_size(img, 160, 120);
 	lv_obj_add_flag(img, LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -42,8 +43,17 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(){
 		lv_obj_invalidate(img);
 	});
 
+	if(mode != DriveMode::Manual && mode != DriveMode::Idle){
+		originalMode = mode;
+	}
+
 	// If mode is idle, do nothing (setMode returns early)
 	setMode(mode);
+
+	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_align(overrideElement.getLvObj(), LV_ALIGN_CENTER, 0, 0);
+	lv_obj_move_foreground(overrideElement.getLvObj());
+	hideOverrideElement();
 }
 
 DriveScreen::~DriveScreen(){
@@ -85,6 +95,9 @@ void DriveScreen::setMode(DriveMode newMode){
 	if(newMode == DriveMode::Idle){
 		currentMode = newMode;
 		Com.sendDriveMode(DriveMode::Idle);
+		if(infoElement){
+			infoElement->setMode(DriveMode::Idle);
+		}
 		return;
 	}
 
@@ -99,27 +112,48 @@ void DriveScreen::setMode(DriveMode newMode){
 	if(!starter || (driver = starter(driverLayer, this)) == nullptr){
 		currentMode = DriveMode::Idle;
 		Com.sendDriveMode(currentMode);
+		if(infoElement){
+			infoElement->setMode(DriveMode::Idle);
+		}
 		return;
 	}
 
 	currentMode = newMode;
 	Com.sendDriveMode(currentMode);
+	if(infoElement){
+		infoElement->setMode(currentMode);
+	}
 }
 
 void DriveScreen::buttonPressed(uint i){
-	if(i != BTN_MENU) return;
+	if(i == BTN_B){
+		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
+		LoopManager::addListener(this);
+		overrideTime = millis();
+		overrideDone = false;
+	}else if(i == BTN_MENU){
+		auto info = std::move(infoElement);
+		auto tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
 
-    auto info = std::move(infoElement);
-	auto tmpScr = lv_obj_create(nullptr);
-	lv_obj_set_parent(info->getLvObj(), tmpScr);
+		stop();
+		delete this;
 
-	stop();
-	delete this;
+		auto mainMenu = new MainMenu();
+		mainMenu->setInfoElement(std::move(info));
+		lv_obj_del(tmpScr);
+		mainMenu->start();
+	}
+}
 
-	auto mainMenu = new MainMenu();
-    mainMenu->setInfoElement(std::move(info));
-    lv_obj_del(tmpScr);
-    mainMenu->start();
+void DriveScreen::buttonReleased(uint i){
+	if(i == BTN_B){
+		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
+		LoopManager::removeListener(this);
+		hideOverrideElement();
+		overrideTime = 0;
+		overrideDone = false;
+	}
 }
 
 void DriveScreen::onDisconnected(){
@@ -138,6 +172,62 @@ void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement
 
     this->infoElement = std::move(infoElement);
     this->infoElement->setMode(currentMode);
-	this->infoElement->getLvObj();
 	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
+}
+
+void DriveScreen::loop(uint micros){
+	if(overrideTime == 0){
+		LoopManager::removeListener(this);
+		hideOverrideElement();
+		return;
+	}
+
+	uint32_t t = millis();
+	const uint8_t perc = constrain(100 * (t - (overrideTime + OverrideShowDuration)) / (OverrideDuration - OverrideShowDuration), 0, 100);
+
+	if(t - overrideTime >= OverrideShowDuration){
+		if(!overrideShown){
+			showOverrideElement();
+		}
+
+		overrideElement.fill(perc);
+	}
+
+	if(t - overrideTime >= (OverrideDuration + 100) && perc >= 100){
+		if(!overrideDone){
+			overrideDone = true;
+			return;
+		}
+
+		hideOverrideElement();
+		overrideTime = 0;
+		overrideDone = false;
+		LoopManager::removeListener(this);
+
+		if(currentMode == DriveMode::Manual){
+			setMode(originalMode);
+		}else{
+			setMode(DriveMode::Manual);
+		}
+
+		if(driver){
+			driver->start();
+		}
+	}
+}
+
+void DriveScreen::showOverrideElement() {
+    if(currentMode == DriveMode::Manual){
+        overrideElement.setText(overrideText::Auto);
+    }else{
+        overrideElement.setText(overrideText::Manual);
+    }
+
+    lv_obj_clear_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+    overrideShown = true;
+}
+
+void DriveScreen::hideOverrideElement(){
+	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
+	overrideShown = false;
 }
