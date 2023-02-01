@@ -31,7 +31,8 @@ OverrideElement::OverrideElement(lv_obj_t* parent) : LVObject(parent){
 OverrideElement::~OverrideElement(){}
 
 void OverrideElement::fill(uint8_t percent){
-	lv_slider_set_value(slider, map(percent, 0, 100, 0, sliderRange), LV_ANIM_ON);
+	lv_slider_set_value(slider, map(percent, 0, 100, 0, sliderRange), LV_ANIM_OFF);
+	lv_obj_invalidate(slider);
 }
 
 void OverrideElement::setText(overrideText oText){
