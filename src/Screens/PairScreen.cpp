@@ -15,8 +15,6 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 
 
 	lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
-	lv_obj_set_style_pad_top(obj, 128, 0);
-	lv_obj_scroll_to_y(obj, 0, LV_ANIM_OFF);
 
 	resetDirect();
 
@@ -88,13 +86,23 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 	pair.setDoneCallback([this](PairError pairError){
 		switch(pairError){
 			case PairError::PairOk:{
+				auto scr = lv_obj_create(nullptr);
+				lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
+				lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
+				lv_scr_load(scr);
+				lv_timer_handler();
+
 				stop();
 				delete this;
 
+				BatController.setBrightness(Settings.get().screenBrightness);
 				Com.sendVolume(Settings.get().soundVolume);
 
 				auto mainMenu = new MainMenu();
+				mainMenu->setInfoElement(std::make_unique<GeneralInfoElement>(mainMenu->getLvObj()));
 				mainMenu->start();
+
+				lv_obj_del(scr);
 				break;
 			}
 
@@ -122,11 +130,13 @@ PairScreen::PairScreen() : LVScreen(), scanAruco(obj, inputGroup), connecting(ob
 PairScreen::~PairScreen(){
 }
 
-void PairScreen::onStart(){
+void PairScreen::onStarting(){
 	resetDirect();
 	scanAruco.start(randID);
+}
+
+void PairScreen::onStart(){
 	pair.start(directSSID, directPass, true);
-	lv_obj_scroll_to_y(obj, 128, LV_ANIM_ON);
 }
 
 void PairScreen::onStop(){

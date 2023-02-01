@@ -3,7 +3,7 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 
-BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode::Ball), autoControls(container, screen), hueElement(container, 110),
+BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode::Ball), autoControls(container), hueElement(container, 110),
 																hueModal(screen, [this](uint8_t hue){
 																	hueElement.setHue(hue);
 																	Com.sendBallHue(hue);

@@ -22,20 +22,24 @@ public:
 	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
+    void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
+
 
 private:
 	void onDisconnected() override;
+
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
+
 	void loop(uint micros) override;
 
 	void setMode(DriveMode mode);
-	void hideOverrideElement();
-    void showOverrideElement();
-
 	DriveMode currentMode = DriveMode::Idle;
-	DriveMode previousMode = DriveMode::Idle;
 	std::unique_ptr<Driver> driver;
+
+	DriveMode previousMode = DriveMode::Idle;
+	void hideOverrideElement();
+	void showOverrideElement();
 
 	Feed feed;
 	lv_obj_t* driverLayer;
@@ -44,7 +48,8 @@ private:
 	lv_img_dsc_t imgDsc {};
 	Color* imgBuf = nullptr;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
+
 	OverrideElement overrideElement;
 
 	uint8_t overridePercent = 0;

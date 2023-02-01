@@ -397,16 +397,6 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
 	if(lv_obj_check_type(obj, &lv_obj_class)){
 		// lv_obj_add_style(obj, &styles->card, 0);
 		lv_obj_add_style(obj, &styles->scrollbar, LV_PART_SCROLLBAR);
-	}
-	else if(lv_obj_check_type(obj, &lv_slider_class)){
-		lv_obj_add_style(obj, &styles->bg_color_primary_muted, 0);
-		lv_obj_add_style(obj, &styles->circle, 0);
-		lv_obj_add_style(obj, &styles->outline_primary, LV_STATE_FOCUS_KEY);
-		lv_obj_add_style(obj, &styles->outline_secondary, LV_STATE_EDITED);
-		lv_obj_add_style(obj, &styles->bg_color_primary, LV_PART_INDICATOR);
-		lv_obj_add_style(obj, &styles->circle, LV_PART_INDICATOR);
-		lv_obj_add_style(obj, &styles->knob, LV_PART_KNOB);
-
 	}else if(lv_obj_check_type(obj, &lv_switch_class)) {
 		lv_obj_add_style(obj, &styles->bg_color_grey, 0);
 		lv_obj_add_style(obj, &styles->circle, 0);

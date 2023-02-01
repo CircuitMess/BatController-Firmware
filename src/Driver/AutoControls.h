@@ -8,24 +8,14 @@
 
 class AutoControls : private InputListener {
 public:
-	AutoControls(lv_obj_t* container, LVScreen* parentScreen);
+	AutoControls(lv_obj_t* container);
 	void start();
 	void stop();
 
-	/**
-	 * @param angle [0-360]
-	 * it could be any number, positive or negative
-	 * or out of the range, the code will set it
-	 * in range
-	 */
-	void setDirection(float angle);
-
 	void setDirection(MotorInfo motors);
-
 
 private:
 	DriveDirectionElement dirElement;
-	SpeedModal speedModal;
 
 	void buttonPressed(uint i) override;
 

@@ -7,13 +7,11 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include "MainMenu.h"
+#include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 #include <Loop/LoopManager.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), infoElement(obj, mode), overrideElement(obj){
-	lv_obj_add_flag(infoElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
-	lv_obj_set_pos(infoElement.getLvObj(), 0, 0);
-
+DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
 	img = lv_img_create(obj);
 	lv_obj_set_size(img, 160, 120);
 	lv_obj_add_flag(img, LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -60,6 +58,10 @@ DriveScreen::~DriveScreen(){
 }
 
 void DriveScreen::onStarting(){
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), currentMode);
+	}
+
 	memset(imgBuf, 0, 160 * 120 * 2);
 }
 
@@ -95,8 +97,8 @@ void DriveScreen::setMode(DriveMode newMode){
 	static const std::map<DriveMode, std::function<std::unique_ptr<Driver>(lv_obj_t* elementContainer, LVScreen* screen)>> Starters = {
 			{ DriveMode::Manual, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<ManualDriver>(elementContainer); }},
 			{ DriveMode::Ball,   [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<BallDriver>(elementContainer, screen); }},
-			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer, screen); }},
-			{ DriveMode::Line,   [](lv_obj_t* elementContainer, LVScreen* screen){ return nullptr; }}
+			{ DriveMode::Marker, [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<MarkerDriver>(elementContainer); }},
+			{ DriveMode::Dance,  [](lv_obj_t* elementContainer, LVScreen* screen){ return std::make_unique<DanceDriver>(elementContainer); }}
 	};
 
 	auto starter = Starters.at(newMode);
@@ -109,18 +111,23 @@ void DriveScreen::setMode(DriveMode newMode){
 	currentMode = newMode;
 	Com.sendDriveMode(currentMode);
     infoElement.setMode(currentMode);
-    driver->start();
 }
 
 void DriveScreen::buttonPressed(uint i){
 	if(i == BTN_B){
-			if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
-			LoopManager::addListener(this);
+		if(currentMode == DriveMode::Manual && previousMode == DriveMode::Idle) return;
+		LoopManager::addListener(this);
 	}else if(i == BTN_MENU){
+		auto info = std::move(infoElement);
+		auto tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
+
 		stop();
 		delete this;
 
 		auto mainMenu = new MainMenu();
+		mainMenu->setInfoElement(std::move(info));
+		lv_obj_del(tmpScr);
 		mainMenu->start();
 	}
 }
@@ -140,6 +147,18 @@ void DriveScreen::onDisconnected(){
 
 	auto pair = new PairScreen();
 	pair->start();
+}
+
+void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
+    this->infoElement = std::move(infoElement);
+    this->infoElement->setMode(currentMode);
+	this->infoElement->getLvObj();
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }
 
 void DriveScreen::loop(uint micros){

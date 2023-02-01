@@ -18,6 +18,7 @@ public:
 
 	void onStart() override;
 	void onStop() override;
+	void onStarting() override;
 
 private:
 
