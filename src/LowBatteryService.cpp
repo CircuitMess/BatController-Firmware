@@ -1,6 +1,5 @@
 #include <Loop/LoopManager.h>
 #include "LowBatteryService.h"
-#include "Screens/PairScreen.h"
 #include <BatteryService.h>
 #include <BatController.h>
 #include <Com/Communication.h>
@@ -19,43 +18,61 @@ void LowBatteryService::end(){
 }
 
 void LowBatteryService::loop(uint micros) {
-    timer += micros;
+	checkTimer += micros;
 
     if(modalShowing){
         shutdownTimer += micros;
-        if(shutdownTimer >= shutdownDelay){
-            batModal->stop();
-            shutdownTimer = 0;
-            modalShowing = false;
+        if(shutdownTimer >= ShutdownDelay){
+			// TODO: optionally do something different based on shutdownType (ex. go to pair)
 
-            if(shutdownBattery == BatType::Controller){
-                //TODO: Send shutdown packet to batmobile
-                BatController.shutdown();
-            }else if(shutdownBattery == BatType::Batmobile){
-                //TODO: Send shutdown packet to batmobile
-                //Com.sendShutdown([](bool temp){});
-                auto pair = new PairScreen();
-                pair->start();
-            }
+			if(Com.isConnected()){
+				Com.sendShutdown([](bool acked){
+					BatController.shutdown();
+				});
+
+				end();
+			}else{
+				BatController.shutdown();
+			}
+
+			return;
         }
-    }else if(timer >= checkInterval){
-        timer = 0;
-        if(Battery.getPercentage() <= 2 && !Battery.charging()){
-            delete batModal;
-            batModal = new LowBatteryModal(LVScreen().getCurrent(), BatType::Controller);
-            batModal->start();
-            modalShowing = true;
-            shutdownBattery = BatType::Controller;
-        }
+    }else if(checkTimer >= CheckInterval){
+		checkTimer = 0;
+		checkCtrlBattery();
     }
 }
 
 void LowBatteryService::onBattery(uint8_t percent, bool charging) {
-    if(percent <= 2 && !charging){
-        delete batModal;
-        batModal = new LowBatteryModal(LVScreen().getCurrent(), BatType::Batmobile);
-        batModal->start();
-        modalShowing = true;
-        shutdownBattery = BatType::Batmobile;
+    if(percent <= 1 && !charging && !modalShowing){
+		showModal(BatType::Batmobile);
     }
+}
+
+void LowBatteryService::checkCtrlBattery(){
+	if(Battery.getPercentage() == 0 && !Battery.charging()){
+		showModal(BatType::Controller);
+	}
+}
+
+void LowBatteryService::showModal(BatType type){
+	if(modal){
+		modal->stop();
+		delete modal;
+	}
+
+	modalShowing = true;
+	shutdownType = type;
+	shutdownTimer = 0;
+
+	modal = new LowBatteryModal(LVScreen::getCurrent(), type);
+	modal->start();
+}
+
+void LowBatteryService::stopModal(){
+	modalShowing = false;
+	if(!modal) return;
+
+	modal->stop();
+	delete modal;
 }
