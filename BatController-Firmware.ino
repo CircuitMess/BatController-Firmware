@@ -12,6 +12,7 @@
 #include "src/BatTheme.h"
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
+#include "src/LowBatteryService.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
@@ -60,10 +61,14 @@ void setup(){
 
 	BatController.getInput()->addListener(new InputLVGL());
 
-	auto intro = new IntroScreen([](){
+	auto intro = new IntroScreen();
+	intro->setPreCallback([](){
 		WiFi.begin();
 		Com.begin();
+	});
+	intro->setPostCallback([](){
 		AutoShutdown.begin();
+		BatteryShutdown.begin();
 	});
 	intro->start();
 	lv_timer_handler();
