@@ -6,8 +6,8 @@ const char* FSLVGL::cached[] = {
 		"/DriveScreen/Boost_segment.bin",
         "/Menu/Small/Ball_b.bin",
         "/Menu/Small/Ball_r.bin",
-        "/Menu/Small/Line_b.bin",
-        "/Menu/Small/Line_r.bin",
+        "/Menu/Small/Dance_b.bin",
+        "/Menu/Small/Dance_r.bin",
         "/Menu/Small/Manual_b.bin",
         "/Menu/Small/Manual_r.bin",
         "/Menu/Small/Marker_b.bin",
@@ -15,10 +15,12 @@ const char* FSLVGL::cached[] = {
         "/Menu/Small/Settings_b.bin",
         "/Menu/Small/Settings_r.bin",
         "/Menu/Label/Ball.bin",
-        "/Menu/Label/Line.bin",
+        "/Menu/Label/Dance.bin",
         "/Menu/Label/Manual.bin",
         "/Menu/Label/Marker.bin",
         "/Menu/Label/Settings.bin",
+		"/DriveScreen/SpeedBar.bin",
+		"/DriveScreen/SpeedBarFill.bin"
 };
 
 std::unordered_map<std::string, fs::File*> FSLVGL::cache;

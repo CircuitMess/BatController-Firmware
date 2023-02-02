@@ -21,6 +21,10 @@ private:
 
 	lv_obj_t* img;
 
+	static constexpr auto FadeTime = 300000;
+	uint32_t fade;
+	bool blInited = false;
+
 };
 
 
