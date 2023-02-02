@@ -7,9 +7,8 @@
 
 class LowBatteryService : private LoopListener, ComListener {
 public:
-    LowBatteryService();
-    ~LowBatteryService();
-
+	void begin();
+	void end();
 
 private:
     void loop(uint micros) override;
@@ -25,5 +24,6 @@ private:
     static constexpr uint32_t shutdownDelay = 3000000;
 };
 
+extern LowBatteryService BatteryShutdown;
 
 #endif //BATCONTROLLER_FIRMWARE_LOWBATTERYSERVICE_H

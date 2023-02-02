@@ -12,6 +12,7 @@
 #include "src/BatTheme.h"
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
+#include "src/LowBatteryService.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
@@ -64,6 +65,7 @@ void setup(){
 		WiFi.begin();
 		Com.begin();
 		AutoShutdown.begin();
+		BatteryShutdown.begin();
 	});
 	intro->start();
 	lv_timer_handler();

@@ -5,15 +5,19 @@
 #include <BatController.h>
 #include <Com/Communication.h>
 
-LowBatteryService::LowBatteryService() {
-    LoopManager::addListener(this);
-    Com.addListener(this);
+LowBatteryService BatteryShutdown;
+
+void LowBatteryService::begin(){
+	LoopManager::addListener(this);
+	Com.addListener(this);
+	checkCtrlBattery();
 }
 
-LowBatteryService::~LowBatteryService() {
-    LoopManager::removeListener(this);
-    Com.removeListener(this);
+void LowBatteryService::end(){
+	LoopManager::removeListener(this);
+	Com.removeListener(this);
 }
+
 void LowBatteryService::loop(uint micros) {
     timer += micros;
 
