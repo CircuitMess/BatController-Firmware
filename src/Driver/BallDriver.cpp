@@ -3,11 +3,13 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 
-BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode::Ball), autoControls(container), hueElement(container, 110),
+BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode::Ball), autoControls(container), hueElement(container, hue),
 																hueModal(screen, [this](uint8_t hue){
+																	this->hue = hue;
 																	hueElement.setHue(hue);
 																	Com.sendBallHue(hue);
-																}, 110){
+																}, hue){
+
 }
 
 BallDriver::~BallDriver() {
@@ -44,6 +46,9 @@ void BallDriver::buttonPressed(uint i){
 }
 
 void BallDriver::onStart(){
+	Com.sendBallHue(hue);
+	hueElement.setHue(hue);
+
 	autoControls.start();
 	Input::getInstance()->addListener(this);
 }
