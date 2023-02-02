@@ -26,7 +26,6 @@ private:
 
 	uint32_t counter = 0;
 	static constexpr uint32_t BatteryCheckInterval = 1000000;
-	uint8_t conBatIndex;
 };
 
 

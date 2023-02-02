@@ -35,8 +35,7 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	mobBat = new BatteryElement(obj, BatType::Batmobile);
 	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -57, 0);
 
-	conBatIndex = Battery.getLevel();
-	conBat->setLevel(conBatIndex);
+	conBat->setLevel(Battery.getLevel());
 
 	lv_obj_add_flag(obj, LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_set_pos(obj, 0, 0);
@@ -63,13 +62,8 @@ void GeneralInfoElement::loop(uint micros){
 			return;
 		}else{
 			conBat->setCharging(false);
-			if(conBatIndex == Battery.getLevel()) return;
-			conBatIndex = Battery.getLevel();
-			if(conBatIndex == 8){
-				conBat->setBlinking(true);
-			}else{
-				conBat->setLevel(conBatIndex);
-			}
+			conBat->setLevel(Battery.getLevel());
+			conBat->setBlinking(Battery.getPercentage() <= 5);
 		}
 	}
 }
@@ -79,24 +73,7 @@ void GeneralInfoElement::onBattery(uint8_t percent, bool charging){
 		mobBat->setCharging(true);
 	}else{
 		mobBat->setCharging(false);
-		if(percent > 90){
-			mobBat->setLevel(7);
-		}else if(percent > 78){
-			mobBat->setLevel(6);
-		}else if(percent > 66){
-			mobBat->setLevel(5);
-		}else if(percent > 54){
-			mobBat->setLevel(4);
-		}else if(percent > 42){
-			mobBat->setLevel(3);
-		}else if(percent > 30){
-			mobBat->setLevel(2);
-		}else if(percent > 15){
-			mobBat->setLevel(1);
-		}else if(percent > 5){
-			mobBat->setLevel(0);
-		}else if(percent <= 5){
-			mobBat->setBlinking(true);
-		}
+		mobBat->setLevel(Battery.percToLevel(percent));
+		mobBat->setBlinking(percent <= 5);
 	}
 }
