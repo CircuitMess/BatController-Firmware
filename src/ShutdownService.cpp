@@ -1,6 +1,5 @@
 #include <Com/Communication.h>
 #include <BatController.h>
-#include <WiFi.h>
 #include <Loop/LoopManager.h>
 #include "ShutdownService.h"
 
@@ -36,29 +35,11 @@ void ShutdownService::loop(uint micros){
 		if(Com.isConnected()){
 			LoopManager::removeListener(this);
 			Com.sendShutdown([this](bool ackReceived){
-				shutdown();
+				BatController.shutdown();
 			});
 		}else{
 			LoopManager::removeListener(this);
-			shutdown();
+            BatController.shutdown();
 		}
 	}
-}
-
-void ShutdownService::shutdown(){
-	if(BatController.backlightPowered()){
-		BatController.fadeOut();
-	}
-
-	adc_power_off();
-	WiFi.disconnect(true);
-	WiFi.mode(WIFI_OFF);
-
-	ledcDetachPin(PIN_BL);
-
-	esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
-	esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
-	esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
-	esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
-	esp_deep_sleep_start();
 }

@@ -12,6 +12,7 @@
 #include "src/BatTheme.h"
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
+#include "src/LowBatteryService.h"
 
 lv_disp_draw_buf_t drawBuffer;
 Display* display;
@@ -56,18 +57,37 @@ void setup(){
 	displayDriver.flush_cb = lvglFlush;
 	displayDriver.draw_buf = &drawBuffer;
 	lv_disp_t * disp = lv_disp_drv_register(&displayDriver);
-//	BatThemeInit(disp);
+	BatThemeInit(disp);
 
 	BatController.getInput()->addListener(new InputLVGL());
 
-	auto intro = new IntroScreen([](){
+	if(Battery.getPercentage() < 1 && !Battery.charging()){
+		auto blank = new LVScreen();
+		lv_obj_set_style_bg_color(blank->getLvObj(), lv_color_black(), 0);
+		lv_obj_set_style_bg_opa(blank->getLvObj(), LV_OPA_COVER, 0);
+		blank->start();
+
+		auto modal = new LowBatteryModal(blank, BatType::Controller);
+		modal->start();
+
+		lv_timer_handler();
+		BatController.fadeIn();
+
+		delay(4000);
+		BatController.shutdown();
+	}
+
+	auto intro = new IntroScreen();
+	intro->setPreCallback([](){
 		WiFi.begin();
 		Com.begin();
+	});
+	intro->setPostCallback([](){
 		AutoShutdown.begin();
+		BatteryShutdown.begin();
 	});
 	intro->start();
 	lv_timer_handler();
-	BatController.fadeIn();
 }
 
 void loop(){
