@@ -7,7 +7,7 @@
 static const uint16_t FrameDurations[] = {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
                                           100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
 
-IntroScreen::IntroScreen(void (* callback)()) : callback(callback){
+IntroScreen::IntroScreen(){
 	img = lv_img_create(obj);
 	lv_img_set_src(img, "S:/Intro/0.bin");
 	lv_obj_set_size(img, 160, 128);
@@ -52,11 +52,12 @@ void IntroScreen::loop(uint micros){
 	currentFrame++;
 	if(currentFrame >= sizeof(FrameDurations) / sizeof(FrameDurations[0])){
 		stop();
-		volatile auto callback = this->callback;
+		auto preCallback = this->preCallback;
+		auto postCallback = this->postCallback;
 		delete this;
 
-		if(callback){
-			callback();
+		if(preCallback){
+			preCallback();
 		}
 
         auto scr = lv_obj_create(nullptr);
@@ -65,11 +66,18 @@ void IntroScreen::loop(uint micros){
         lv_scr_load(scr);
 
 		auto pair = new PairScreen();
-        LoopManager::defer([pair, scr](uint32_t){
-            pair->start(true, LV_SCR_LOAD_ANIM_FADE_ON);
-			auto timer = lv_timer_create([](lv_timer_t* timer){ lv_obj_del((lv_obj_t*) timer->user_data); }, 600, scr);
+		LoopManager::defer([pair, scr, postCallback](uint32_t){
+			pair->start(true, LV_SCR_LOAD_ANIM_FADE_ON);
+
+			if(postCallback){
+				postCallback();
+			}
+
+			auto timer = lv_timer_create([](lv_timer_t* timer){
+				lv_obj_del((lv_obj_t*) timer->user_data);
+			}, 600, scr);
 			lv_timer_set_repeat_count(timer, 1);
-        });
+		});
 		return;
 	}
 
@@ -79,4 +87,12 @@ void IntroScreen::loop(uint micros){
 	sprintf(path, "S:/Intro/%d.bin", currentFrame+1);
 	lv_img_set_src(img, path);
 	lv_obj_invalidate(img);
+}
+
+void IntroScreen::setPreCallback(std::function<void()> preCallback){
+	IntroScreen::preCallback = std::move(preCallback);
+}
+
+void IntroScreen::setPostCallback(std::function<void()> postCallback){
+	IntroScreen::postCallback = std::move(postCallback);
 }

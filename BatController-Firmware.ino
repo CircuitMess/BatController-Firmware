@@ -61,9 +61,12 @@ void setup(){
 
 	BatController.getInput()->addListener(new InputLVGL());
 
-	auto intro = new IntroScreen([](){
+	auto intro = new IntroScreen();
+	intro->setPreCallback([](){
 		WiFi.begin();
 		Com.begin();
+	});
+	intro->setPostCallback([](){
 		AutoShutdown.begin();
 		BatteryShutdown.begin();
 	});

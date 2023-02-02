@@ -3,16 +3,24 @@
 
 #include "../Interface/LVScreen.h"
 #include <Loop/LoopListener.h>
+#include <functional>
 
 class IntroScreen : public LVScreen, private LoopListener {
 public:
-	IntroScreen(void (* callback)());
+	IntroScreen();
 
 	void onStart() override;
 	void onStop() override;
 
+	/** Called before creating PairScreen */
+	void setPreCallback(std::function<void()> preCallback);
+
+	/** Called after creating PairScreen */
+	void setPostCallback(std::function<void()> postCallback);
+
 private:
-	void (*callback)() = nullptr;
+	std::function<void()> preCallback;
+	std::function<void()> postCallback;
 
 	void loop(uint micros) override;
 
