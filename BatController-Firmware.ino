@@ -72,7 +72,6 @@ void setup(){
 	});
 	intro->start();
 	lv_timer_handler();
-	BatController.fadeIn();
 }
 
 void loop(){
