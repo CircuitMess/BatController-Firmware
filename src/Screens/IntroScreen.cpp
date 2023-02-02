@@ -38,9 +38,7 @@ void IntroScreen::loop(uint micros){
 		uint8_t diff = (255 - maxBrightness);
 		uint8_t current = 255.0f - (float) diff * t;
 
-
 		ledcWrite(6, current);
-		printf("PWM %d\n", current);
 	}else if(!blInited){
 		blInited = true;
 		BatController.setBrightness(Settings.get().screenBrightness);
