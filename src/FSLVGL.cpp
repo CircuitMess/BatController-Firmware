@@ -18,9 +18,9 @@ const char* FSLVGL::cached[] = {
         "/Menu/Label/Dance.bin",
         "/Menu/Label/Manual.bin",
         "/Menu/Label/Marker.bin",
-        "/Menu/Label/Settings.bin",
-        "/DriveScreen/BallHuePicker.bin",
-        "/DriveScreen/BallHueBar.bin",
+		"/Menu/Label/Settings.bin",
+		"/DriveScreen/BallHuePicker.bin",
+		"/DriveScreen/BallHueBar.bin",
 		"/DriveScreen/SpeedBar.bin",
 		"/DriveScreen/SpeedBarFill.bin"
 };
