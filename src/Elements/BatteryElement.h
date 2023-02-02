@@ -29,10 +29,13 @@ private:
 
 	bool blinking = false;
 	bool hidden = false;
+	uint32_t blinkTimer = 0;
+	static constexpr uint32_t BlinkInterval = 500; // [ms]
+
 	bool charging = false;
 	uint8_t picIndex = 0;
-	uint32_t microCounter = 0;
-	static const uint32_t checkInterval = 500000;
+	uint32_t chargeTimer = 0;
+	static const uint32_t ChargeInterval = 500000;
 };
 
 
