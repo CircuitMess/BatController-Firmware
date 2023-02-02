@@ -61,6 +61,22 @@ void setup(){
 
 	BatController.getInput()->addListener(new InputLVGL());
 
+	if(Battery.getPercentage() < 1 && !Battery.charging()){
+		auto blank = new LVScreen();
+		lv_obj_set_style_bg_color(blank->getLvObj(), lv_color_black(), 0);
+		lv_obj_set_style_bg_opa(blank->getLvObj(), LV_OPA_COVER, 0);
+		blank->start();
+
+		auto modal = new LowBatteryModal(blank, BatType::Controller);
+		modal->start();
+
+		lv_timer_handler();
+		BatController.fadeIn();
+
+		delay(4000);
+		BatController.shutdown();
+	}
+
 	auto intro = new IntroScreen();
 	intro->setPreCallback([](){
 		WiFi.begin();
