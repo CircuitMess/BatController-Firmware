@@ -59,7 +59,7 @@ void GeneralInfoElement::loop(uint micros){
 		counter = 0;
 		if(Battery.charging()){
 			conBat->setCharging(true);
-			return;
+			conBat->setBlinking(false);
 		}else{
 			conBat->setCharging(false);
 			conBat->setLevel(Battery.getLevel());
@@ -71,6 +71,7 @@ void GeneralInfoElement::loop(uint micros){
 void GeneralInfoElement::onBattery(uint8_t percent, bool charging){
 	if(charging){
 		mobBat->setCharging(true);
+		mobBat->setBlinking(false);
 	}else{
 		mobBat->setCharging(false);
 		mobBat->setLevel(Battery.percToLevel(percent));
