@@ -54,15 +54,15 @@ void GeneralInfoElement::loop(uint micros){
 		if(Battery.charging()){
 			conBat->setCharging(true);
 			return;
-		} else {
+		}else{
 			conBat->setCharging(false);
 			if(conBatIndex == Battery.getLevel()) return;
 			conBatIndex = Battery.getLevel();
-            if(conBatIndex == 8){
-                conBat->setBlinking(true);
-            }else{
-                conBat->setLevel(conBatIndex);
-            }
+			if(conBatIndex == 8){
+				conBat->setBlinking(true);
+			}else{
+				conBat->setLevel(conBatIndex);
+			}
 		}
 	}
 }
@@ -89,7 +89,7 @@ void GeneralInfoElement::onBattery(uint8_t percent, bool charging){
 		}else if(percent > 5){
 			mobBat->setLevel(0);
 		}else if(percent <= 5){
-            mobBat->setBlinking(true);
-        }
+			mobBat->setBlinking(true);
+		}
 	}
 }
