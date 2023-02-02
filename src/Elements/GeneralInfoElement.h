@@ -22,7 +22,7 @@ private:
 	BatteryElement* conBat;
 	BatteryElement* mobBat;
 
-	static const char* modePaths[5];
+	static const char* modePaths[7];
 
 	uint32_t counter = 0;
 	static constexpr uint32_t BatteryCheckInterval = 1000000;

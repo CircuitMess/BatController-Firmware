@@ -42,8 +42,7 @@ void BoostElement::setActive(bool active){
 		lv_obj_add_flag(bgIMG, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_clear_flag(bgGIF, LV_OBJ_FLAG_HIDDEN);
 
-		lv_gif_set_src(bgGIF, activePath);
-		lv_gif_restart(bgGIF);
+		lv_gif_start(bgGIF);
 		lv_gif_set_loop(bgGIF, LV_GIF_LOOP_ON);
 		gifRunning = true;
 
@@ -51,6 +50,7 @@ void BoostElement::setActive(bool active){
 		lv_obj_set_style_bg_opa(bar, LV_OPA_TRANSP, LV_PART_MAIN);
 		lv_obj_clear_flag(bgIMG, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_add_flag(bgGIF, LV_OBJ_FLAG_HIDDEN);
+		lv_gif_stop(bgGIF);
 
 		lv_img_set_src(bgIMG, emptyPath);
 		gifRunning = false;

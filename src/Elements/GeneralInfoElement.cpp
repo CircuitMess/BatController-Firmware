@@ -9,7 +9,9 @@ const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Manual.bin",
 		"S:/DriveMode/Ball.bin",
 		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin"
+		"S:/DriveMode/Marker.bin",
+        "", //QRSCan
+        "" //TODO: add DriveMode/Dance.bin to data
 };
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
@@ -18,6 +20,8 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 	lv_obj_align(obj, LV_ALIGN_TOP_MID, 0, 0);
+	lv_obj_add_flag(obj, LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_set_pos(obj, 0, 0);
 
 	modeImg = lv_img_create(obj);
 	lv_obj_align(modeImg, LV_ALIGN_CENTER, 0, 0);
@@ -33,6 +37,9 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 
 	conBatIndex = Battery.getLevel();
 	conBat->setLevel(conBatIndex);
+
+	lv_obj_add_flag(obj, LV_OBJ_FLAG_IGNORE_LAYOUT);
+	lv_obj_set_pos(obj, 0, 0);
 
 	Com.addListener(this);
 	LoopManager::addListener(this);

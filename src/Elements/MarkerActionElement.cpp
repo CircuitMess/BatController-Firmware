@@ -14,21 +14,17 @@ MarkerActionElement::MarkerActionElement(lv_obj_t* parent, MarkerAction action) 
 	lv_obj_set_pos(obj, x, y);
 
 	img = lv_img_create(obj);
-	if(!images.count(action)) return;
 
-	lv_img_set_src(img, images.at(action));
+	setAction(action);
 }
 
 void MarkerActionElement::setAction(MarkerAction action){
 	if(!images.count(action)){
-		lv_img_set_src(img, nullptr);
+		lv_img_set_src(img, "");
 		lv_obj_add_flag(img, LV_OBJ_FLAG_HIDDEN);
 		return;
 	}
 
-	if(lv_obj_has_flag(img, LV_OBJ_FLAG_HIDDEN)){
-		lv_obj_clear_flag(img, LV_OBJ_FLAG_HIDDEN);
-	}
-
 	lv_img_set_src(img, images.at(action));
+	lv_obj_clear_flag(img, LV_OBJ_FLAG_HIDDEN);
 }
