@@ -12,8 +12,9 @@
 #include <DisconnectListener.h>
 #include "../Elements/GeneralInfoElement.h"
 #include "../Feed/Feed.h"
+#include "../Elements/OverrideElement.h"
 
-class DriveScreen : public LVScreen, private InputListener, private DisconnectListener {
+class DriveScreen : public LVScreen, private InputListener, private DisconnectListener, private LoopListener {
 public:
 	DriveScreen(DriveMode mode);
 	virtual ~DriveScreen();
@@ -21,11 +22,16 @@ public:
 	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
+    void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
+
 
 private:
 	void onDisconnected() override;
 
+	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
+
+	void loop(uint micros) override;
 
 	void setMode(DriveMode mode);
 	DriveMode currentMode = DriveMode::Idle;
@@ -38,7 +44,19 @@ private:
 	lv_img_dsc_t imgDsc {};
 	Color* imgBuf = nullptr;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
+
+	OverrideElement overrideElement;
+
+	DriveMode originalMode = DriveMode::Idle;
+	void hideOverrideElement();
+	void showOverrideElement();
+
+	static constexpr uint32_t OverrideDuration = 3000; // [ms]
+	static constexpr uint32_t OverrideShowDuration = 600; // [ms]
+	uint32_t overrideTime = 0;
+	bool overrideShown = false;
+	bool overrideDone = false;
 };
 
 

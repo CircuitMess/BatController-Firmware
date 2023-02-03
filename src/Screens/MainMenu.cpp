@@ -9,7 +9,7 @@
 
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
-        {"Line",     0},
+        {"Dance",     0},
         {"Ball",     0},
         {"Marker",   0},
         {"Settings", 0},
@@ -36,8 +36,6 @@ MainMenu::MainMenu() : LVScreen() {
     lv_obj_set_pos(top, 0, 0);
     lv_obj_set_size(top, lv_pct(100), 8);
 
-	infoElement = new GeneralInfoElement(top, DriveMode::Idle);
-
 	lv_obj_set_pos(right, 147, 8);
     lv_obj_set_size(right, 13, 120);
     lv_obj_set_style_pad_top(right, 3, 0);
@@ -49,6 +47,7 @@ MainMenu::MainMenu() : LVScreen() {
 	lv_obj_set_pos(midContainer, 0, 8);
 	lv_obj_set_size(midContainer, 147, 120);
 	lv_obj_set_style_pad_top(midContainer, 120, 0);
+	lv_obj_set_scrollbar_mode(midContainer, LV_SCROLLBAR_MODE_OFF);
 
     lv_obj_set_size(mid, 147, 120);
     lv_obj_set_scrollbar_mode(mid, LV_SCROLLBAR_MODE_OFF);
@@ -138,6 +137,10 @@ void MainMenu::setRed(uint8_t index, bool reverse) {
 }
 
 void MainMenu::onStarting() {
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj());
+	}
+
     if (bigs.empty()) {
         loadGIFs();
     } else {
@@ -159,6 +162,7 @@ void MainMenu::onStart() {
 
     Input::getInstance()->addListener(this);
     Com.addDcListener(this);
+
 	lv_obj_scroll_to_x(right, 13, LV_ANIM_ON);
 	lv_obj_scroll_to_y(midContainer, 120, LV_ANIM_ON);
 
@@ -214,7 +218,7 @@ void MainMenu::launch() {
 
 		static LVScreen *(*screens[])() = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
-				[]() -> LVScreen * { return new DriveScreen(DriveMode::Line); }, //TODO: add Line driver
+				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
 				[]() -> LVScreen * { return new SettingsScreen(); }
@@ -234,10 +238,16 @@ void MainMenu::launch() {
 			return;
 		}
 
+        auto info = std::move(menu->infoElement);
+		auto tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
+
 		delete menu;
 
-		auto screen = launcher();
-		screen->start();
+		DriveScreen* screen = reinterpret_cast<DriveScreen*>(launcher());
+        screen->setInfoElement(std::move(info));
+		lv_obj_del(tmpScr);
+        screen->start();
 
 	}, 500, this);
 	lv_timer_set_repeat_count(timer, 1);
@@ -266,6 +276,17 @@ void MainMenu::selectPrev() {
 void MainMenu::buttonPressed(uint i) {
 //    if(i != BTN_BACK && i != BTN_R) return; TODO: I have no idea what to do with this
 //    LockScreen::activate(this);
+}
+
+void MainMenu::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
+    this->infoElement = std::move(infoElement);
+    this->infoElement->setMode(DriveMode::Idle);
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }
 
 void MainMenu::onDisconnected() {

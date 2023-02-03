@@ -2,6 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_MAINMENU_H
 
 #include <Input/InputListener.h>
+#include <memory>
 #include <DisconnectListener.h>
 #include "../Interface/LVScreen.h"
 #include "../Elements/GeneralInfoElement.h"
@@ -15,6 +16,7 @@ public:
     void onStarting() override;
     void onStart() override;
     void onStop() override;
+    void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
 
 private:
     struct Item {
@@ -50,10 +52,11 @@ private:
 
     uint8_t selected = 0;
 
-    GeneralInfoElement* infoElement = nullptr;
+    std::unique_ptr<GeneralInfoElement> infoElement;
 
-    void onDisconnected() override;
     void buttonPressed(uint i) override;
+
+	void onDisconnected() override;
 };
 
 
