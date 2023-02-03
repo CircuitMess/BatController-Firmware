@@ -1,16 +1,16 @@
 #ifndef BATCONTROLLER_FIRMWARE_SIMPLEPROGDRIVER_H
 #define BATCONTROLLER_FIRMWARE_SIMPLEPROGDRIVER_H
 
-
 #include <Loop/LoopListener.h>
 #include "Driver.h"
 #include "../Screens/SimpleProg/SimpleProgModel.h"
+#include "../Elements/ProgPlaybackElement.h"
 
 class SimpleProgDriver : public Driver, private LoopListener {
 public:
 	SimpleProgDriver(std::unique_ptr<Simple::Program> program);
 
-	~SimpleProgDriver() override{};
+	~SimpleProgDriver() override = default;;
 	void setContainer(lv_obj_t* container);
 
 protected:
@@ -19,11 +19,10 @@ protected:
 
 private:
 	void loop(uint micros) override;
-    void nextAction();
+	void nextAction();
 
-    lv_obj_t* panel;
-    lv_style_t border;
 	std::unique_ptr<Simple::Program> program;
+	std::unique_ptr<ProgPlaybackElement> playbackElement;
 
 	bool inited = false;
 	size_t actionCursor = 0;
