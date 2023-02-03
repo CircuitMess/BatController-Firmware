@@ -3,7 +3,6 @@
 #include <FS/RamFile.h>
 
 const char* FSLVGL::cached[] = {
-		"/DriveScreen/Boost_segment.bin",
 		"/Menu/Small/Ball_b.bin",
 		"/Menu/Small/Ball_r.bin",
 		"/Menu/Small/Dance_b.bin",
@@ -19,6 +18,12 @@ const char* FSLVGL::cached[] = {
 		"/Menu/Label/Manual.bin",
 		"/Menu/Label/Marker.bin",
 		"/Menu/Label/Settings.bin",
+		"/DriveScreen/ModalBg.bin",
+		"/DriveScreen/BallHue.bin",
+		"/DriveScreen/MarkerBackward.bin",
+		"/DriveScreen/MarkerForward.bin",
+		"/DriveScreen/MarkerRotate.bin",
+		"/DriveScreen/MarkerBurnout.bin",
 		"/DriveScreen/BallHuePicker.bin",
 		"/DriveScreen/BallHueBar.bin",
 		"/DriveScreen/SpeedBar.bin",
