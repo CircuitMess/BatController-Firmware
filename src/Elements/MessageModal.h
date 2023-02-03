@@ -7,11 +7,6 @@
 class MessageModal : public LVModal {
 public:
 	MessageModal(LVScreen* parent,  const char* message);
-	~MessageModal() override;
-
-protected:
-	void onStart() override;
-	void onStop() override;
 
 };
 
