@@ -17,7 +17,6 @@ private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
 
-	void shutdown();
 	uint32_t timer = 0;
 
 	bool paused = false;

@@ -15,6 +15,8 @@ public:
     ~BallDriver() override;
 
 private:
+	uint8_t hue = 110;
+
 	AutoControls autoControls;
 	BallHueElement hueElement;
 	HueModal hueModal;

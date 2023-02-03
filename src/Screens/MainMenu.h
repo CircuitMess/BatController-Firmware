@@ -3,12 +3,13 @@
 
 #include <Input/InputListener.h>
 #include <memory>
+#include <DisconnectListener.h>
 #include "../Interface/LVScreen.h"
 #include "../Elements/GeneralInfoElement.h"
 
 
 
-class MainMenu: public LVScreen, private InputListener{
+class MainMenu: public LVScreen, private InputListener,  private DisconnectListener{
 public:
     MainMenu();
     ~MainMenu() override;
@@ -54,6 +55,8 @@ private:
     std::unique_ptr<GeneralInfoElement> infoElement;
 
     void buttonPressed(uint i) override;
+
+	void onDisconnected() override;
 };
 
 

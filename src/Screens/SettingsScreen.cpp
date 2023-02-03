@@ -519,10 +519,12 @@ void SettingsScreen::onStarting(){
 }
 
 void SettingsScreen::onStart(){
+    Com.addDcListener(this);
 }
 
 void SettingsScreen::onStop(){
 	Settings.store();
+    Com.removeDcListener(this);
 }
 
 void SettingsScreen::backToMain(){
@@ -532,4 +534,11 @@ void SettingsScreen::backToMain(){
 	delete this;
 
 	parent->start();
+}
+
+void SettingsScreen::onDisconnected() {
+    stop();
+    delete this;
+    auto pair = new PairScreen();
+    pair->start();
 }

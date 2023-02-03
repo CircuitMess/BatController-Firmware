@@ -3,9 +3,10 @@
 
 #include "../Interface/LVScreen.h"
 #include <Input/InputListener.h>
+#include <DisconnectListener.h>
 #include "../Elements/Prompt.h"
 
-class SettingsScreen : public LVScreen, private InputListener {
+class SettingsScreen : public LVScreen, private InputListener, private DisconnectListener {
 public:
 	SettingsScreen();
 
@@ -42,6 +43,7 @@ private:
 
 	void backToMain();
 
+    void onDisconnected() override;
 };
 
 #endif //BATCONTROLLER_FIRMWARE_SETTINGSSCREEN_H
