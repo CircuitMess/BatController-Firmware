@@ -292,6 +292,6 @@ void MainMenu::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
 void MainMenu::onDisconnected() {
     stop();
     delete this;
-    auto pair = new PairScreen();
+    auto pair = new PairScreen(true);
     pair->start();
 }

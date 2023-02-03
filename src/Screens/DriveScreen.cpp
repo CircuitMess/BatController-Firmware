@@ -160,7 +160,7 @@ void DriveScreen::onDisconnected(){
 	stop();
 	delete this;
 
-	auto pair = new PairScreen();
+	auto pair = new PairScreen(true);
 	pair->start();
 }
 

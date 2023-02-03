@@ -539,6 +539,6 @@ void SettingsScreen::backToMain(){
 void SettingsScreen::onDisconnected() {
     stop();
     delete this;
-    auto pair = new PairScreen();
+    auto pair = new PairScreen(true);
     pair->start();
 }

@@ -13,7 +13,7 @@
 
 class PairScreen : public LVScreen {
 public:
-	PairScreen();
+	PairScreen(bool disconnect = false);
 	~PairScreen() override;
 
 	void onStart() override;
@@ -32,6 +32,7 @@ private:
 
 	std::string ssid;
 	std::string password;
+	bool disconnect = false;
 
 	uint16_t randID;
 	char directSSID[14];
