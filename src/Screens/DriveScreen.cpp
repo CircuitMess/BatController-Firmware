@@ -57,6 +57,26 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 	}else{
 		setMode(mode);
 	}
+
+	lv_group_add_obj(inputGroup, obj);
+	lv_obj_add_event_cb(obj, [](lv_event_t* e){
+		auto &driveScreen = *(DriveScreen*)e->user_data;
+		if(lv_event_get_key(e) != LV_KEY_HOME) return;
+
+		bool backToMenu = driveScreen.currentMode != DriveMode::SimpleProgramming;
+
+		driveScreen.stop();
+		delete &driveScreen;
+
+		if(backToMenu){
+			auto mainMenu = new MainMenu();
+			mainMenu->start();
+		}else{
+			auto simple = new SimpleProgScreen();
+			simple->start();
+		}
+
+	}, LV_EVENT_KEY, this);
 }
 
 DriveScreen::~DriveScreen(){
@@ -113,20 +133,7 @@ void DriveScreen::setMode(DriveMode newMode){
 }
 
 void DriveScreen::buttonPressed(uint i){
-	if(i != BTN_MENU) return;
 
-	bool backToMenu = currentMode != DriveMode::SimpleProgramming;
-
-	stop();
-	delete this;
-
-	if(backToMenu){
-		auto mainMenu = new MainMenu();
-		mainMenu->start();
-	}else{
-		auto simple = new SimpleProgScreen();
-		simple->start();
-	}
 }
 
 void DriveScreen::onDisconnected(){
