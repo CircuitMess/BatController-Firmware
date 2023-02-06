@@ -11,7 +11,7 @@ const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Line.bin",
 		"S:/DriveMode/Marker.bin",
         "", //QRSCan
-        "" //TODO: add DriveMode/Dance.bin to data
+        "S:/DriveMode/Dance.bin"
 };
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
