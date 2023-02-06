@@ -20,6 +20,7 @@ ScanAruco::ScanAruco(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGr
 	lv_obj_set_flex_flow(scanAruco, LV_FLEX_FLOW_COLUMN);
 	lv_obj_set_flex_align(scanAruco, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_obj_set_style_pad_row(scanAruco, 7, 0);
+	lv_obj_clear_flag(scanAruco, LV_OBJ_FLAG_SCROLLABLE);
 
 	buffer = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 49 * Scale * Scale));
 
