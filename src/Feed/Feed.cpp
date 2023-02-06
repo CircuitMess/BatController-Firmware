@@ -3,6 +3,7 @@
 #include <Loop/LoopManager.h>
 
 static const char* tag = "Feed";
+static bool taskKill = false;
 
 class Locker {
 public:
@@ -46,10 +47,13 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 
 	LoopManager::addListener(this);
 	frameConsumed.signal();
+	taskKill = false;
 	decodeTask.start(1, 0);
 }
 
 Feed::~Feed(){
+	taskKill = true;
+	frameConsumed.signal();
 	decodeTask.stop(true);
 	LoopManager::removeListener(this);
 	free(frame.img);
@@ -160,6 +164,11 @@ void Feed::decodeFunc(){
 	while(decodeTask.running){
 		frameConsumed.wait();
 
+		if(taskKill){
+			taskKill = false;
+			return;
+		}
+
 		/** We can't continue into the next iteration in case of error, because the task will end up waiting for a
 		 * semaphore that will never get signaled - frameReady never gets set, and the main thread never signals
 		 * the semaphore. Therefore, a goto is required.
@@ -169,6 +178,11 @@ start:
 		if(!findFrame(true)){
 			rxMut.unlock();
 			delay(10);
+
+			if(taskKill){
+				taskKill = false;
+				return;
+			}
 
 			goto start;
 		}
