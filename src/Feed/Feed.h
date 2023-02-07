@@ -47,8 +47,8 @@ private:
 	Task decodeTask;
 	void decodeFunc();
 
-	constexpr static size_t JpgMaxSize = 4500; //upper size limit for JPG quality 30 on Batmobile camera, approximately
-	constexpr static size_t RxBufSize = 3 * (sizeof(DriveInfo) + JpgMaxSize);
+	constexpr static size_t JpgMaxSize = 8000; //upper size limit for JPG quality 30 on Batmobile camera, approximately
+	constexpr static size_t RxBufSize = 2 * (sizeof(DriveInfo) + JpgMaxSize);
 
 	std::function<void(std::shared_ptr<const DriveInfo>, const Color* frame)> frameCallback;
 	std::function<void(const DriveInfo&, Color* frame)> postProcCallback;
