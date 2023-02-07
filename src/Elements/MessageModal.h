@@ -6,8 +6,11 @@
 
 class MessageModal : public LVModal {
 public:
-	MessageModal(LVScreen* parent,  const char* message);
-
+	MessageModal(LVScreen* parent, const char* message, uint32_t timeout = -1);
+protected:
+	void onStop() override;
+private:
+	lv_timer_t* timer;
 };
 
 
