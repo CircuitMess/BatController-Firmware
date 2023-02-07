@@ -54,7 +54,7 @@ void BallDriver::onStart(){
 }
 
 void BallDriver::onStop(){
-    Serial.println("ON STOP");
+	hueModal.stop();
 	autoControls.stop();
 	Input::getInstance()->removeListener(this);
 }
