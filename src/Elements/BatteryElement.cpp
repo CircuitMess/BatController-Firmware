@@ -5,7 +5,7 @@
 BatteryElement::BatteryElement(lv_obj_t* parent, BatType type) : LVObject(parent){
 	img = lv_img_create(obj);
 	lv_obj_set_size(img, 12, 5);
-	lv_obj_align(img, LV_ALIGN_CENTER, 15, 0);
+	lv_obj_align(img, LV_ALIGN_CENTER, 14, 0);
 	setLevel(7);
 
 	device = lv_img_create(obj);

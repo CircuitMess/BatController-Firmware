@@ -9,9 +9,10 @@ const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Manual.bin",
 		"S:/DriveMode/Ball.bin",
 		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin",
-        "", //QRSCan
-        "S:/DriveMode/Dance.bin"
+		"S:/DriveMode/Marker.bin"
+		"", //QRSCan
+		"S:/DriveMode/SimpleProg.bin",
+		"S:/DriveMode/Dance.bin"
 };
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
@@ -28,12 +29,12 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	setMode(mode);
 
 	signal = new SignalElement(obj);
-	lv_obj_align(signal->getLvObj(), LV_ALIGN_LEFT_MID, -30, 0);
+	lv_obj_align(signal->getLvObj(), LV_ALIGN_LEFT_MID, -33, 0);
 
 	conBat = new BatteryElement(obj, BatType::Controller);
 	lv_obj_align(conBat->getLvObj(), LV_ALIGN_RIGHT_MID, 40, 0);
 	mobBat = new BatteryElement(obj, BatType::Batmobile);
-	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -57, 0);
+	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -60, 0);
 
 	conBat->setLevel(Battery.getLevel());
 

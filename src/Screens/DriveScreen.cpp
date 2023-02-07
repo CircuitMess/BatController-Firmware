@@ -7,11 +7,13 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include "MainMenu.h"
+#include "../Driver/SimpleProgDriver.h"
+#include "SimpleProg/SimpleProgScreen.h"
 #include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 #include <Loop/LoopManager.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
+DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) : LVScreen(), overrideElement(obj){
 	img = lv_img_create(obj);
 	lv_obj_set_size(img, 160, 120);
 	lv_obj_add_flag(img, LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -48,7 +50,16 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
 	}
 
 	// If mode is idle, do nothing (setMode returns early)
-	setMode(mode);
+	if(customDriver){
+		currentMode = mode;
+		driver = std::move(customDriver);
+		if(mode == DriveMode::SimpleProgramming){
+			static_cast<SimpleProgDriver&>(*driver).setContainer(driverLayer);
+		}
+		Com.sendDriveMode(currentMode);
+	}else{
+		setMode(mode);
+	}
 
 	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_align(overrideElement.getLvObj(), LV_ALIGN_CENTER, 0, 0);
@@ -136,13 +147,21 @@ void DriveScreen::buttonPressed(uint i){
 		auto tmpScr = lv_obj_create(nullptr);
 		lv_obj_set_parent(info->getLvObj(), tmpScr);
 
+		bool backToMenu = currentMode != DriveMode::SimpleProgramming;
+
 		stop();
 		delete this;
 
-		auto mainMenu = new MainMenu();
-		mainMenu->setInfoElement(std::move(info));
-		lv_obj_del(tmpScr);
-		mainMenu->start();
+		if(backToMenu){
+			auto mainMenu = new MainMenu();
+			mainMenu->setInfoElement(std::move(info));
+			lv_obj_del(tmpScr);
+			mainMenu->start();
+		}else{
+			// TODO: general info element passing
+			auto simple = new SimpleProgScreen();
+			simple->start();
+		}
 	}
 }
 
