@@ -3,7 +3,6 @@
 #include <Loop/LoopManager.h>
 
 static const char* tag = "Feed";
-static bool taskKill = false;
 
 class Locker {
 public:
@@ -34,7 +33,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	frame.img = static_cast<Color*>(heap_caps_malloc(160 * 120 * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT));
 
 	udp.listen(controllerIP, feedPort);
-	udp.onPacket([this](AsyncUDPPacket& packet) {
+	udp.onPacket([this](AsyncUDPPacket& packet){
 		Locker lock(rxMut);
 
 		if(rxBuf.writeAvailable() < packet.length()){
@@ -46,8 +45,8 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	});
 
 	LoopManager::addListener(this);
-	frameConsumed.signal();
 	taskKill = false;
+	frameConsumed.signal();
 	decodeTask.start(1, 0);
 }
 
@@ -164,10 +163,7 @@ void Feed::decodeFunc(){
 	while(decodeTask.running){
 		frameConsumed.wait();
 
-		if(taskKill){
-			taskKill = false;
-			return;
-		}
+		if(taskKill) return;
 
 		/** We can't continue into the next iteration in case of error, because the task will end up waiting for a
 		 * semaphore that will never get signaled - frameReady never gets set, and the main thread never signals
@@ -179,10 +175,7 @@ start:
 			rxMut.unlock();
 			delay(10);
 
-			if(taskKill){
-				taskKill = false;
-				return;
-			}
+			if(taskKill) return;
 
 			goto start;
 		}
@@ -204,6 +197,9 @@ start:
 
 		if(frame == nullptr){
 			ESP_LOGD(tag, "Couldn't deserialize frame");
+
+			if(taskKill) return;
+
 			goto start;
 		}
 
@@ -211,7 +207,7 @@ start:
 			for(int y = data->y, iy = 0; y < data->y + data->iHeight; y++, iy++){
 				size_t offset = y * 160 + data->x;
 				size_t ioffset = iy * data->iWidth;
-				memcpy((uint8_t*) data->pUser + offset*2, (uint8_t*) data->pPixels + ioffset*2, data->iWidth * 2);
+				memcpy((uint8_t*) data->pUser + offset * 2, (uint8_t*) data->pPixels + ioffset * 2, data->iWidth * 2);
 			}
 			return 1;
 		});
@@ -221,6 +217,9 @@ start:
 
 		if(jpeg.decode(0, 0, 0) == 0){
 			ESP_LOGE(tag, "decode error: %d", jpeg.getLastError());
+
+			if(taskKill) return;
+
 			goto start;
 		}
 
@@ -234,6 +233,8 @@ start:
 		}
 
 		frameReady = true;
+
+		if(taskKill) return;
 	}
 }
 

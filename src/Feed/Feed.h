@@ -46,6 +46,7 @@ private:
 	// Core 1
 	Task decodeTask;
 	void decodeFunc();
+	bool taskKill = false;
 
 	constexpr static size_t JpgMaxSize = 4500; //upper size limit for JPG quality 30 on Batmobile camera, approximately
 	constexpr static size_t RxBufSize = 3 * (sizeof(DriveInfo) + JpgMaxSize);
