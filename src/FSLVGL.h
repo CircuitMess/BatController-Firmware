@@ -8,11 +8,30 @@
 
 class FSLVGL {
 public:
-	FSLVGL(fs::FS &filesystem, char letter);
+	FSLVGL(fs::FS& filesystem, char letter);
 	fs::FS& getFS();
 
 	static void loadCache();
 	static void unloadCache();
+
+	template<std::size_t SIZE>
+	static void addCache(const std::array<const char*, SIZE>& paths){
+		for(auto path: paths){
+			addCache(path);
+		}
+	}
+
+	static void addCache(const char* path);
+
+	template<std::size_t SIZE>
+	static void removeCache(const std::array<const char*, SIZE>& paths){
+		for(auto path: paths){
+			removeCache(path);
+		}
+	}
+
+	static void removeCache(const char* path);
+
 	static void loadSpecialCache(const char* path);
 	static void unloadSpecialCache();
 

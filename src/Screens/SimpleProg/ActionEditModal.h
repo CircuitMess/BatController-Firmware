@@ -4,7 +4,7 @@
 #include "../../Interface/LVModal.h"
 #include "SimpleProgModel.h"
 
-class ActionEditModal : public LVModal{
+class ActionEditModal : public LVModal {
 public:
 	explicit ActionEditModal(LVScreen* parent);
 	void startEdit(Simple::Action& action);
@@ -28,6 +28,5 @@ private:
 	void addColor(Simple::Action& action);
 
 };
-
 
 #endif //BATCONTROLLER_FIRMWARE_ACTIONEDITMODAL_H

@@ -43,4 +43,12 @@ namespace Simple {
 		std::string name;
 	};
 }
+
+extern const char* DirectionSymbols[4];
+extern const uint8_t SoundsNum;
+extern const char* SoundNames[];
+extern const uint8_t ColorsNum;
+extern const char* ColorNames[];
+
+
 #endif //BATCONTROLLER_FIRMWARE_SIMPLEPROGMODEL_H

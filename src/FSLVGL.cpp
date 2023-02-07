@@ -27,14 +27,34 @@ const char* FSLVGL::cached[] = {
 		"/DriveScreen/BallHuePicker.bin",
 		"/DriveScreen/BallHueBar.bin",
 		"/DriveScreen/SpeedBar.bin",
-		"/DriveScreen/SpeedBarFill.bin"
+		"/DriveScreen/SpeedBarFill.bin",
+		"/Signal/0.bin",
+		"/Signal/1.bin",
+		"/Signal/2.bin",
+		"/Signal/3.bin",
+		"/Battery/0.bin",
+		"/Battery/1.bin",
+		"/Battery/2.bin",
+		"/Battery/3.bin",
+		"/Battery/4.bin",
+		"/Battery/5.bin",
+		"/Battery/6.bin",
+		"/Battery/7.bin",
+		"/Battery/Batmobile.bin",
+		"/Battery/Controller.bin",
+		"/DriveMode/Ball.bin",
+		"/DriveMode/Idle.bin",
+		"/DriveMode/Line.bin",
+		"/DriveMode/Marker.bin",
+		"/DriveMode/Manual.bin",
+		"/DriveMode/SimpleProg.bin"
 };
 
 std::unordered_map<std::string, fs::File*> FSLVGL::cache;
 fs::File* FSLVGL::specialCache = nullptr;
 bool FSLVGL::cacheLoaded = false;
 
-FSLVGL::FSLVGL(fs::FS &filesystem, char letter) : filesys(filesystem){
+FSLVGL::FSLVGL(fs::FS& filesystem, char letter) : filesys(filesystem){
 	cache.reserve((sizeof(cached) / sizeof(cached[0])) * 2);
 
 	lv_fs_drv_init(&drv);                     /*Basic initialization*/
@@ -113,10 +133,10 @@ void* FSLVGL::open_cb(struct _lv_fs_drv_t* drv, const char* path, lv_fs_mode_t m
 			fsMode = FILE_READ;
 	}
 
-	return (void*)new fs::File(static_cast<FSLVGL*>(drv->user_data)->getFS().open(path, fsMode));
+	return (void*) new fs::File(static_cast<FSLVGL*>(drv->user_data)->getFS().open(path, fsMode));
 }
 
-fs::FS &FSLVGL::getFS(){
+fs::FS& FSLVGL::getFS(){
 	return filesys;
 }
 
@@ -131,13 +151,13 @@ lv_fs_res_t FSLVGL::close_cb(struct _lv_fs_drv_t* drv, void* file_p){
 
 lv_fs_res_t FSLVGL::read_cb(struct _lv_fs_drv_t* drv, void* file_p, void* buf, uint32_t btr, uint32_t* br){
 	if(!static_cast<File*>(file_p)->operator bool()) return LV_FS_RES_NOT_EX;
-	*br = static_cast<fs::File*>(file_p)->read((uint8_t*)buf, btr);
+	*br = static_cast<fs::File*>(file_p)->read((uint8_t*) buf, btr);
 	return 0;
 }
 
 lv_fs_res_t FSLVGL::write_cb(struct _lv_fs_drv_t* drv, void* file_p, const void* buf, uint32_t btw, uint32_t* bw){
 	if(!static_cast<File*>(file_p)->operator bool()) return LV_FS_RES_NOT_EX;
-	*bw = static_cast<fs::File*>(file_p)->write((uint8_t*)buf, btw);
+	*bw = static_cast<fs::File*>(file_p)->write((uint8_t*) buf, btw);
 	return 0;
 }
 
@@ -165,12 +185,12 @@ lv_fs_res_t FSLVGL::seek_cb(struct _lv_fs_drv_t* drv, void* file_p, uint32_t pos
 
 lv_fs_res_t FSLVGL::tell_cb(struct _lv_fs_drv_t* drv, void* file_p, uint32_t* pos_p){
 	*pos_p = static_cast<fs::File*>(file_p)->position();
-	if(*pos_p == (uint32_t)-1) return LV_FS_RES_UNKNOWN;
+	if(*pos_p == (uint32_t) -1) return LV_FS_RES_UNKNOWN;
 	return 0;
 }
 
 void* FSLVGL::dir_open_cb(struct _lv_fs_drv_t* drv, const char* path){
-	return (void*)new fs::File(static_cast<FSLVGL*>(drv->user_data)->getFS().open(path));
+	return (void*) new fs::File(static_cast<FSLVGL*>(drv->user_data)->getFS().open(path));
 }
 
 lv_fs_res_t FSLVGL::dir_read_cb(struct _lv_fs_drv_t* drv, void* rddir_p, char* fn){
@@ -202,6 +222,25 @@ void FSLVGL::unloadSpecialCache(){
 	specialCache = nullptr;
 }
 
+void FSLVGL::addCache(const char* path){
+	File file = SPIFFS.open(path);
+	if(!file) return;
 
+	auto pair = cache.find(path);
+	if(pair == cache.end()){
+		lv_img_cache_invalidate_src((std::string("S:") + path).c_str());
+		File* ram = new fs::File();
+		*ram = RamFile::open(file);
 
+		cache.insert(std::make_pair(path, ram));
+	}
+}
 
+void FSLVGL::removeCache(const char* path){
+	auto pair = cache.find(path);
+	if(pair == cache.end()) return;
+
+	lv_img_cache_invalidate_src((std::string("S:") + path).c_str());
+	delete pair->second;
+	cache.erase(pair);
+}

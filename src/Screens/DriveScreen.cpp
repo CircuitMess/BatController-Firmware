@@ -65,6 +65,35 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 	lv_obj_align(overrideElement.getLvObj(), LV_ALIGN_CENTER, 0, 0);
 	lv_obj_move_foreground(overrideElement.getLvObj());
 	hideOverrideElement();
+
+	lv_group_add_obj(inputGroup, obj);
+	lv_obj_add_event_cb(obj, [](lv_event_t* e){
+		auto &driveScreen = *(DriveScreen*)e->user_data;
+		if(lv_event_get_key(e) != LV_KEY_HOME) return;
+
+		bool backToMenu = driveScreen.currentMode != DriveMode::SimpleProgramming;
+
+		auto info = std::move(infoElement);
+		auto tmpScr = lv_obj_create(nullptr);
+		if(info){
+			lv_obj_set_parent(info->getLvObj(), tmpScr);
+		}
+
+		driveScreen.stop();
+		delete &driveScreen;
+
+		if(backToMenu){
+			auto mainMenu = new MainMenu();
+			mainMenu->setInfoElement(std::move(info));
+			lv_obj_del(tmpScr);
+			mainMenu->start();
+		}else{
+			// TODO: general info element passing
+			auto simple = new SimpleProgScreen();
+			simple->start();
+		}
+
+	}, LV_EVENT_KEY, this);
 }
 
 DriveScreen::~DriveScreen(){
@@ -142,26 +171,6 @@ void DriveScreen::buttonPressed(uint i){
 		LoopManager::addListener(this);
 		overrideTime = millis();
 		overrideDone = false;
-	}else if(i == BTN_MENU){
-		auto info = std::move(infoElement);
-		auto tmpScr = lv_obj_create(nullptr);
-		lv_obj_set_parent(info->getLvObj(), tmpScr);
-
-		bool backToMenu = currentMode != DriveMode::SimpleProgramming;
-
-		stop();
-		delete this;
-
-		if(backToMenu){
-			auto mainMenu = new MainMenu();
-			mainMenu->setInfoElement(std::move(info));
-			lv_obj_del(tmpScr);
-			mainMenu->start();
-		}else{
-			// TODO: general info element passing
-			auto simple = new SimpleProgScreen();
-			simple->start();
-		}
 	}
 }
 

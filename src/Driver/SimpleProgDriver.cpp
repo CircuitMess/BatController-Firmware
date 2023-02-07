@@ -2,6 +2,8 @@
 #include "../Screens/SimpleProg/SimpleProgScreen.h"
 #include <Loop/LoopManager.h>
 #include <Com/Communication.h>
+#include <SPIFFS.h>
+#include "../Screens/SimpleProg/ActionEditModal.h"
 
 SimpleProgDriver::SimpleProgDriver(std::unique_ptr<Simple::Program> program) : program(std::move(program)){
 
@@ -9,7 +11,7 @@ SimpleProgDriver::SimpleProgDriver(std::unique_ptr<Simple::Program> program) : p
 
 void SimpleProgDriver::setContainer(lv_obj_t* container){
 	inited = true;
-	//TODO - build UI once we have a container
+	playbackElement = std::make_unique<ProgPlaybackElement>(container, *program);
 }
 
 void SimpleProgDriver::onStart(){
@@ -38,7 +40,7 @@ void SimpleProgDriver::loop(uint micros){
 	if(currentAction.type == Simple::Action::Type::Drive && actionExecuted){
 		actionTimer += micros;
 		if(actionTimer >= currentAction.DriveData.duration * 100000){
-			actionCursor++;
+			nextAction();
 			actionTimer = 0;
 			actionExecuted = false;
 			Com.sendDriveDir((uint8_t) DriveDirection::None);
@@ -47,7 +49,7 @@ void SimpleProgDriver::loop(uint micros){
 	}else if(currentAction.type == Simple::Action::Type::Delay && actionExecuted){
 		actionTimer += micros;
 		if(actionTimer >= currentAction.DelayData.duration * 100000){
-			actionCursor++;
+			nextAction();
 			actionTimer = 0;
 			actionExecuted = false;
 			return;
@@ -66,21 +68,22 @@ void SimpleProgDriver::loop(uint micros){
 
 			case Simple::Action::Type::Headlights:
 				Com.sendHeadlights(currentAction.HeadTaillightData.toggle ? 255 : 0);
-				actionCursor++;
+				nextAction();
 				break;
 
 			case Simple::Action::Type::Taillights:
 				Com.sendTaillights(currentAction.HeadTaillightData.toggle ? 255 : 0);
-				actionCursor++;
+				nextAction();
 				break;
 
 			case Simple::Action::Type::Underlights:
 				Com.sendUnderlights(currentAction.RGBData.colorID);
-				actionCursor++;
+				nextAction();
 				break;
 
 			case Simple::Action::Type::Sound:
 				Com.sendSoundEffect(currentAction.SoundData.sampleIndex);
+				nextAction();
 				break;
 
 			case Simple::Action::Type::Delay:
@@ -89,4 +92,15 @@ void SimpleProgDriver::loop(uint micros){
 				break;
 		}
 	}
+}
+
+void SimpleProgDriver::nextAction(){
+	actionCursor++;
+	if(actionCursor >= program->actions.size()){
+		if(playbackElement) playbackElement->nextAction();
+		stop();
+		return;
+	}
+
+	if(playbackElement) playbackElement->nextAction();
 }
