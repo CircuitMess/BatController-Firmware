@@ -30,7 +30,7 @@ namespace Simple {
 				DriveDirection dir;
 				uint8_t duration; //duration increment is 100ms
 				uint8_t speed;
-			} DriveData;
+			} __attribute__((packed)) DriveData;
 
 			struct {
 				bool toggle;
