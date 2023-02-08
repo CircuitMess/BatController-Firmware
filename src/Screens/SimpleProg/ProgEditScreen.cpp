@@ -24,7 +24,7 @@ ProgEditScreen::ProgEditScreen(Simple::Program& program, std::function<void()> s
 
 	actionView = lv_obj_create(obj);
 	lv_obj_set_size(actionView, 137, 102);
-	lv_obj_set_scrollbar_mode(actionView, LV_SCROLLBAR_MODE_ON);
+	lv_obj_set_scrollbar_mode(actionView, LV_SCROLLBAR_MODE_OFF);
 	lv_obj_set_layout(actionView, LV_LAYOUT_FLEX);
 	lv_obj_set_flex_flow(actionView, LV_FLEX_FLOW_ROW_WRAP);
 	lv_obj_set_flex_align(actionView, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);

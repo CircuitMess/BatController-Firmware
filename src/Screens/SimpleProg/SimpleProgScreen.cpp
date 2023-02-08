@@ -65,7 +65,7 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_obj_set_style_pad_row(progView, spaceBetweenProgs, LV_STATE_DEFAULT);
 	lv_obj_set_style_pad_top(progView, 5, LV_STATE_DEFAULT);
 	lv_obj_set_style_pad_bottom(progView, 3, LV_STATE_DEFAULT);
-	lv_obj_set_scrollbar_mode(progView, LV_SCROLLBAR_MODE_ON);
+	lv_obj_set_scrollbar_mode(progView, LV_SCROLLBAR_MODE_OFF);
 
 	footer = lv_img_create(obj);
 	lv_img_set_src(footer, "S:/SimpleProg/footer.bin");
