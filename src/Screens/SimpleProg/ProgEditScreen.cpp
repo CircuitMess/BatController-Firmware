@@ -13,7 +13,7 @@ static const std::map<Simple::Action::Type, const char*> actionIcons = {
 };
 
 
-ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<void()> saveCallback) : program(program), editModal(this), pickModal(this),
+ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback) : program(program), editModal(this), pickModal(this),
 																							   saveCallback(saveCallback),
 																							   infoElement(obj, DriveMode::SimpleProgramming){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
@@ -124,7 +124,7 @@ void ProgEditScreen::onStop(){
 	InputLVGL::enableVerticalNavigation(true);
 	InputLVGL::enableHorizontalNavigation(false);
 	Input::getInstance()->removeListener(this);
-	if(saveCallback) saveCallback();
+	if(saveCallback) saveCallback(program);
 }
 
 void ProgEditScreen::buttonPressed(uint i){

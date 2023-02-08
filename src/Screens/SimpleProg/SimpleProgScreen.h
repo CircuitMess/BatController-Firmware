@@ -20,7 +20,6 @@ private:
 	Simple::Storage storage;
 	void buildProgView();
 
-	Simple::Program currentProgram;
 	static uint8_t lastProgramIndex;
 
 	GeneralInfoElement infoElement;
@@ -30,6 +29,8 @@ private:
 
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
+
+	void startEdit(uint8_t index);
 
 	static constexpr uint8_t programWidth = 141;
 	static constexpr uint8_t programHeight = 17;

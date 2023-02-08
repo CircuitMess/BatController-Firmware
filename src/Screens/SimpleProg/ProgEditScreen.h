@@ -12,7 +12,7 @@
 
 class ProgEditScreen : public LVScreen, private DisconnectListener, private InputListener{
 public:
-	ProgEditScreen(const Simple::Program& program, std::function<void()> saveCallback);
+	ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback);
 	void onStart() override;
 	void onStop() override;
 
@@ -23,7 +23,7 @@ private:
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
 
-	std::function<void()> saveCallback;
+	std::function<void(Simple::Program)> saveCallback;
 
 	ActionEditModal editModal;
 	ActionPickModal pickModal;

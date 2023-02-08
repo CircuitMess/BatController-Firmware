@@ -210,13 +210,7 @@ void SimpleProgScreen::buildProgView(){
 			//Editing existing program
 			auto& screen = *(SimpleProgScreen*) e->user_data;
 			auto index = lv_obj_get_index(lv_group_get_focused(screen.inputGroup));
-
-			SimpleProgScreen::lastProgramIndex = index;
-			screen.currentProgram = screen.storage.getProg(index);
-			auto next = new ProgEditScreen(screen.currentProgram, [&screen](){
-				screen.storage.updateProg(SimpleProgScreen::lastProgramIndex, screen.currentProgram);
-			});
-			screen.push(next);
+			screen.startEdit(index);
 		}, LV_EVENT_SHORT_CLICKED, this);
 	}
 
@@ -229,15 +223,20 @@ void SimpleProgScreen::buildProgView(){
 	lv_obj_add_event_cb(newProg, [](lv_event_t* e){
 		//Adding new program
 		auto& screen = *(SimpleProgScreen*) e->user_data;
-		auto& prog = screen.currentProgram;
 
-		prog = Simple::Program{};
-		prog.name = "Program ";
-		prog.name.push_back((char) ((lv_obj_get_index(e->target) + 1) + '0'));
-		auto progEdit = new ProgEditScreen(prog, [&screen](){
-			screen.storage.addProg(screen.currentProgram);
-		});
-		screen.push(progEdit);
+		Simple::Program prog = {};
+
+		int i = 0;
+		do {
+			i++;
+			prog.name = "Program " + std::string(String(i).c_str());
+		} while(screen.storage.nameTaken(prog.name));
+
+		auto index = screen.storage.getNumProgs();
+		screen.storage.addProg(prog);
+
+		lastProgramIndex = index;
+		screen.startEdit(index);
 	}, LV_EVENT_PRESSED, this);
 
 	for(int j = 0; j < lv_obj_get_child_cnt(progView); ++j){
@@ -264,4 +263,14 @@ void SimpleProgScreen::onStarting(){
 		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_ON);
 	});
 	lv_group_focus_obj(lv_obj_get_child(progView, lastProgramIndex));
+}
+
+void SimpleProgScreen::startEdit(uint8_t index){
+	lastProgramIndex = index;
+
+	auto edit = new ProgEditScreen(storage.getProg(index), [this, index](Simple::Program program){
+		storage.updateProg(index, program);
+	});
+
+	push(edit);
 }
