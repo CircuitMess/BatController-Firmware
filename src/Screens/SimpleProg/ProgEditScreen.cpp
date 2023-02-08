@@ -33,38 +33,6 @@ ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<voi
 	lv_obj_set_style_pad_ver(actionView, 5, LV_STATE_DEFAULT);
 	lv_obj_set_style_pad_hor(actionView, 1, LV_STATE_DEFAULT);
 
-	program.actions.clear();
-	Simple::Action act{};
-	act.type = Simple::Action::Type::Drive;
-	act.DriveData = { DriveDirection::Forward, 10, 100 };
-	program.actions.push_back(act);
-
-	act = {};
-	act.type = Simple::Action::Type::Underlights;
-	act.RGBData = { Simple::Red };
-	program.actions.push_back(act);
-
-	act = {};
-	act.type = Simple::Action::Type::Delay;
-	act.DelayData = { 10 };
-	program.actions.push_back(act);
-
-	act = {};
-	act.type = Simple::Action::Type::Underlights;
-	act.RGBData = { Simple::Green };
-	program.actions.push_back(act);
-
-	act = {};
-	act.type = Simple::Action::Type::Sound;
-	act.SoundData.sampleIndex = 0;
-	program.actions.push_back(act);
-
-	act = {};
-	act.type = Simple::Action::Type::Headlights;
-	act.HeadTaillightData.toggle = true;
-	program.actions.push_back(act);
-
-
 	progDeleteTimer = lv_timer_create([](lv_timer_t* timer){
 		auto& screen = *(ProgEditScreen*) timer->user_data;
 		if(millis() - screen.holdStartTime >= holdTime){
