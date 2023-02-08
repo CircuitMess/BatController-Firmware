@@ -49,15 +49,15 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 		originalMode = mode;
 	}
 
-	// If mode is idle, do nothing (setMode returns early)
 	if(customDriver){
 		currentMode = mode;
 		driver = std::move(customDriver);
 		if(mode == DriveMode::SimpleProgramming){
-			static_cast<SimpleProgDriver&>(*driver).setContainer(driverLayer);
+			static_cast<SimpleProgDriver*>(driver.get())->setContainer(driverLayer);
 		}
 		Com.sendDriveMode(currentMode);
 	}else{
+		// If mode is idle, do nothing (setMode returns early)
 		setMode(mode);
 	}
 
