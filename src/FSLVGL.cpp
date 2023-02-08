@@ -5,6 +5,8 @@
 const char* FSLVGL::cached[] = {
 		"/Menu/Small/Ball_b.bin",
 		"/Menu/Small/Ball_r.bin",
+		"/Menu/Small/SimpleProg_b.bin",
+		"/Menu/Small/SimpleProg_r.bin",
 		"/Menu/Small/Dance_b.bin",
 		"/Menu/Small/Dance_r.bin",
 		"/Menu/Small/Manual_b.bin",
@@ -14,6 +16,7 @@ const char* FSLVGL::cached[] = {
 		"/Menu/Small/Settings_b.bin",
 		"/Menu/Small/Settings_r.bin",
 		"/Menu/Label/Ball.bin",
+		"/Menu/Label/SimpleProg.bin",
 		"/Menu/Label/Dance.bin",
 		"/Menu/Label/Manual.bin",
 		"/Menu/Label/Marker.bin",

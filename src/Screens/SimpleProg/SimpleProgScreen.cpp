@@ -21,11 +21,12 @@ std::array<const char*, 9> SimpleProgScreen::cacheFiles{
 		"/SimpleProg/footer.bin"
 };
 
-std::array<const char*, 16> SimpleProgScreen::uncachedFiles{ "/DriveScreen/Boost_segment.bin",
-															 "/Menu/Small/Ball_b.bin",
+std::array<const char*, 18> SimpleProgScreen::uncachedFiles{ "/Menu/Small/Ball_b.bin",
 															 "/Menu/Small/Ball_r.bin",
-															 "/Menu/Small/Line_b.bin",
-															 "/Menu/Small/Line_r.bin",
+															 "/Menu/Small/SimpleProg_b.bin",
+															 "/Menu/Small/SimpleProg_r.bin",
+															 "/Menu/Small/Dance_b.bin",
+															 "/Menu/Small/Dance_r.bin",
 															 "/Menu/Small/Manual_b.bin",
 															 "/Menu/Small/Manual_r.bin",
 															 "/Menu/Small/Marker_b.bin",
@@ -33,7 +34,8 @@ std::array<const char*, 16> SimpleProgScreen::uncachedFiles{ "/DriveScreen/Boost
 															 "/Menu/Small/Settings_b.bin",
 															 "/Menu/Small/Settings_r.bin",
 															 "/Menu/Label/Ball.bin",
-															 "/Menu/Label/Line.bin",
+															 "/Menu/Label/SimpleProg.bin",
+															 "/Menu/Label/Dance.bin",
 															 "/Menu/Label/Manual.bin",
 															 "/Menu/Label/Marker.bin",
 															 "/Menu/Label/Settings.bin" };
