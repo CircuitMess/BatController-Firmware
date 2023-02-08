@@ -19,7 +19,7 @@ public:
 
 private:
 	Simple::Program program;
-	void addAction(Simple::Action& action);
+	void addAction(const Simple::Action& action);
 	void addNewActionButton();
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;

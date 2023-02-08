@@ -133,7 +133,7 @@ void SimpleProgScreen::buildProgView(){
 
 	lv_obj_t* progElement;
 	for(int i = 0; i < storage.getNumProgs(); ++i){
-		auto prog = storage.getProg(i);
+		const auto prog = storage.getProg(i);
 
 		progElement = lv_btn_create(progView);
 		lv_obj_set_style_border_width(progElement, 1, LV_STATE_DEFAULT);

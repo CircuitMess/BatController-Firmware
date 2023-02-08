@@ -116,7 +116,7 @@ void ProgEditScreen::buttonReleased(uint i){
 	lv_timer_pause(progDeleteTimer);
 }
 
-void ProgEditScreen::addAction(Simple::Action& action){
+void ProgEditScreen::addAction(const Simple::Action& action){
 	lv_obj_t* actionElement = lv_img_create(actionView);
 	lv_img_set_src(actionElement, actionIcons.at(action.type));
 	lv_obj_set_style_radius(actionElement, 1, LV_STATE_DEFAULT);
