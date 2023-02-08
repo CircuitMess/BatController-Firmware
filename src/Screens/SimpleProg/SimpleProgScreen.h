@@ -40,7 +40,7 @@ private:
 	uint32_t holdStartTime = 0;
 
 	static std::array<const char*, 9> cacheFiles;
-	static std::array<const char*, 16> uncachedFiles;
+	static std::array<const char*, 18> uncachedFiles;
 };
 
 
