@@ -112,3 +112,11 @@ void Simple::Storage::clearAll(){
 	programs.clear();
 	writeProgs();
 }
+
+bool Simple::Storage::nameTaken(std::string name){
+	for(const auto prog : programs){
+		if(prog.name == name) return true;
+	}
+
+	return false;
+}

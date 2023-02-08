@@ -19,6 +19,8 @@ namespace Simple {
 		void updateProg(uint8_t index, const Program& program);
 		void clearAll();
 
+		bool nameTaken(std::string name);
+
 	private:
 		void readProgs();
 		void writeProgs();
