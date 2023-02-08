@@ -73,7 +73,7 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 
 		bool backToMenu = driveScreen.currentMode != DriveMode::SimpleProgramming;
 
-		auto info = std::move(infoElement);
+		auto info = std::move(driveScreen.infoElement);
 		auto tmpScr = lv_obj_create(nullptr);
 		if(info){
 			lv_obj_set_parent(info->getLvObj(), tmpScr);
