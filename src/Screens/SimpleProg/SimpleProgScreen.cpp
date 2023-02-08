@@ -260,7 +260,7 @@ void SimpleProgScreen::onStarting(){
 	buildProgView();
 
 	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
-		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_ON);
+		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_OFF);
 	});
 	lv_group_focus_obj(lv_obj_get_child(progView, lastProgramIndex));
 }
