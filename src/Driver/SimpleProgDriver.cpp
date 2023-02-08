@@ -77,7 +77,7 @@ void SimpleProgDriver::loop(uint micros){
 				break;
 
 			case Simple::Action::Type::Underlights:
-				Com.sendUnderlights(currentAction.RGBData.colorID);
+				Com.sendUnderlights(currentAction.RGBData.color);
 				nextAction();
 				break;
 

@@ -3,9 +3,21 @@
 
 #include <Arduino.h>
 #include <DriveDirection.h>
+#include <string>
 
 //TODO - define static color array used in Action's RGBData
 namespace Simple {
+	enum Color : uint8_t {
+		Off		= 0b0000,
+		Red		= 0b0001,
+		Green	= 0b0010,
+		Yellow	= 0b0011,
+		Blue	= 0b0100,
+		Magenta	= 0b0101,
+		Cyan	= 0b0110,
+		White	= 0b0111
+	};
+
 	struct Action {
 		enum class Type : uint8_t {
 			Drive, Headlights, Taillights, Underlights, Sound, Delay
@@ -25,7 +37,7 @@ namespace Simple {
 			} HeadTaillightData;
 
 			struct {
-				uint8_t colorID;
+				Color color;
 			} RGBData;
 
 			struct {

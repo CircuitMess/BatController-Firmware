@@ -19,7 +19,14 @@ const char* SoundNames[SoundsNum] = {
 		"paired",
 		"scan"
 };
-const uint8_t ColorsNum = 5;
+const uint8_t ColorsNum = 8;
 const char* ColorNames[ColorsNum] = {
-		"Off", "Red", "Green", "Blue", "White"
+		"Off",
+		"Red",
+		"Green",
+		"Yellow",
+		"Blue",
+		"Magenta",
+		"Cyan",
+		"White",
 };

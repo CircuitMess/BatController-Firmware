@@ -48,7 +48,7 @@ ProgPlaybackElement::ProgPlaybackElement(lv_obj_t* parent, const Simple::Program
 				break;
 			case Simple::Action::Type::Underlights:
 				lv_img_set_src(img, "S:/SimpleProg/Underlight.bin");
-				lv_label_set_text(text, (String("Under-lights ") + ColorNames[action.RGBData.colorID]).c_str());
+				lv_label_set_text(text, (String("Under-lights ") + ColorNames[action.RGBData.color]).c_str());
 				break;
 			case Simple::Action::Type::Sound:
 				lv_img_set_src(img, "S:/SimpleProg/Sound.bin");

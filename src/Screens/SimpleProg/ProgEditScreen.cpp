@@ -41,7 +41,7 @@ ProgEditScreen::ProgEditScreen(Simple::Program& program, std::function<void()> s
 
 	act = {};
 	act.type = Simple::Action::Type::Underlights;
-	act.RGBData = { 1 };
+	act.RGBData = { Simple::Red };
 	program.actions.push_back(act);
 
 	act = {};
@@ -51,7 +51,7 @@ ProgEditScreen::ProgEditScreen(Simple::Program& program, std::function<void()> s
 
 	act = {};
 	act.type = Simple::Action::Type::Underlights;
-	act.RGBData = { 0 };
+	act.RGBData = { Simple::Green };
 	program.actions.push_back(act);
 
 	act = {};

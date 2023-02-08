@@ -1,7 +1,5 @@
 #include "ActionEditModal.h"
 #include "../../InputLVGL.h"
-#include <SimpleProgColors.h>
-
 
 ActionEditModal::ActionEditModal(LVScreen* parent) : LVModal(parent){
 
@@ -266,7 +264,7 @@ void ActionEditModal::addColor(Simple::Action& action){
 	lv_obj_t* indicator = lv_label_create(dir);
 	lv_obj_set_style_text_font(indicator, &lv_font_montserrat_10, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(indicator, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text(indicator, ColorNames[action.RGBData.colorID]);
+	lv_label_set_text(indicator, ColorNames[action.RGBData.color]);
 	lv_obj_set_align(indicator, LV_ALIGN_BOTTOM_MID);
 
 	lv_obj_add_event_cb(dir, [](lv_event_t* e){
@@ -274,11 +272,11 @@ void ActionEditModal::addColor(Simple::Action& action){
 		auto indicator = lv_obj_get_child(e->target, 1);
 
 		if(lv_event_get_key(e) == LV_KEY_LEFT){
-			action.RGBData.colorID = constrain(action.RGBData.colorID - 1, 0, ColorsNum - 1);
-			lv_label_set_text(indicator, ColorNames[action.RGBData.colorID]);
+			action.RGBData.color = (Simple::Color) constrain(action.RGBData.color - 1, 0, ColorsNum - 1);
+			lv_label_set_text(indicator, ColorNames[action.RGBData.color]);
 		}else if(lv_event_get_key(e) == LV_KEY_RIGHT){
-			action.RGBData.colorID = constrain(action.RGBData.colorID + 1, 0, ColorsNum - 1);
-			lv_label_set_text(indicator, ColorNames[action.RGBData.colorID]);
+			action.RGBData.color = (Simple::Color) constrain(action.RGBData.color + 1, 0, ColorsNum - 1);
+			lv_label_set_text(indicator, ColorNames[action.RGBData.color]);
 		}
 	}, LV_EVENT_KEY, &action);
 

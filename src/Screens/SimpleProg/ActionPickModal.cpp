@@ -72,7 +72,7 @@ void ActionPickModal::addAction(Simple::Action::Type type){
 				action.HeadTaillightData.toggle = true;
 				break;
 			case Simple::Action::Type::Underlights:
-				action.RGBData.colorID = 1;
+				action.RGBData.color = Simple::Green;
 				break;
 			case Simple::Action::Type::Sound:
 				action.SoundData.sampleIndex = 2;
