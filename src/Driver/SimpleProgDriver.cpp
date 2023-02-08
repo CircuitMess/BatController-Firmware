@@ -5,7 +5,7 @@
 #include <SPIFFS.h>
 #include "../Screens/SimpleProg/ActionEditModal.h"
 
-SimpleProgDriver::SimpleProgDriver(std::unique_ptr<Simple::Program> program) : program(std::move(program)){
+SimpleProgDriver::SimpleProgDriver(std::unique_ptr<Simple::Program> program) : Driver(DriveMode::SimpleProgramming), program(std::move(program)){
 
 }
 
