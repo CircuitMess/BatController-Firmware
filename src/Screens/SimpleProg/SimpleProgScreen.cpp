@@ -53,6 +53,10 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_COLUMN);
 	lv_obj_set_flex_align(obj, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
+	// sue me
+	lv_obj_t* pad = lv_obj_create(obj);
+	lv_obj_set_size(pad, 160, 8);
+
 	progView = lv_obj_create(obj);
 	lv_obj_set_size(progView, 160, 102);
 	lv_obj_set_layout(progView, LV_LAYOUT_FLEX);
