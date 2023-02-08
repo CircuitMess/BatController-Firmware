@@ -198,6 +198,7 @@ void SimpleProgScreen::buildProgView(){
 				p->stop();
 				delete p;
 				auto ds = new DriveScreen(DriveMode::SimpleProgramming, std::move(driver));
+				ds->setInfoElement(std::make_unique<GeneralInfoElement>(ds->getLvObj(), DriveMode::SimpleProgramming));
 				ds->start();
 
 			}
