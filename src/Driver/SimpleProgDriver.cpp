@@ -5,13 +5,13 @@
 #include <SPIFFS.h>
 #include "../Screens/SimpleProg/ActionEditModal.h"
 
-SimpleProgDriver::SimpleProgDriver(std::unique_ptr<Simple::Program> program) : Driver(DriveMode::SimpleProgramming), program(std::move(program)){
+SimpleProgDriver::SimpleProgDriver(const Simple::Program& program) : Driver(DriveMode::SimpleProgramming), program(program){
 
 }
 
 void SimpleProgDriver::setContainer(lv_obj_t* container){
 	inited = true;
-	playbackElement = std::make_unique<ProgPlaybackElement>(container, *program);
+	playbackElement = std::make_unique<ProgPlaybackElement>(container, program);
 }
 
 void SimpleProgDriver::onStart(){
@@ -29,12 +29,12 @@ void SimpleProgDriver::onStop(){
 
 void SimpleProgDriver::loop(uint micros){
 
-	if(actionCursor >= program->actions.size()){
+	if(actionCursor >= program.actions.size()){
 		stop();
 		return;
 	}
 
-	auto currentAction = program->actions[actionCursor];
+	auto currentAction = program.actions[actionCursor];
 
 	//timekeeping for actions with durations (Drive and Delay)
 	if(currentAction.type == Simple::Action::Type::Drive && actionExecuted){
@@ -96,7 +96,7 @@ void SimpleProgDriver::loop(uint micros){
 
 void SimpleProgDriver::nextAction(){
 	actionCursor++;
-	if(actionCursor >= program->actions.size()){
+	if(actionCursor >= program.actions.size()){
 		if(playbackElement) playbackElement->nextAction();
 		stop();
 		return;

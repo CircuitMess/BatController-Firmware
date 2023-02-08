@@ -8,7 +8,7 @@
 
 class SimpleProgDriver : public Driver, private LoopListener {
 public:
-	SimpleProgDriver(std::unique_ptr<Simple::Program> program);
+	SimpleProgDriver(const Simple::Program& program);
 
 	~SimpleProgDriver() override = default;;
 	void setContainer(lv_obj_t* container);
@@ -21,7 +21,7 @@ private:
 	void loop(uint micros) override;
 	void nextAction();
 
-	std::unique_ptr<Simple::Program> program;
+	Simple::Program program;
 	std::unique_ptr<ProgPlaybackElement> playbackElement;
 
 	bool inited = false;

@@ -13,7 +13,7 @@ static const std::map<Simple::Action::Type, const char*> actionIcons = {
 };
 
 
-ProgEditScreen::ProgEditScreen(Simple::Program& program, std::function<void()> saveCallback) : program(program), editModal(this), pickModal(this),
+ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<void()> saveCallback) : program(program), editModal(this), pickModal(this),
 																							   saveCallback(saveCallback),
 																							   infoElement(obj, DriveMode::SimpleProgramming){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);

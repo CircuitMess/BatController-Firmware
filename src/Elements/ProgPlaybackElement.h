@@ -14,7 +14,7 @@ private:
 	lv_obj_t* doneElement;
 	lv_obj_t* doneLabel;
 	lv_style_t border;
-	const Simple::Program& program;
+	const Simple::Program program;
 
 	size_t actionCursor = 0;
 };

@@ -192,12 +192,14 @@ void SimpleProgScreen::buildProgView(){
 				auto index = lv_obj_get_index(e->target);
 				SimpleProgScreen::lastProgramIndex = index;
 
-				std::unique_ptr<Simple::Program> program = std::make_unique<Simple::Program>(p->storage.getProg(index));
-				std::unique_ptr<SimpleProgDriver> driver = std::make_unique<SimpleProgDriver>(std::move(program));
+				auto program = p->storage.getProg(index);
 
 				p->stop();
 				delete p;
-				auto ds = new DriveScreen(DriveMode::SimpleProgramming, std::move(driver));
+
+				auto driver = new SimpleProgDriver(program);
+
+				auto ds = new DriveScreen(DriveMode::SimpleProgramming, std::unique_ptr<Driver>(driver));
 				ds->setInfoElement(std::make_unique<GeneralInfoElement>(ds->getLvObj(), DriveMode::SimpleProgramming));
 				ds->start();
 

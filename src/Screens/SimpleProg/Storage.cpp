@@ -20,7 +20,7 @@ uint8_t Simple::Storage::getNumProgs() const{
 	return programs.size();
 }
 
-const Simple::Program& Simple::Storage::getProg(uint8_t index){
+Simple::Program Simple::Storage::getProg(uint8_t index){
 	return programs[index];
 }
 
