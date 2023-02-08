@@ -35,13 +35,14 @@ ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<voi
 
 	progDeleteTimer = lv_timer_create([](lv_timer_t* timer){
 		auto& screen = *(ProgEditScreen*) timer->user_data;
-		if(millis() - screen.holdStartTime >= holdTime){
-			auto index = lv_obj_get_index(lv_group_get_focused(screen.inputGroup));
-			screen.program.actions.erase(screen.program.actions.begin() + index);
-			lv_obj_del_async(lv_group_get_focused(screen.inputGroup));
-			lv_timer_pause(timer);
-		}
-	}, 1, this);
+
+		auto index = lv_obj_get_index(lv_group_get_focused(screen.inputGroup));
+		if(index >= screen.program.actions.size()) return;
+
+		screen.program.actions.erase(screen.program.actions.begin() + index);
+		lv_obj_del_async(lv_group_get_focused(screen.inputGroup));
+		lv_timer_pause(timer);
+	}, holdTime, this);
 	lv_timer_pause(progDeleteTimer);
 
 	for(auto& action: program.actions){
@@ -82,6 +83,10 @@ ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<voi
 	});
 }
 
+ProgEditScreen::~ProgEditScreen(){
+	lv_timer_del(progDeleteTimer);
+}
+
 void ProgEditScreen::onStart(){
 	InputLVGL::enableVerticalNavigation(false);
 	InputLVGL::enableHorizontalNavigation(true);
@@ -97,21 +102,17 @@ void ProgEditScreen::onStop(){
 
 void ProgEditScreen::buttonPressed(uint i){
 	if(editModal.isActive()) return;
-	if(i != BTN_B) return;
-	if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()) return;
 
-	if(progDeleteTimer->paused){
-		lv_timer_reset(progDeleteTimer);
-		lv_timer_resume(progDeleteTimer);
-		holdStartTime = millis();
-	}
+	if(i != BTN_B){
+		lv_timer_pause(progDeleteTimer);
+	}else if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()) return;
+
+	lv_timer_reset(progDeleteTimer);
+	lv_timer_resume(progDeleteTimer);
 }
 
 void ProgEditScreen::buttonReleased(uint i){
 	if(editModal.isActive()) return;
-	if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()) return;
-
-	holdStartTime = millis();
 	lv_timer_pause(progDeleteTimer);
 }
 

@@ -15,6 +15,7 @@ public:
 	ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback);
 	void onStart() override;
 	void onStop() override;
+	virtual ~ProgEditScreen();
 
 private:
 	Simple::Program program;
@@ -36,7 +37,6 @@ private:
 	static constexpr uint32_t holdTime = 800; //0.8s hold to confirm erase
 	static constexpr uint8_t rowLength = 7;
 	lv_timer_t* progDeleteTimer;
-	uint32_t holdStartTime = 0;
 };
 
 
