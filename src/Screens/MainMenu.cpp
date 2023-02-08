@@ -6,9 +6,11 @@
 #include <Com/Communication.h>
 #include "SettingsScreen.h"
 #include "PairScreen.h"
+#include "SimpleProg/SimpleProgScreen.h"
 
 const MainMenu::Item MainMenu::Items[] = {
         {"Manual",   0},
+        {"SimpleProg",     0},
         {"Dance",     0},
         {"Ball",     0},
         {"Marker",   0},
@@ -218,6 +220,7 @@ void MainMenu::launch() {
 
 		static LVScreen *(*screens[])() = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
+				[]() -> LVScreen * { return new SimpleProgScreen; },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
@@ -236,7 +239,15 @@ void MainMenu::launch() {
 			screen->setParent(menu);
 			screen->start();
 			return;
-		}
+		}else if(selected == 1){
+			delete menu;
+
+			// TODO: set info element
+			auto screen = launcher();
+			if(screen == nullptr) return;
+			screen->start();
+			return;
+	}
 
         auto info = std::move(menu->infoElement);
 		auto tmpScr = lv_obj_create(nullptr);
