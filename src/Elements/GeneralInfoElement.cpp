@@ -9,7 +9,7 @@ const char* GeneralInfoElement::modePaths[] = {
 		"S:/DriveMode/Manual.bin",
 		"S:/DriveMode/Ball.bin",
 		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin"
+		"S:/DriveMode/Marker.bin",
 		"", //QRSCan
 		"S:/DriveMode/SimpleProg.bin",
 		"S:/DriveMode/Dance.bin"
