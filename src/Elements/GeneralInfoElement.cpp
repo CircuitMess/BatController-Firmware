@@ -29,12 +29,12 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 	setMode(mode);
 
 	signal = new SignalElement(obj);
-	lv_obj_align(signal->getLvObj(), LV_ALIGN_LEFT_MID, -33, 0);
+	lv_obj_align(signal->getLvObj(), LV_ALIGN_LEFT_MID, -30, 0);
 
 	conBat = new BatteryElement(obj, BatType::Controller);
 	lv_obj_align(conBat->getLvObj(), LV_ALIGN_RIGHT_MID, 40, 0);
 	mobBat = new BatteryElement(obj, BatType::Batmobile);
-	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -60, 0);
+	lv_obj_align(mobBat->getLvObj(), LV_ALIGN_LEFT_MID, -57, 0);
 
 	conBat->setLevel(Battery.getLevel());
 
