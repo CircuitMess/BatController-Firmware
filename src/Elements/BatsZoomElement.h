@@ -14,7 +14,7 @@ private:
 	static constexpr uint8_t maxScale = 5;
 	static constexpr uint8_t w = 9 * (maxScale + 1) + 1;
 	static constexpr uint8_t h = 5 * (maxScale + 1) + 1;
-	static constexpr uint32_t duration = 3000;
+	static constexpr uint32_t duration = 2000;
 	lv_obj_t* img;
 	lv_anim_t zoomAnim;
 	lv_timer_t* timer;
