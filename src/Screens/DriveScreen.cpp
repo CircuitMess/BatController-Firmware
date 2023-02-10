@@ -206,8 +206,10 @@ void DriveScreen::loop(uint micros){
 
 		if(currentMode == DriveMode::Manual){
 			setMode(originalMode);
+			Com.sendOverrideSound(false);
 		}else{
 			setMode(DriveMode::Manual);
+			Com.sendOverrideSound(true);
 		}
 
 		if(driver){
