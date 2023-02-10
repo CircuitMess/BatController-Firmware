@@ -1,17 +1,16 @@
-#include <cstdio>
 #include "GeneralInfoElement.h"
 #include <Loop/LoopManager.h>
 #include <BatteryService.h>
 #include <Com/Communication.h>
+#include <map>
 
-const char* GeneralInfoElement::modePaths[] = {
-		"",
-		"S:/DriveMode/Manual.bin",
-		"S:/DriveMode/Ball.bin",
-		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin",
-        "", //QRSCan
-        "S:/DriveMode/Dance.bin"
+static const std::map<DriveMode, const char*> modePaths = {
+		{ DriveMode::Idle,   "S:/DriveMode/Idle.bin" },
+		{ DriveMode::Manual, "S:/DriveMode/Manual.bin" },
+		{ DriveMode::Ball,   "S:/DriveMode/Ball.bin" },
+		{ DriveMode::Line,   "S:/DriveMode/Line.bin" },
+		{ DriveMode::Marker, "S:/DriveMode/Marker.bin" },
+		{ DriveMode::Dance,  "S:/DriveMode/Dance.bin" }
 };
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
@@ -50,7 +49,9 @@ GeneralInfoElement::~GeneralInfoElement(){
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
-	lv_img_set_src(modeImg, modePaths[(int) mode]);
+	if(!modePaths.count(mode)) return;
+
+	lv_img_set_src(modeImg, modePaths.at(mode));
 }
 
 void GeneralInfoElement::loop(uint micros){
