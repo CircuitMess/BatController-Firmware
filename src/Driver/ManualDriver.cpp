@@ -13,6 +13,7 @@ ManualDriver::ManualDriver(lv_obj_t* elementContainer) : Driver(DriveMode::Manua
 
 ManualDriver::~ManualDriver(){
 	stop();
+	delete boost;
 }
 
 void ManualDriver::onStart(){
