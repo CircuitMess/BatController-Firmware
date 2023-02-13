@@ -43,9 +43,7 @@ void setup(){
 	pinMode(PIN_BATT, INPUT);
 	srand(analogRead(PIN_BATT)*7+analogRead(PIN_BATT)*13);
 
-	display = BatController.getDisplay();
-
-	LoopManager::reserve(10);
+	LoopManager::reserve(26);
 
 	lv_init();
 	if(!display->getBaseSprite()->created()){
