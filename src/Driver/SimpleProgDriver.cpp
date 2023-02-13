@@ -9,6 +9,10 @@ SimpleProgDriver::SimpleProgDriver(const Simple::Program& program) : Driver(Driv
 
 }
 
+SimpleProgDriver::~SimpleProgDriver(){
+	stop();
+}
+
 void SimpleProgDriver::setContainer(lv_obj_t* container){
 	inited = true;
 	playbackElement = std::make_unique<ProgPlaybackElement>(container, program);

@@ -9,8 +9,8 @@
 class SimpleProgDriver : public Driver, private LoopListener {
 public:
 	SimpleProgDriver(const Simple::Program& program);
+	virtual ~SimpleProgDriver();
 
-	~SimpleProgDriver() override = default;;
 	void setContainer(lv_obj_t* container);
 
 protected:
