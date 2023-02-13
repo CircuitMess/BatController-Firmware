@@ -10,6 +10,7 @@
 class SimpleProgScreen : public LVScreen, private DisconnectListener, private InputListener {
 public:
 	SimpleProgScreen();
+	virtual ~SimpleProgScreen();
 
 	void onStarting() override;
 	void onStart() override;

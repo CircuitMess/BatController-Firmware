@@ -50,6 +50,10 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_timer_pause(progDeleteTimer);
 }
 
+SimpleProgScreen::~SimpleProgScreen(){
+	lv_timer_del(progDeleteTimer);
+}
+
 void SimpleProgScreen::onStart(){
 	Input::getInstance()->addListener(this);
 }

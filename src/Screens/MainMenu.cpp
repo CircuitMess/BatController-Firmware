@@ -206,6 +206,7 @@ void MainMenu::launch() {
 
 	auto timer = lv_timer_create([](lv_timer_t* timer){
 		auto menu = static_cast<MainMenu*>(timer->user_data);
+		lv_timer_del(timer);
 
 		const std::function<LVScreen*(void)> screens[] = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
