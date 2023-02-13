@@ -15,6 +15,8 @@ public:
 	void onStart() override;
 	void onStop() override;
 
+	static void touchIndex();
+
 private:
 	void onDisconnected() override;
 	Simple::Storage storage;

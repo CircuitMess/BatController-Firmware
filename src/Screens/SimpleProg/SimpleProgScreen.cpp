@@ -58,6 +58,10 @@ void SimpleProgScreen::onStop(){
 	Input::getInstance()->removeListener(this);
 }
 
+void SimpleProgScreen::touchIndex(){
+	printf("LPI: %d\n", lastProgramIndex);
+}
+
 void SimpleProgScreen::onDisconnected(){
 	stop();
 	delete this;

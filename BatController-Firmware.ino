@@ -77,6 +77,8 @@ void setup(){
 		BatController.shutdown();
 	}
 
+	SimpleProgScreen::touchIndex();
+
 	auto intro = new IntroScreen();
 	intro->setPreCallback([](){
 		WiFi.begin();
