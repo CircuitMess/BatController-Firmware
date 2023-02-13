@@ -40,8 +40,6 @@ private:
 	lv_timer_t* progDeleteTimer;
 	uint32_t holdStartTime = 0;
 
-	static std::array<const char*, 9> cacheFiles;
-	static std::array<const char*, 18> uncachedFiles;
 };
 
 

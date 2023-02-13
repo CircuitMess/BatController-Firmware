@@ -7,45 +7,10 @@
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
-#include "../../FSLVGL.h"
-
-std::array<const char*, 9> SimpleProgScreen::cacheFiles{
-		"/SimpleProg/Backlight.bin",
-		"/SimpleProg/Delay.bin",
-		"/SimpleProg/Drive.bin",
-		"/SimpleProg/Frontlight.bin",
-		"/SimpleProg/Sound.bin",
-		"/SimpleProg/Underlight.bin",
-		"/SimpleProg/new.bin",
-		"/SimpleProg/newFocused.bin",
-		"/SimpleProg/footer.bin"
-};
-
-std::array<const char*, 18> SimpleProgScreen::uncachedFiles{ "/Menu/Small/Ball_b.bin",
-															 "/Menu/Small/Ball_r.bin",
-															 "/Menu/Small/SimpleProg_b.bin",
-															 "/Menu/Small/SimpleProg_r.bin",
-															 "/Menu/Small/Dance_b.bin",
-															 "/Menu/Small/Dance_r.bin",
-															 "/Menu/Small/Manual_b.bin",
-															 "/Menu/Small/Manual_r.bin",
-															 "/Menu/Small/Marker_b.bin",
-															 "/Menu/Small/Marker_r.bin",
-															 "/Menu/Small/Settings_b.bin",
-															 "/Menu/Small/Settings_r.bin",
-															 "/Menu/Label/Ball.bin",
-															 "/Menu/Label/SimpleProg.bin",
-															 "/Menu/Label/Dance.bin",
-															 "/Menu/Label/Manual.bin",
-															 "/Menu/Label/Marker.bin",
-															 "/Menu/Label/Settings.bin" };
 
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
 SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgramming){
-
-	FSLVGL::addCache(cacheFiles);
-
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, LV_STATE_DEFAULT);
 
@@ -86,7 +51,6 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 }
 
 void SimpleProgScreen::onStart(){
-	FSLVGL::removeCache(uncachedFiles);
 	Input::getInstance()->addListener(this);
 }
 
@@ -97,8 +61,6 @@ void SimpleProgScreen::onStop(){
 void SimpleProgScreen::onDisconnected(){
 	stop();
 	delete this;
-
-	FSLVGL::addCache(uncachedFiles);
 
 	auto pair = new PairScreen();
 	pair->start();
@@ -248,8 +210,6 @@ void SimpleProgScreen::buildProgView(){
 			screen->stop();
 			delete screen;
 
-			FSLVGL::removeCache(cacheFiles);
-			FSLVGL::addCache(uncachedFiles);
 			auto mainMenu = new MainMenu();
 			mainMenu->start();
 		}, LV_EVENT_KEY, this);
