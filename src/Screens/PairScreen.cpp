@@ -86,12 +86,6 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 	pair.setDoneCallback([this](PairError pairError){
 		switch(pairError){
 			case PairError::PairOk:{
-				auto scr = lv_obj_create(nullptr);
-				lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
-				lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
-				lv_scr_load(scr);
-				lv_timer_handler();
-
 				stop();
 				delete this;
 
@@ -102,7 +96,6 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 				mainMenu->setInfoElement(std::make_unique<GeneralInfoElement>(mainMenu->getLvObj()));
 				mainMenu->start();
 
-				lv_obj_del(scr);
 				break;
 			}
 
