@@ -207,7 +207,7 @@ void MainMenu::launch() {
 	auto timer = lv_timer_create([](lv_timer_t* timer){
 		auto menu = static_cast<MainMenu*>(timer->user_data);
 
-		static LVScreen *(*screens[])() = {
+		const std::function<LVScreen*(void)> screens[] = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
 				[]() -> LVScreen * { return new SimpleProgScreen; },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); },
@@ -216,25 +216,25 @@ void MainMenu::launch() {
 				[]() -> LVScreen * { return new SettingsScreen(); }
 		};
 		volatile const auto selected = menu->selected;
-		volatile auto launcher = screens[selected];
 
 		menu->stop();
 
 		// Settings
 		if(selected == ItemCount-1){
-			auto screen = launcher();
+			auto screen = screens[selected]();
 			if(screen == nullptr) return;
 
 			screen->setParent(menu);
 			screen->start();
 			return;
-		}else if(selected == 1){
+		}else if(selected == 1){ // Simple prog
 			delete menu;
 
-			// TODO: set info element
-			auto screen = launcher();
+			// TODO: info element passing
+			auto screen = screens[selected]();
 			if(screen == nullptr) return;
 			screen->start();
+
 			return;
 	}
 
@@ -244,6 +244,7 @@ void MainMenu::launch() {
 
 		delete menu;
 
+		auto launcher = screens[selected];
 		DriveScreen* screen = reinterpret_cast<DriveScreen*>(launcher());
         screen->setInfoElement(std::move(info));
 		lv_obj_del(tmpScr);
