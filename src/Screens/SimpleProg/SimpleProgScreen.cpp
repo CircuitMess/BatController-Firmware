@@ -97,11 +97,10 @@ void SimpleProgScreen::buildProgView(){
 		lv_obj_del(lv_obj_get_child(progView, j));
 	}
 
-	lv_obj_t* progElement;
 	for(int i = 0; i < storage.getNumProgs(); ++i){
 		const auto prog = storage.getProg(i);
 
-		progElement = lv_btn_create(progView);
+		lv_obj_t* progElement = lv_btn_create(progView);
 		lv_obj_set_style_border_width(progElement, 1, LV_STATE_DEFAULT);
 		lv_obj_set_style_border_opa(progElement, LV_OPA_COVER, LV_STATE_DEFAULT);
 		lv_obj_set_style_border_color(progElement, lv_color_white(), LV_STATE_DEFAULT);
