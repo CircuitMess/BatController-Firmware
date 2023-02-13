@@ -30,9 +30,15 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 	lv_disp_flush_ready(disp);
 }
 
+static uint8_t displBuf[160*20];
+
 void setup(){
 	Serial.begin(115200);
 	BatController.begin(false);
+
+	display = BatController.getDisplay();
+	auto sprite = display->getBaseSprite();
+	sprite->resize(1, 1);
 
 	pinMode(PIN_BATT, INPUT);
 	srand(analogRead(PIN_BATT)*7+analogRead(PIN_BATT)*13);
@@ -46,7 +52,7 @@ void setup(){
 		Serial.println("not created");
 		return;
 	}
-	lv_disp_draw_buf_init(&drawBuffer, display->getBaseSprite()->getBuffer(), NULL, 160 * 128);
+	lv_disp_draw_buf_init(&drawBuffer, displBuf, NULL, sizeof(displBuf));
 
 	new FSLVGL(SPIFFS, 'S');
 	FSLVGL::loadCache();
