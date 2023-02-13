@@ -100,4 +100,5 @@ void MarkerDriver::onStart(){
 
 void MarkerDriver::onStop(){
 	autoControls.stop();
+	batsElement.stop();
 }
