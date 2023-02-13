@@ -57,6 +57,8 @@ private:
 	uint32_t overrideTime = 0;
 	bool overrideShown = false;
 	bool overrideDone = false;
+
+	void toMenu();
 };
 
 
