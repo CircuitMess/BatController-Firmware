@@ -42,6 +42,8 @@ private:
 	lv_timer_t* progDeleteTimer;
 	uint32_t holdStartTime = 0;
 
+	void startDrive(uint8_t index);
+
 };
 
 
