@@ -15,8 +15,9 @@
 #include "src/ShutdownService.h"
 #include "src/LowBatteryService.h"
 
-lv_disp_draw_buf_t drawBuffer;
 Display* display;
+lv_disp_draw_buf_t drawBuffer;
+static uint8_t drawData[160*20*2];
 
 void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 	uint32_t w = (area->x2 - area->x1 + 1);
@@ -29,8 +30,6 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 	tft.endWrite();
 	lv_disp_flush_ready(disp);
 }
-
-static uint8_t displBuf[160*20];
 
 void setup(){
 	Serial.begin(115200);
@@ -46,14 +45,7 @@ void setup(){
 	LoopManager::reserve(26);
 
 	lv_init();
-	if(!display->getBaseSprite()->created()){
-		Serial.println("not created");
-		return;
-	}
-	lv_disp_draw_buf_init(&drawBuffer, displBuf, NULL, sizeof(displBuf));
-
-	new FSLVGL(SPIFFS, 'S');
-	FSLVGL::loadCache();
+	lv_disp_draw_buf_init(&drawBuffer, drawData, nullptr, sizeof(drawData)/2);
 
 	static lv_disp_drv_t displayDriver;
 	lv_disp_drv_init(&displayDriver);
@@ -63,8 +55,6 @@ void setup(){
 	displayDriver.draw_buf = &drawBuffer;
 	lv_disp_t * disp = lv_disp_drv_register(&displayDriver);
 	BatThemeInit(disp);
-
-	BatController.getInput()->addListener(new InputLVGL());
 
 	if(Battery.getPercentage() < 1 && !Battery.charging()){
 		auto blank = new LVScreen();
@@ -82,6 +72,10 @@ void setup(){
 		BatController.shutdown();
 	}
 
+	new FSLVGL(SPIFFS, 'S');
+	FSLVGL::loadCache();
+
+	BatController.getInput()->addListener(new InputLVGL());
 	SimpleProgScreen::touchIndex();
 
 	auto intro = new IntroScreen();
