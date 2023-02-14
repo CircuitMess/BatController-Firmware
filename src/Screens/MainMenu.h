@@ -19,11 +19,15 @@ public:
     void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
 
 private:
-    struct Item {
-        const char* icon;
-        int16_t offset;
-    } static const Items[];
-    static const uint8_t ItemCount;
+	static constexpr uint8_t ItemCount = 6;
+	const char* const Items[ItemCount] = {
+			"Manual",
+			"SimpleProg",
+			"Dance",
+			"Ball",
+			"Marker",
+			"Settings",
+	};
 
     lv_obj_t* top;
     lv_obj_t* right;
