@@ -9,7 +9,7 @@
 class Prompt : public LVModal {
 public:
 	Prompt(LVScreen* parent, const char* text);
-	virtual ~Prompt();
+	~Prompt() override;
 
 protected:
 	void onStart() override;

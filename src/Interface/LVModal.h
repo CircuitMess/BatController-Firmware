@@ -8,7 +8,7 @@
 class LVModal : public LVObject {
 public:
 	LVModal(LVScreen* parent);
-	virtual ~LVModal();
+	~LVModal() override;
 
 	void start();
 	void stop();
