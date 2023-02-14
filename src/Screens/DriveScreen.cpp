@@ -7,11 +7,13 @@
 #include "../Driver/MarkerDriver.h"
 #include "PairScreen.h"
 #include "MainMenu.h"
+#include "../Driver/SimpleProgDriver.h"
+#include "SimpleProg/SimpleProgScreen.h"
 #include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 #include <Loop/LoopManager.h>
 
-DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
+DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) : LVScreen(), overrideElement(obj){
 	img = lv_img_create(obj);
 	lv_obj_set_size(img, 160, 120);
 	lv_obj_add_flag(img, LV_OBJ_FLAG_IGNORE_LAYOUT);
@@ -47,13 +49,32 @@ DriveScreen::DriveScreen(DriveMode mode) : LVScreen(), overrideElement(obj){
 		originalMode = mode;
 	}
 
-	// If mode is idle, do nothing (setMode returns early)
-	setMode(mode);
+	if(customDriver){
+		currentMode = mode;
+		driver = std::move(customDriver);
+		if(mode == DriveMode::SimpleProgramming){
+			static_cast<SimpleProgDriver*>(driver.get())->setContainer(driverLayer);
+		}
+		Com.sendDriveMode(currentMode);
+	}else{
+		// If mode is idle, do nothing (setMode returns early)
+		setMode(mode);
+	}
 
 	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_IGNORE_LAYOUT);
 	lv_obj_align(overrideElement.getLvObj(), LV_ALIGN_CENTER, 0, 0);
 	lv_obj_move_foreground(overrideElement.getLvObj());
 	hideOverrideElement();
+
+	lv_group_add_obj(inputGroup, obj);
+	lv_obj_add_event_cb(obj, [](lv_event_t* e){
+		if(lv_event_get_key(e) != LV_KEY_HOME) return;
+
+		auto screen = static_cast<DriveScreen*>(e->user_data);
+		LoopManager::defer([screen](uint32_t t){
+			screen->toMenu();
+		});
+	}, LV_EVENT_KEY, this);
 }
 
 DriveScreen::~DriveScreen(){
@@ -131,18 +152,6 @@ void DriveScreen::buttonPressed(uint i){
 		LoopManager::addListener(this);
 		overrideTime = millis();
 		overrideDone = false;
-	}else if(i == BTN_MENU){
-		auto info = std::move(infoElement);
-		auto tmpScr = lv_obj_create(nullptr);
-		lv_obj_set_parent(info->getLvObj(), tmpScr);
-
-		stop();
-		delete this;
-
-		auto mainMenu = new MainMenu();
-		mainMenu->setInfoElement(std::move(info));
-		lv_obj_del(tmpScr);
-		mainMenu->start();
 	}
 }
 
@@ -230,4 +239,30 @@ void DriveScreen::showOverrideElement() {
 void DriveScreen::hideOverrideElement(){
 	lv_obj_add_flag(overrideElement.getLvObj(), LV_OBJ_FLAG_HIDDEN);
 	overrideShown = false;
+}
+
+void DriveScreen::toMenu(){
+	const bool backToMenu = currentMode != DriveMode::SimpleProgramming;
+
+	auto info = std::move(infoElement);
+	auto tmpScr = lv_obj_create(nullptr);
+	if(info){
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
+	}
+
+	stop();
+	delete this;
+
+	if(backToMenu){
+		auto mainMenu = new MainMenu();
+		mainMenu->setInfoElement(std::move(info));
+		mainMenu->start();
+	}else{
+		info.reset();
+		// TODO: general info element passing
+		auto simple = new SimpleProgScreen();
+		simple->start();
+	}
+
+	lv_obj_del(tmpScr);
 }

@@ -6,16 +6,7 @@
 #include <Com/Communication.h>
 #include "SettingsScreen.h"
 #include "PairScreen.h"
-
-const MainMenu::Item MainMenu::Items[] = {
-        {"Manual",   0},
-        {"Dance",     0},
-        {"Ball",     0},
-        {"Marker",   0},
-        {"Settings", 0},
-};
-
-const uint8_t MainMenu::ItemCount = sizeof(Items) / sizeof(Items[0]);
+#include "SimpleProg/SimpleProgScreen.h"
 
 MainMenu::MainMenu() : LVScreen() {
     bigContainers.reserve(ItemCount * 2);
@@ -64,15 +55,15 @@ MainMenu::MainMenu() : LVScreen() {
         bigLabels.push_back(bigLabel);
         smalls.push_back(small);
 
-        lv_img_set_src(bigLabel, (String("S:/Menu/Label/") + item.icon + ".bin").c_str());
-        lv_img_set_src(small, (String("S:/Menu/Small/") + item.icon + "_b.bin").c_str());
+        lv_img_set_src(bigLabel, (String("S:/Menu/Label/") + item + ".bin").c_str());
+        lv_img_set_src(small, (String("S:/Menu/Small/") + item + "_b.bin").c_str());
 
         lv_obj_set_flex_flow(bigContainer, LV_FLEX_FLOW_COLUMN);
         lv_obj_set_flex_align(bigContainer, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
         lv_obj_set_width(bigContainer, lv_pct(100));
         lv_obj_set_height(bigContainer, 120);
 
-        lv_obj_set_style_translate_y(bigContainer, item.offset, LV_PART_MAIN | LV_STATE_DEFAULT);
+        // lv_obj_set_style_translate_y(bigContainer, item.offset, LV_PART_MAIN | LV_STATE_DEFAULT);
 
         lv_group_add_obj(inputGroup, bigContainer);
 
@@ -107,7 +98,7 @@ void MainMenu::loadGIFs() {
         lv_obj_t *big = lv_gif_create(bigContainers[i]);
         bigs.push_back(big);
 
-        lv_gif_set_src(bigs[i], (String("S:/Menu/Big/") + Items[i].icon + ".gif").c_str());
+        lv_gif_set_src(bigs[i], (String("S:/Menu/Big/") + Items[i] + ".gif").c_str());
         lv_gif_set_loop(big, LV_GIF_LOOP_ON);
         lv_gif_restart(big);
         lv_gif_stop(big);
@@ -127,10 +118,10 @@ void MainMenu::setRed(uint8_t index, bool reverse) {
     if (index >= smalls.size()) return;
 
     if (reverse) {
-        lv_img_set_src(smalls[index], (String("S:/Menu/Small/") + Items[index].icon + "_b.bin").c_str());
+        lv_img_set_src(smalls[index], (String("S:/Menu/Small/") + Items[index] + "_b.bin").c_str());
         lv_gif_stop(bigs[index]);
     } else {
-        lv_img_set_src(smalls[index], (String("S:/Menu/Small/") + Items[index].icon + "_r.bin").c_str());
+        lv_img_set_src(smalls[index], (String("S:/Menu/Small/") + Items[index] + "_r.bin").c_str());
         lv_gif_start(bigs[index]);
     }
 
@@ -215,28 +206,38 @@ void MainMenu::launch() {
 
 	auto timer = lv_timer_create([](lv_timer_t* timer){
 		auto menu = static_cast<MainMenu*>(timer->user_data);
+		lv_timer_del(timer);
 
-		static LVScreen *(*screens[])() = {
+		const std::function<LVScreen*(void)> screens[] = {
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Manual); },
+				[]() -> LVScreen * { return new SimpleProgScreen; },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Dance); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Ball); },
 				[]() -> LVScreen * { return new DriveScreen(DriveMode::Marker); },
 				[]() -> LVScreen * { return new SettingsScreen(); }
 		};
 		volatile const auto selected = menu->selected;
-		volatile auto launcher = screens[selected];
 
 		menu->stop();
 
 		// Settings
 		if(selected == ItemCount-1){
-			auto screen = launcher();
+			auto screen = screens[selected]();
 			if(screen == nullptr) return;
 
 			screen->setParent(menu);
 			screen->start();
 			return;
-		}
+		}else if(selected == 1){ // Simple prog
+			delete menu;
+
+			// TODO: info element passing
+			auto screen = screens[selected]();
+			if(screen == nullptr) return;
+			screen->start();
+
+			return;
+	}
 
         auto info = std::move(menu->infoElement);
 		auto tmpScr = lv_obj_create(nullptr);
@@ -244,6 +245,7 @@ void MainMenu::launch() {
 
 		delete menu;
 
+		auto launcher = screens[selected];
 		DriveScreen* screen = reinterpret_cast<DriveScreen*>(launcher());
         screen->setInfoElement(std::move(info));
 		lv_obj_del(tmpScr);
