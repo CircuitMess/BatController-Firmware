@@ -73,6 +73,7 @@ void IntroScreen::loop(uint micros){
 
 			auto timer = lv_timer_create([](lv_timer_t* timer){
 				lv_obj_del((lv_obj_t*) timer->user_data);
+				lv_timer_del(timer);
 			}, 600, scr);
 			lv_timer_set_repeat_count(timer, 1);
 		});

@@ -5,14 +5,13 @@
 #include <Com/Communication.h>
 #include <Wire.h>
 
-static const uint directions[] = { BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT };
-
 ManualDriver::ManualDriver(lv_obj_t* elementContainer) : Driver(DriveMode::Manual), boost(new BoostElement(elementContainer)){
 	lv_obj_set_pos(boost->getLvObj(), 2, 10);
 }
 
 ManualDriver::~ManualDriver(){
 	stop();
+	delete boost;
 }
 
 void ManualDriver::onStart(){

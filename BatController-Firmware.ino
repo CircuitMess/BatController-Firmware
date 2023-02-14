@@ -10,12 +10,14 @@
 #include <Com/Communication.h>
 #include <WiFi.h>
 #include "src/BatTheme.h"
+#include "src/Screens/SimpleProg/SimpleProgScreen.h"
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
 #include "src/LowBatteryService.h"
 
-lv_disp_draw_buf_t drawBuffer;
 Display* display;
+lv_disp_draw_buf_t drawBuffer;
+static uint8_t drawData[160*20*2];
 
 void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 	uint32_t w = (area->x2 - area->x1 + 1);
@@ -33,22 +35,17 @@ void setup(){
 	Serial.begin(115200);
 	BatController.begin(false);
 
+	display = BatController.getDisplay();
+	auto sprite = display->getBaseSprite();
+	sprite->resize(1, 1);
+
 	pinMode(PIN_BATT, INPUT);
 	srand(analogRead(PIN_BATT)*7+analogRead(PIN_BATT)*13);
 
-	display = BatController.getDisplay();
-
-	LoopManager::reserve(10);
+	LoopManager::reserve(26);
 
 	lv_init();
-	if(!display->getBaseSprite()->created()){
-		Serial.println("not created");
-		return;
-	}
-	lv_disp_draw_buf_init(&drawBuffer, display->getBaseSprite()->getBuffer(), NULL, 160 * 128);
-
-	new FSLVGL(SPIFFS, 'S');
-	FSLVGL::loadCache();
+	lv_disp_draw_buf_init(&drawBuffer, drawData, nullptr, sizeof(drawData)/2);
 
 	static lv_disp_drv_t displayDriver;
 	lv_disp_drv_init(&displayDriver);
@@ -58,8 +55,6 @@ void setup(){
 	displayDriver.draw_buf = &drawBuffer;
 	lv_disp_t * disp = lv_disp_drv_register(&displayDriver);
 	BatThemeInit(disp);
-
-	BatController.getInput()->addListener(new InputLVGL());
 
 	if(Battery.getPercentage() < 1 && !Battery.charging()){
 		auto blank = new LVScreen();
@@ -76,6 +71,12 @@ void setup(){
 		delay(4000);
 		BatController.shutdown();
 	}
+
+	new FSLVGL(SPIFFS, 'S');
+	FSLVGL::loadCache();
+
+	BatController.getInput()->addListener(new InputLVGL());
+	SimpleProgScreen::touchIndex();
 
 	auto intro = new IntroScreen();
 	intro->setPreCallback([](){
