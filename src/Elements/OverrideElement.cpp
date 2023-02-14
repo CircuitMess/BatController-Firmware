@@ -41,7 +41,7 @@ void OverrideElement::setText(overrideText oText){
 			lv_label_set_text(text, "MANUAL\nOVERRIDE");
 			break;
 		case overrideText::Auto:
-			lv_label_set_text(text, "INITIALIZING\nAUTOPILOT");
+			lv_label_set_text(text, "RESUMING\nAUTOPILOT");
 			break;
 	}
 }

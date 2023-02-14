@@ -8,19 +8,19 @@
 
 class DanceDriver : public Driver, private InputListener {
 public:
-    DanceDriver(lv_obj_t* elementContainer);
-    ~DanceDriver() override;
+	DanceDriver(lv_obj_t* elementContainer);
+	~DanceDriver() override;
 
 protected:
-    void onStart() override;
-    void onStop() override;
+	void onStart() override;
+	void onStop() override;
 
 private:
-    void buttonReleased(uint i) override;
-    void buttonPressed(uint i) override;
+	void buttonReleased(uint i) override;
+	void buttonPressed(uint i) override;
 
-    DanceElement* dance;
-    uint8_t danceIndex = 0;
+	DanceElement danceElement;
+	uint8_t danceIndex = 0;
 };
 
 
