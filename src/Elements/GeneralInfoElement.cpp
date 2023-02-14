@@ -1,4 +1,3 @@
-#include <cstdio>
 #include "GeneralInfoElement.h"
 #include <Loop/LoopManager.h>
 #include <BatteryService.h>
@@ -51,7 +50,9 @@ GeneralInfoElement::~GeneralInfoElement(){
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
-	lv_img_set_src(modeImg, modePaths[(int) mode]);
+	if(!modePaths.count(mode)) return;
+
+	lv_img_set_src(modeImg, modePaths.at(mode));
 }
 
 void GeneralInfoElement::loop(uint micros){
