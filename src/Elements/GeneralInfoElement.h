@@ -22,7 +22,16 @@ private:
 	BatteryElement* conBat;
 	BatteryElement* mobBat;
 
-	static const char* modePaths[8];
+	const char* const modePaths[8] = {
+			"",
+			"S:/DriveMode/Manual.bin",
+			"S:/DriveMode/Ball.bin",
+			"S:/DriveMode/Line.bin",
+			"S:/DriveMode/Marker.bin",
+			"", //QRSCan
+			"S:/DriveMode/SimpleProg.bin",
+			"S:/DriveMode/Dance.bin"
+	};
 
 	uint32_t counter = 0;
 	static constexpr uint32_t BatteryCheckInterval = 1000000;

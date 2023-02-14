@@ -3,17 +3,6 @@
 #include <BatteryService.h>
 #include <Com/Communication.h>
 
-const char* GeneralInfoElement::modePaths[] = {
-		"",
-		"S:/DriveMode/Manual.bin",
-		"S:/DriveMode/Ball.bin",
-		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin",
-		"", //QRSCan
-		"S:/DriveMode/SimpleProg.bin",
-		"S:/DriveMode/Dance.bin"
-};
-
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
 	lv_obj_set_pos(obj, 0, 0);
 	lv_obj_set_size(obj, 160, 8);
@@ -50,9 +39,7 @@ GeneralInfoElement::~GeneralInfoElement(){
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){
-	if(!modePaths.count(mode)) return;
-
-	lv_img_set_src(modeImg, modePaths.at(mode));
+	lv_img_set_src(modeImg, modePaths[(int) mode]);
 }
 
 void GeneralInfoElement::loop(uint micros){
