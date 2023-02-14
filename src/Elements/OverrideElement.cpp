@@ -1,4 +1,5 @@
 #include "OverrideElement.h"
+#include <Arduino.h>
 
 OverrideElement::OverrideElement(lv_obj_t* parent) : LVObject(parent){
 	lv_obj_set_size(obj, w, h);

@@ -7,7 +7,6 @@
 class Connecting {
 public:
 	Connecting(lv_obj_t* obj);
-	~Connecting();
 
 	void start();
 	void stop();

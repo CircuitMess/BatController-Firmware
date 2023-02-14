@@ -94,6 +94,8 @@ void ProgEditScreen::onStart(){
 }
 
 void ProgEditScreen::onStop(){
+	editModal.stop();
+	pickModal.stop();
 	InputLVGL::enableVerticalNavigation(true);
 	InputLVGL::enableHorizontalNavigation(false);
 	Input::getInstance()->removeListener(this);
