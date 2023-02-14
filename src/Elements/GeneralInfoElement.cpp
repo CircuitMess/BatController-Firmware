@@ -1,18 +1,7 @@
-#include <cstdio>
 #include "GeneralInfoElement.h"
 #include <Loop/LoopManager.h>
 #include <BatteryService.h>
 #include <Com/Communication.h>
-
-const char* GeneralInfoElement::modePaths[] = {
-		"",
-		"S:/DriveMode/Manual.bin",
-		"S:/DriveMode/Ball.bin",
-		"S:/DriveMode/Line.bin",
-		"S:/DriveMode/Marker.bin",
-        "", //QRSCan
-        "S:/DriveMode/Dance.bin"
-};
 
 GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObject(parent){
 	lv_obj_set_pos(obj, 0, 0);

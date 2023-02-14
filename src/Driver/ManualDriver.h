@@ -5,6 +5,7 @@
 #include "../Elements/BoostElement.h"
 #include <Loop/LoopListener.h>
 #include <Input/InputListener.h>
+#include <Pins.hpp>
 
 class ManualDriver : public Driver, private LoopListener, private InputListener {
 public:
@@ -22,6 +23,7 @@ private:
 	uint8_t dir = 0;
 	size_t directionSendTimer = 0;
 	static constexpr size_t directionSendInterval = 100000; //send direction every 100ms
+	const uint directions[4] = { BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT };
 
 	void loop(uint micros) override;
 
