@@ -523,6 +523,7 @@ void SettingsScreen::onStart(){
 }
 
 void SettingsScreen::onStop(){
+	factoryResetPrompt.stop();
 	Settings.store();
     Com.removeDcListener(this);
 }
