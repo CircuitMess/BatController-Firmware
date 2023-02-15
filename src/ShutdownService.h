@@ -10,6 +10,11 @@ public:
 	void begin();
 	void pause();
 	void resume();
+	/**
+	 * Call when an activity other than keypresses have occured.
+	 * This will reset the inactivity timer.
+	 */
+	void activityReset();
 
 private:
 	void loop(uint micros) override;

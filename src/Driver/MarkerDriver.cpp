@@ -1,4 +1,5 @@
 #include "MarkerDriver.h"
+#include "../ShutdownService.h"
 
 MarkerDriver::MarkerDriver(lv_obj_t* container) : Driver(DriveMode::Marker), autoControls(container), markerElement(container, MarkerAction::None),
 												  batsElement(container){
@@ -18,6 +19,8 @@ void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	autoControls.setDirection(frame.motors);
 
 	if(markerInfo->markers.empty()) return;
+
+	AutoShutdown.activityReset();
 
 	if(markerInfo->markers[0].id == 100){
 		batsElement.startAnim();
