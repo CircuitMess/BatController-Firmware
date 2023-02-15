@@ -3,7 +3,6 @@
 #include <Loop/LoopManager.h>
 #include <Com/Communication.h>
 #include <SPIFFS.h>
-#include "../Screens/SimpleProg/ActionEditModal.h"
 
 SimpleProgDriver::SimpleProgDriver(const Simple::Program& program) : Driver(DriveMode::SimpleProgramming), program(program){
 
