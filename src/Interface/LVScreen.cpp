@@ -72,7 +72,7 @@ void LVScreen::stop(){
 void LVScreen::push(LVScreen* other){
 	other->parent = this;
 	stop();
-	other->start(true);
+	other->start(true, LV_SCR_LOAD_ANIM_FADE_ON);
 }
 
 void LVScreen::pop(){
@@ -81,7 +81,7 @@ void LVScreen::pop(){
 	stop();
 
 	parent->delOnStart.insert(this);
-	parent->start(true, LV_SCR_LOAD_ANIM_MOVE_TOP);
+	parent->start(true, LV_SCR_LOAD_ANIM_FADE_ON);
 }
 
 void LVScreen::setParent(LVScreen* parent){
