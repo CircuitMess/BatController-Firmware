@@ -47,7 +47,17 @@ void SimpleProgDriver::loop(uint micros){
 			nextAction();
 			actionTimer = 0;
 			actionExecuted = false;
-			Com.sendDriveDir((uint8_t) DriveDirection::None);
+			if(actionCursor < program.actions.size()){
+				if(program.actions[actionCursor].type != Simple::Action::Type::Drive){
+					Com.sendDriveDir((uint8_t) DriveDirection::None);
+					Com.sendDriveSpeed(0);
+					Com.sendMotorsTimeoutClear();
+				}
+			}else{
+				Com.sendDriveDir((uint8_t) DriveDirection::None);
+				Com.sendDriveSpeed(0);
+				Com.sendMotorsTimeoutClear();
+			}
 			return;
 		}
 	}else if(currentAction.type == Simple::Action::Type::Delay && actionExecuted){
@@ -64,8 +74,10 @@ void SimpleProgDriver::loop(uint micros){
 	if(!actionExecuted){
 		switch(currentAction.type){
 			case Simple::Action::Type::Drive:
+				Com.sendMotorsTimeoutClear();
 				Com.sendDriveSpeed(constrain(currentAction.DriveData.speed, 0, 100));
 				Com.sendDriveDir((uint8_t) currentAction.DriveData.dir);
+				Com.sendMotorsTimeout(currentAction.DriveData.duration + 2);
 				actionExecuted = true;
 				actionTimer = 0;
 				break;
