@@ -1,5 +1,6 @@
 #include "SimpleProgDriver.h"
 #include "../Screens/SimpleProg/SimpleProgScreen.h"
+#include "../ShutdownService.h"
 #include <Loop/LoopManager.h>
 #include <Com/Communication.h>
 #include <SPIFFS.h>
@@ -22,6 +23,8 @@ void SimpleProgDriver::onStart(){
 
 	actionTimer = 0;
 	actionCursor = 0;
+
+	AutoShutdown.activityReset();
 
 	LoopManager::addListener(this);
 }
@@ -110,6 +113,7 @@ void SimpleProgDriver::loop(uint micros){
 }
 
 void SimpleProgDriver::nextAction(){
+	AutoShutdown.activityReset();
 	actionCursor++;
 	if(actionCursor >= program.actions.size()){
 		if(playbackElement) playbackElement->nextAction();

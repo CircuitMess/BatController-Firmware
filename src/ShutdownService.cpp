@@ -53,3 +53,7 @@ void ShutdownService::shutdown(){
 	});
 	modal->start();
 }
+
+void ShutdownService::activityReset(){
+	timer = 0;
+}
