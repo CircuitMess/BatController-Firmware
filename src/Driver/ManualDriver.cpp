@@ -7,6 +7,7 @@
 
 ManualDriver::ManualDriver(lv_obj_t* elementContainer) : Driver(DriveMode::Manual), boost(new BoostElement(elementContainer)){
 	lv_obj_set_pos(boost->getLvObj(), 2, 10);
+	boost->setLevel(boostGauge);
 }
 
 ManualDriver::~ManualDriver(){
