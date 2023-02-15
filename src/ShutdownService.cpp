@@ -2,6 +2,7 @@
 #include <BatController.h>
 #include <Loop/LoopManager.h>
 #include "ShutdownService.h"
+#include "Elements/MessageModal.h"
 
 ShutdownService AutoShutdown;
 
@@ -27,16 +28,28 @@ void ShutdownService::loop(uint micros){
 	if(paused || Settings.get().shutdownTime == 0) return;
 	timer += micros;
 
-	if(timer >= ShutdownSeconds[Settings.get().shutdownTime] * 1000000){
+	if(timer >= ShutdownSeconds[Settings.get().shutdownTime] * 1000000 && !done){
+		done = true;
 
 		if(Com.isConnected()){
 			LoopManager::removeListener(this);
 			Com.sendShutdown([this](bool ackReceived){
-				BatController.shutdown();
+				shutdown();
 			});
 		}else{
 			LoopManager::removeListener(this);
-			BatController.shutdown();
+			shutdown();
 		}
 	}
+}
+
+void ShutdownService::shutdown(){
+	auto screen = LVScreen::getCurrent();
+	screen->stop();
+
+	auto modal = new MessageModal(screen, "Inactive.\nShutting down.", 5000);
+	modal->setDismissCallback([](){
+		BatController.shutdown();
+	});
+	modal->start();
 }

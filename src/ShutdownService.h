@@ -19,6 +19,9 @@ private:
 	uint32_t timer = 0;
 
 	bool paused = false;
+
+	bool done = false;
+	void shutdown();
 };
 
 extern ShutdownService AutoShutdown;
