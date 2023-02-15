@@ -36,7 +36,7 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_obj_set_scrollbar_mode(progView, LV_SCROLLBAR_MODE_OFF);
 
 	footer = lv_img_create(obj);
-	lv_img_set_src(footer, "S:/SimpleProg/footer.bin");
+	lv_img_set_src(footer, "S:/SimpleProg/footer_1.bin");
 
 	progDeleteTimer = lv_timer_create([](lv_timer_t* timer){
 		auto& screen = *(SimpleProgScreen*) timer->user_data;

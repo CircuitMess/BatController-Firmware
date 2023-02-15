@@ -65,17 +65,8 @@ ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<voi
 		}, LV_EVENT_KEY, this);
 	}
 
-	footer = lv_obj_create(obj);
-	lv_obj_set_size(footer, 160, 12);
-	lv_obj_set_style_bg_color(footer, lv_color_white(), LV_STATE_DEFAULT);
-	lv_obj_set_style_bg_opa(footer, LV_OPA_COVER, LV_STATE_DEFAULT);
-	lv_obj_t* footerLabel = lv_label_create(footer);
-	lv_obj_center(footerLabel);
-	lv_obj_set_style_text_align(footerLabel, LV_ALIGN_CENTER, LV_STATE_DEFAULT);
-	lv_label_set_recolor(footerLabel, true);
-	lv_obj_set_style_text_font(footerLabel, &lv_font_montserrat_10, LV_STATE_DEFAULT);
-	lv_obj_set_style_text_color(footerLabel, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text(footerLabel, "Hold #00bed6 BACK# to erase action");
+	footer = lv_img_create(obj);
+	lv_img_set_src(footer, "S:/SimpleProg/footer_2.bin");
 
 	lv_obj_scroll_to_view(lv_obj_get_child(actionView, 0), LV_ANIM_OFF);
 	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
