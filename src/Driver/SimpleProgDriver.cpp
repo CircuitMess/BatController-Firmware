@@ -47,7 +47,13 @@ void SimpleProgDriver::loop(uint micros){
 			nextAction();
 			actionTimer = 0;
 			actionExecuted = false;
-			Com.sendDriveDir((uint8_t) DriveDirection::None);
+			if(actionCursor < program.actions.size()){
+				if(program.actions[actionCursor].type != Simple::Action::Type::Drive){
+					Com.sendDriveDir((uint8_t) DriveDirection::None);
+				}
+			}else{
+				Com.sendDriveDir((uint8_t) DriveDirection::None);
+			}
 			return;
 		}
 	}else if(currentAction.type == Simple::Action::Type::Delay && actionExecuted){
