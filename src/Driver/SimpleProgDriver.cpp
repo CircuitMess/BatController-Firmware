@@ -50,9 +50,13 @@ void SimpleProgDriver::loop(uint micros){
 			if(actionCursor < program.actions.size()){
 				if(program.actions[actionCursor].type != Simple::Action::Type::Drive){
 					Com.sendDriveDir((uint8_t) DriveDirection::None);
+					Com.sendDriveSpeed(0);
+					Com.sendMotorsTimeoutClear();
 				}
 			}else{
 				Com.sendDriveDir((uint8_t) DriveDirection::None);
+				Com.sendDriveSpeed(0);
+				Com.sendMotorsTimeoutClear();
 			}
 			return;
 		}
