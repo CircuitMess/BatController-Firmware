@@ -107,7 +107,10 @@ void ProgEditScreen::buttonPressed(uint i){
 
 	if(i != BTN_B){
 		lv_timer_pause(progDeleteTimer);
-	}else if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()) return;
+		return;
+	}else if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()){
+		return;
+	}
 
 	lv_timer_reset(progDeleteTimer);
 	lv_timer_resume(progDeleteTimer);
@@ -189,6 +192,3 @@ void ProgEditScreen::addNewActionButton(){
 	}, LV_EVENT_PRESSED, this);
 
 }
-
-
-
