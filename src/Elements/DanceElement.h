@@ -22,7 +22,15 @@ private:
     /**
      * make sure that dances align in order in DanceType.h (Bat-Common)
      */
-    const std::string dances[6] = { "Idle", "Wiggle", "Step", "Spin", "BackItUp", "Waltz"};
+    const std::string dances[9] = { "Idle",
+									"Wiggle",
+									"Step",
+									"Spin",
+									"Back it up",
+									"Waltz",
+									"Wax on",
+									"Wax off",
+									"Sneak" };
 };
 
 
