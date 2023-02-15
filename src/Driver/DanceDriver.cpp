@@ -31,7 +31,7 @@ void DanceDriver::buttonReleased(uint i){
 void DanceDriver::buttonPressed(uint i){
 	if(i == BTN_RIGHT){
 		danceElement.arrowRightPressed(true);
-		if(danceIndex == 5){
+		if(danceIndex == 8){
 			danceIndex = 0;
 		}else{
 			danceIndex++;
@@ -42,7 +42,7 @@ void DanceDriver::buttonPressed(uint i){
 	if(i == BTN_LEFT){
 		danceElement.arrowLeftPressed(true);
 		if(danceIndex == 0){
-			danceIndex = 5;
+			danceIndex = 8;
 		}else{
 			danceIndex--;
 		}
