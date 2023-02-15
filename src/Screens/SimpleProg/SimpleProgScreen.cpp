@@ -37,6 +37,11 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 
 	progDeleteTimer = lv_timer_create([](lv_timer_t* timer){
 		auto& screen = *(SimpleProgScreen*) timer->user_data;
+		if(!lv_obj_get_child_cnt(lv_group_get_focused(screen.inputGroup))){
+			lv_timer_pause(timer);
+			return;
+		}
+
 		auto bg = lv_obj_get_child(lv_group_get_focused(screen.inputGroup), 0);
 		lv_obj_set_width(bg, map(millis() - screen.holdStartTime, 0, holdTime, 0, programWidth));
 
