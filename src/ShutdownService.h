@@ -14,8 +14,7 @@ public:
 private:
 	void loop(uint micros) override;
 
-	void buttonPressed(uint i) override;
-	void buttonReleased(uint i) override;
+	void anyKeyPressed() override;
 
 	uint32_t timer = 0;
 

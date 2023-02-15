@@ -7,6 +7,7 @@ ShutdownService AutoShutdown;
 
 void ShutdownService::begin(){
 	LoopManager::addListener(this);
+	Input::getInstance()->addListener(this);
 }
 
 void ShutdownService::pause(){
@@ -18,11 +19,7 @@ void ShutdownService::resume(){
 	timer = 0;
 }
 
-void ShutdownService::buttonPressed(uint i){
-	timer = 0;
-}
-
-void ShutdownService::buttonReleased(uint i){
+void ShutdownService::anyKeyPressed(){
 	timer = 0;
 }
 
@@ -39,7 +36,7 @@ void ShutdownService::loop(uint micros){
 			});
 		}else{
 			LoopManager::removeListener(this);
-            BatController.shutdown();
+			BatController.shutdown();
 		}
 	}
 }
