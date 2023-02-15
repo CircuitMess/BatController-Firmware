@@ -9,7 +9,7 @@
 #include "../Elements/MessageModal.h"
 
 PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
-						   input(obj, inputGroup), disconnect(disconnect){
+										  input(obj, inputGroup), disconnect(disconnect){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 	lv_obj_set_size(obj, 160, 128);
@@ -138,7 +138,7 @@ void PairScreen::onStarting(){
 void PairScreen::onStart(){
 	pair.start(directSSID, directPass, true);
 	if(disconnect){
-		auto modal  = new MessageModal(this, "LINK\nERROR");
+		auto modal = new MessageModal(this, "Disconnected\nfrom\nBatmobile!", 5000);
 		modal->start();
 	}
 }

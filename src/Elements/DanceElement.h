@@ -9,7 +9,6 @@
 class DanceElement : public LVObject{
 public:
     DanceElement(lv_obj_t *parent);
-    ~DanceElement() override;
 
     void setCurrentDance(DanceType danceType);
     void arrowLeftPressed(bool pressed);

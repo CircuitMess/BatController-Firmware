@@ -74,6 +74,10 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 	}, LV_EVENT_KEY, this);
 }
 
+HueModal::~HueModal(){
+	stop();
+}
+
 void HueModal::onStart(){
 	lv_group_focus_obj(slider);
 
@@ -84,7 +88,11 @@ void HueModal::onStart(){
 }
 
 void HueModal::onStop(){
-	lv_timer_del(timeout);
+	if(timeout){
+		lv_timer_del(timeout);
+		timeout = nullptr;
+	}
+
 	if(!hueCB) return;
 	hueCB(map(lv_slider_get_value(slider), 0, sliderRange, 0, 180));
 }

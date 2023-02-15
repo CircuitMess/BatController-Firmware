@@ -24,10 +24,6 @@ Connecting::Connecting(lv_obj_t* obj){
 	lv_label_set_text(text, "Connecting");
 }
 
-Connecting::~Connecting(){
-
-}
-
 void Connecting::start(){
 	lv_gif_restart(gif);
 	lv_gif_start(gif);

@@ -2,7 +2,7 @@
 #include <BatController.h>
 #include "../InputLVGL.h"
 
-SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed) : LVModal(parent), speedCB(speedCB){
+[[maybe_unused]] SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed) : LVModal(parent), speedCB(speedCB){
 
 	lv_obj_set_size(obj, w, h);
 	lv_obj_set_style_bg_img_src(obj, "S:/DriveScreen/ModalBg.bin", LV_STATE_DEFAULT);

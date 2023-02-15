@@ -1,7 +1,7 @@
 #include "MarkerDriver.h"
 
-MarkerDriver::MarkerDriver(lv_obj_t* container) : Driver(DriveMode::Marker), autoControls(container), markerElement(container, MarkerAction::None){
-
+MarkerDriver::MarkerDriver(lv_obj_t* container) : Driver(DriveMode::Marker), autoControls(container), markerElement(container, MarkerAction::None),
+												  batsElement(container){
 }
 
 MarkerDriver::~MarkerDriver(){
@@ -18,6 +18,10 @@ void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	autoControls.setDirection(frame.motors);
 
 	if(markerInfo->markers.empty()) return;
+
+	if(markerInfo->markers[0].id == 100){
+		batsElement.startAnim();
+	}
 
 	static const auto drawLine = [&pixels](int x1, int y1, int x2, int y2){
 		static const auto drawPixel = [&pixels](int x, int y){
@@ -55,11 +59,11 @@ void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	std::vector<DrawInfo> infos;
 	infos.reserve(markerInfo->markers.size());
 
-	for(const auto& marker : markerInfo->markers){
+	for(const auto& marker: markerInfo->markers){
 		DrawInfo info = { .x = 0, .y = 0, .id = marker.id };
 
 		for(int i = 0; i < 4; i++){
-			drawLine(marker.projected[i].x, marker.projected[i].y, marker.projected[(i+1)%4].x, marker.projected[(i+1)%4].y);
+			drawLine(marker.projected[i].x, marker.projected[i].y, marker.projected[(i + 1) % 4].x, marker.projected[(i + 1) % 4].y);
 			info.x += marker.projected[i].x;
 			info.y += marker.projected[i].y;
 		}
@@ -78,10 +82,10 @@ void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){
 	draw.opa = LV_OPA_COVER;
 	draw.font = &lv_font_unscii_8;
 	draw.align = LV_TEXT_ALIGN_CENTER;
-	draw.ofs_x = -42/2;
+	draw.ofs_x = -42 / 2;
 	draw.ofs_y = -4;
 
-	for(const auto& info : infos){
+	for(const auto& info: infos){
 		char text[12];
 		sprintf(text, "%d", info.id);
 		lv_canvas_draw_text(canvas, info.x, info.y, 42, &draw, text);
@@ -96,4 +100,5 @@ void MarkerDriver::onStart(){
 
 void MarkerDriver::onStop(){
 	autoControls.stop();
+	batsElement.stop();
 }

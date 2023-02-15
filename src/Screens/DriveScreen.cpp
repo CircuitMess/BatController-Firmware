@@ -99,6 +99,8 @@ void DriveScreen::onStart(){
 }
 
 void DriveScreen::onStop(){
+	LoopManager::removeListener(this);
+
 	if(!driver) return;
 
 	driver->stop();
@@ -215,8 +217,10 @@ void DriveScreen::loop(uint micros){
 
 		if(currentMode == DriveMode::Manual){
 			setMode(originalMode);
+			Com.sendOverrideSound(false);
 		}else{
 			setMode(DriveMode::Manual);
+			Com.sendOverrideSound(true);
 		}
 
 		if(driver){

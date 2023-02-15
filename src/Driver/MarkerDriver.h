@@ -5,13 +5,14 @@
 #include "Driver.h"
 #include "AutoControls.h"
 #include "../Elements/MarkerActionElement.h"
+#include "../Elements/BatsZoomElement.h"
 
 class MarkerDriver : public Driver {
 public:
 	MarkerDriver(lv_obj_t* container);
 	void onFrame(const DriveInfo& frame, Color* pixels) override;
 
-    ~MarkerDriver() override;
+	~MarkerDriver() override;
 
 protected:
 	void onStart() override;
@@ -21,6 +22,7 @@ protected:
 private:
 	AutoControls autoControls;
 	MarkerActionElement markerElement;
+	BatsZoomElement batsElement;
 };
 
 

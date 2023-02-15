@@ -1,7 +1,7 @@
 #ifndef BATCONTROLLER_FIRMWARE_OVERRIDEELEMENT_H
 #define BATCONTROLLER_FIRMWARE_OVERRIDEELEMENT_H
 
-#include "../Interface/LVModal.h"
+#include "../Interface/LVObject.h"
 
 enum overrideText {
 	Manual, Auto

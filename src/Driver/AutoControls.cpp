@@ -43,12 +43,20 @@ void AutoControls::setDirection(MotorInfo motors){
 	const float sum = abs(leftMotors) + abs(rightMotors);
 	if(leftMotors != 0 && rightMotors != 0){
 		angle = (leftMotors - rightMotors) / sum * 90;
+	}else if(leftMotors == 0 && rightMotors != 0){
+		angle = (-rightMotors / (2 * 100.0)) * 90.0;
+		if(rightMotors < 0) angle = -180 - angle;
+	}else if(rightMotors == 0 && leftMotors != 0){
+		angle = (leftMotors / (2 * 100.0)) * 90.0;
+		if(leftMotors < 0) angle = -180 - angle;
 	}
 
 	if(leftMotors < 0 && rightMotors < 0) angle += 180;
 
 	dirElement.setDirection(angle);
 
-	const uint8_t speed = (abs(motors.frontRight) + abs(motors.frontLeft) + abs(motors.backRight) + abs(motors.backLeft)) / 4;
+	const uint8_t motorsRunning = (motors.frontLeft != 0) + (motors.frontRight != 0) + (motors.backLeft != 0) + (motors.backRight != 0);
+	const uint8_t speed = (motorsRunning == 0) ? 0 : (abs(motors.frontRight) + abs(motors.frontLeft) + abs(motors.backRight) + abs(motors.backLeft)) /
+													 motorsRunning;
 	setSpeed(speed);
 }

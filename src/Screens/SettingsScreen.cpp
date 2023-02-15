@@ -243,21 +243,6 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 		}
 	}, LV_EVENT_STYLE_CHANGED, nullptr);
 
-	lv_style_init(&style_main);
-	lv_style_set_bg_opa(&style_main, LV_OPA_COVER);
-	lv_style_set_bg_color(&style_main, lv_color_hex3(0xbbb));
-	lv_style_set_radius(&style_main, LV_RADIUS_CIRCLE);
-	lv_obj_add_style(shutdownSlider, &style_main, LV_PART_MAIN);
-
-	lv_style_init(&style_knob);
-	lv_style_set_bg_opa(&style_knob, LV_OPA_100);
-	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB);
-	lv_style_set_text_font(&style_knob, &lv_font_montserrat_10);
-	lv_style_set_text_color(&style_knob, lv_color_white());
-	lv_style_set_height(&style_knob, 10);
-	lv_style_set_width(&style_knob, 10);
-	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
-
 	//screenBrightness
 	screenBrightness = lv_obj_create(flexContainer);
 	lv_obj_set_height(screenBrightness, LV_SIZE_CONTENT);
@@ -332,22 +317,6 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 		Settings.get().screenBrightness = lv_slider_get_value(slider) * 5;
 		BatController.setBrightness(lv_slider_get_value(slider) * 5);
 	}, LV_EVENT_VALUE_CHANGED, brightnessSlider);
-
-	lv_style_init(&style_main);
-	lv_style_set_bg_opa(&style_main, LV_OPA_COVER);
-	lv_style_set_bg_color(&style_main, lv_color_hex3(0xbbb));
-	lv_style_set_radius(&style_main, LV_RADIUS_CIRCLE);
-	lv_obj_add_style(brightnessSlider, &style_main, LV_PART_MAIN);
-
-	lv_style_init(&style_knob);
-	lv_style_set_bg_opa(&style_knob, LV_OPA_100);
-	lv_obj_add_style(brightnessSlider, &style_knob, LV_PART_KNOB);
-	lv_style_set_text_font(&style_knob, &lv_font_montserrat_10);
-	lv_style_set_text_color(&style_knob, lv_color_white());
-	lv_style_set_radius(&style_knob, LV_RADIUS_CIRCLE);
-	lv_style_set_height(&style_knob, 10);
-	lv_style_set_width(&style_knob, 10);
-	lv_obj_add_style(brightnessSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//pairBatmobile
 	pairBatmobile = lv_obj_create(flexContainer);
@@ -523,6 +492,7 @@ void SettingsScreen::onStart(){
 }
 
 void SettingsScreen::onStop(){
+	factoryResetPrompt.stop();
 	Settings.store();
     Com.removeDcListener(this);
 }
