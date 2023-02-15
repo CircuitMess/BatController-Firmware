@@ -64,8 +64,10 @@ void SimpleProgDriver::loop(uint micros){
 	if(!actionExecuted){
 		switch(currentAction.type){
 			case Simple::Action::Type::Drive:
+				Com.sendMotorsTimeoutClear();
 				Com.sendDriveSpeed(constrain(currentAction.DriveData.speed, 0, 100));
 				Com.sendDriveDir((uint8_t) currentAction.DriveData.dir);
+				Com.sendMotorsTimeout(currentAction.DriveData.duration + 2);
 				actionExecuted = true;
 				actionTimer = 0;
 				break;
