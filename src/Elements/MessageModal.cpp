@@ -1,4 +1,6 @@
 #include "MessageModal.h"
+#include <Loop/LoopManager.h>
+#include <Input/Input.h>
 
 MessageModal::MessageModal(LVScreen* parent, const char* message, uint32_t timeout) : LVModal(parent){
 	lv_obj_set_size(obj, 79, 48);
@@ -30,10 +32,21 @@ void MessageModal::onStart(){
 		lv_timer_reset(timer);
 		lv_timer_resume(timer);
 	}
+
+	Input::getInstance()->addListener(this);
 }
 
 void MessageModal::onStop(){
 	if(timer){
 		lv_timer_pause(timer);
 	}
+
+	Input::getInstance()->removeListener(this);
+}
+
+void MessageModal::buttonReleased(uint i){
+	LoopManager::defer([this](uint32_t t){
+		stop();
+		delete this;
+	});
 }
