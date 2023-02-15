@@ -4,6 +4,7 @@
 #include "../PairScreen.h"
 #include "ProgEditScreen.h"
 #include "../MainMenu.h"
+#include "../../FSLVGL.h"
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
@@ -11,6 +12,8 @@
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
 SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgramming){
+	FSLVGL::loadSimple();
+
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, LV_STATE_DEFAULT);
 
@@ -215,8 +218,19 @@ void SimpleProgScreen::buildProgView(){
 			screen->stop();
 			delete screen;
 
-			auto mainMenu = new MainMenu();
-			mainMenu->start();
+			FSLVGL::unloadSimple();
+
+			lv_obj_t* scr = lv_obj_create(nullptr);
+			lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
+			lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
+			lv_scr_load(scr);
+
+			LoopManager::defer([scr](uint32_t t){
+				lv_obj_del(scr);
+
+				auto mainMenu = new MainMenu();
+				mainMenu->start();
+			});
 		}, LV_EVENT_KEY, this);
 	}
 }
