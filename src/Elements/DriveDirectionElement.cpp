@@ -1,10 +1,7 @@
-#include <cstdlib>
-#include <Arduino.h>
 #include "DriveDirectionElement.h"
 #include <fstream>
 #include <iostream>
 #include <SPIFFS.h>
-#include <Display/Color.h>
 
 DriveDirectionElement::DriveDirectionElement(lv_obj_t* parent) : LVObject(parent){
 	lv_obj_set_size(obj, 15, 15);

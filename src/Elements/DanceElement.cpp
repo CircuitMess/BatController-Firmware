@@ -26,11 +26,6 @@ DanceElement::DanceElement(lv_obj_t *parent) : LVObject(parent) {
 
 }
 
-DanceElement::~DanceElement() {
-
-}
-
-
 void DanceElement::setCurrentDance(DanceType danceType) {
     lv_label_set_text(currentDance, dances[(uint8_t)danceType].c_str());
 }

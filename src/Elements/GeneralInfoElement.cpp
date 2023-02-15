@@ -36,6 +36,9 @@ GeneralInfoElement::GeneralInfoElement(lv_obj_t* parent, DriveMode mode) : LVObj
 GeneralInfoElement::~GeneralInfoElement(){
 	LoopManager::removeListener(this);
 	Com.removeListener(this);
+	delete signal;
+	delete conBat;
+	delete mobBat;
 }
 
 void GeneralInfoElement::setMode(DriveMode mode){

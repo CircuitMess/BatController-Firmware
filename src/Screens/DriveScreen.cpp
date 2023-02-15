@@ -99,6 +99,8 @@ void DriveScreen::onStart(){
 }
 
 void DriveScreen::onStop(){
+	LoopManager::removeListener(this);
+
 	if(!driver) return;
 
 	driver->stop();

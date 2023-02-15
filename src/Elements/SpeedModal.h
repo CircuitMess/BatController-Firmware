@@ -5,9 +5,9 @@
 #include <Input/InputListener.h>
 #include <functional>
 
-class SpeedModal : public LVModal {
+class [[maybe_unused]] SpeedModal : public LVModal {
 public:
-	explicit SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed);
+	[[maybe_unused]] explicit SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed);
 
 protected:
 	void onStart() override;

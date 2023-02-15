@@ -10,7 +10,7 @@
 class GeneralInfoElement : public LVObject, private LoopListener, private ComListener {
 public:
 	GeneralInfoElement(lv_obj_t* parent, DriveMode mode = DriveMode::Idle);
-	~GeneralInfoElement();
+	~GeneralInfoElement() override;
 	void setMode(DriveMode mode);
 
 private:
