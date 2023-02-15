@@ -14,31 +14,26 @@ MessageModal::MessageModal(LVScreen* parent, const char* message, uint32_t timeo
 	lv_obj_set_style_text_font(txt, &lv_font_montserrat_10, 0);
 	lv_obj_set_style_text_align(txt, LV_TEXT_ALIGN_CENTER, 0);
 
-	lv_obj_add_event_cb(txt, [](lv_event_t* e){
-		auto modal = static_cast<MessageModal*>(lv_event_get_user_data(e));
-		modal->stop();
-		delete modal;
-	}, LV_EVENT_CLICKED, this);
-
-	lv_obj_add_event_cb(txt, [](lv_event_t* e){
-		auto modal = static_cast<MessageModal*>(lv_event_get_user_data(e));
-		modal->stop();
-		delete modal;
-	}, LV_EVENT_KEY, this);
-
-	lv_group_add_obj(inputGroup, txt);
-	lv_group_focus_obj(txt);
-
-	if(timeout != -1){
+	if(timeout != UINT32_MAX){
 		timer = lv_timer_create([](lv_timer_t* t){
 			auto modal = static_cast<MessageModal*>(t->user_data);
 			modal->stop();
 			delete modal;
-			lv_timer_pause(t);
 		}, timeout, this);
+		lv_timer_set_repeat_count(timer, 1);
+		lv_timer_pause(timer);
+	}
+}
+
+void MessageModal::onStart(){
+	if(timer){
+		lv_timer_reset(timer);
+		lv_timer_resume(timer);
 	}
 }
 
 void MessageModal::onStop(){
-	lv_timer_del(timer);
+	if(timer){
+		lv_timer_pause(timer);
+	}
 }
