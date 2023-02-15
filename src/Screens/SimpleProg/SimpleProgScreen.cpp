@@ -40,6 +40,7 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 
 	progDeleteTimer = lv_timer_create([](lv_timer_t* timer){
 		auto& screen = *(SimpleProgScreen*) timer->user_data;
+		//in case the "+" element is selected, which doesn't have a bg as child
 		if(!lv_obj_get_child_cnt(lv_group_get_focused(screen.inputGroup))){
 			lv_timer_pause(timer);
 			return;
