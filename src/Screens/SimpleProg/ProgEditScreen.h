@@ -9,13 +9,19 @@
 #include "ActionPickModal.h"
 #include "../../Elements/GeneralInfoElement.h"
 #include <functional>
+#include <memory>
 
-class ProgEditScreen : public LVScreen, private DisconnectListener, private InputListener{
+class ProgEditScreen : public LVScreen, private DisconnectListener, private InputListener {
 public:
 	ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback);
+	~ProgEditScreen() override;
+
+	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
-	virtual ~ProgEditScreen();
+
+	void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
+
 
 private:
 	Simple::Program program;
@@ -29,7 +35,8 @@ private:
 	ActionEditModal editModal;
 	ActionPickModal pickModal;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
+
 	lv_obj_t* newAction;
 	lv_obj_t* actionView;
 	lv_obj_t* footer;

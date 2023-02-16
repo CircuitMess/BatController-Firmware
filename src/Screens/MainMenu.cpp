@@ -229,11 +229,20 @@ void MainMenu::launch() {
 			screen->start();
 			return;
 		}else if(selected == 1){ // Simple prog
+
+			auto info = std::move(menu->infoElement);
+			auto tmpScr = lv_obj_create(nullptr);
+			lv_obj_set_parent(info->getLvObj(), tmpScr);
+
 			delete menu;
 
-			// TODO: info element passing
-			auto screen = screens[selected]();
-			if(screen == nullptr) return;
+			auto launcher = screens[selected];
+			if(launcher == nullptr) return;
+
+			auto screen = reinterpret_cast<SimpleProgScreen*>(launcher());
+			screen->setInfoElement(std::move(info));
+			lv_obj_del(tmpScr);
+
 			screen->start();
 
 			return;

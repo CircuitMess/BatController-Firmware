@@ -262,9 +262,8 @@ void DriveScreen::toMenu(){
 		mainMenu->setInfoElement(std::move(info));
 		mainMenu->start();
 	}else{
-		info.reset();
-		// TODO: general info element passing
 		auto simple = new SimpleProgScreen();
+		simple->setInfoElement(std::move(info));
 		simple->start();
 	}
 
