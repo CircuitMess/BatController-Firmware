@@ -12,7 +12,6 @@
 class MainMenu: public LVScreen, private InputListener,  private DisconnectListener{
 public:
     MainMenu();
-    ~MainMenu() override;
     void onStarting() override;
     void onStart() override;
     void onStop() override;
@@ -55,6 +54,7 @@ private:
 	bool launching = false;
 
     uint8_t selected = 0;
+	static uint8_t lastSelected;
 
     std::unique_ptr<GeneralInfoElement> infoElement;
 
