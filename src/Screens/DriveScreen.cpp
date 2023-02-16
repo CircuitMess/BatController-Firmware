@@ -12,6 +12,7 @@
 #include "../Driver/DanceDriver.h"
 #include <Com/Communication.h>
 #include <Loop/LoopManager.h>
+#include "../Elements/MessageModal.h"
 
 DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) : LVScreen(), overrideElement(obj){
 	img = lv_img_create(obj);
@@ -96,16 +97,19 @@ void DriveScreen::onStart(){
 	driver->start();
 	Input::getInstance()->addListener(this);
 	Com.addDcListener(this);
+	Com.addListener(this);
 }
 
 void DriveScreen::onStop(){
 	LoopManager::removeListener(this);
+	if(LVModal::getCurrent()) LVModal::getCurrent()->stop();
 
 	if(!driver) return;
 
 	driver->stop();
 	Input::getInstance()->removeListener(this);
 	Com.removeDcListener(this);
+	Com.removeListener(this);
 }
 
 void DriveScreen::setMode(DriveMode newMode){
@@ -174,6 +178,16 @@ void DriveScreen::onDisconnected(){
 	auto pair = new PairScreen(true);
 	pair->start();
 }
+
+void DriveScreen::onCameraError(uint8_t errorCode){
+	if(LVModal::getCurrent() != nullptr) return;
+
+	if(errorCode == 1){
+		auto errorMessage = new MessageModal(this, "Camera error!\nReinsert ribbon cable.", 5000);
+		errorMessage->start();
+	}
+}
+
 
 void DriveScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
 	if(infoElement == nullptr){
