@@ -76,10 +76,14 @@ ProgPlaybackElement::ProgPlaybackElement(lv_obj_t* parent, const Simple::Program
 	lv_obj_set_style_text_align(doneLabel, LV_TEXT_ALIGN_CENTER, LV_STATE_DEFAULT);
 
 
-	lv_obj_t* tmp = lv_obj_get_child(obj, 0);
-	lv_obj_scroll_to(obj, 0, 0 * 20, LV_ANIM_ON);
-	lv_obj_set_style_text_color(lv_obj_get_child(tmp, 1), lv_color_make(255, 0, 0), 0);
-	lv_obj_add_style(lv_obj_get_child(tmp, 0), &border, 0);
+	if(program.actions.empty()){
+		lv_obj_set_style_text_color(doneLabel, lv_color_make(255, 0, 0), 0);
+	}else{
+		lv_obj_t* tmp = lv_obj_get_child(obj, 0);
+		lv_obj_scroll_to(obj, 0, 0 * 20, LV_ANIM_ON);
+		lv_obj_set_style_text_color(lv_obj_get_child(tmp, 1), lv_color_make(255, 0, 0), 0);
+		lv_obj_add_style(lv_obj_get_child(tmp, 0), &border, 0);
+	}
 }
 
 void ProgPlaybackElement::nextAction(){
