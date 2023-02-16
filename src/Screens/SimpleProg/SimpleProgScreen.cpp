@@ -215,8 +215,12 @@ void SimpleProgScreen::buildProgView(){
 			if(lv_event_get_key(e) != LV_KEY_HOME) return;
 
 			auto screen = (SimpleProgScreen*) e->user_data;
-			auto info = std::move(screen->infoElement);
 			lv_obj_t* tmpScr = lv_obj_create(nullptr);
+			lv_obj_set_style_bg_color(tmpScr, lv_color_black(), 0);
+			lv_obj_set_style_bg_opa(tmpScr, LV_OPA_COVER, 0);
+			lv_scr_load(tmpScr);
+
+			auto info = screen->infoElement.release();
 			if(info){
 				lv_obj_set_parent(info->getLvObj(), tmpScr);
 			}
@@ -226,11 +230,13 @@ void SimpleProgScreen::buildProgView(){
 			delete screen;
 
 			FSLVGL::unloadSimple();
+			LoopManager::defer([tmpScr, info](uint32_t t){
+				auto mainMenu = new MainMenu();
+				mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
+				mainMenu->start();
 
-			auto mainMenu = new MainMenu();
-			mainMenu->setInfoElement(std::move(info));
-			lv_obj_del(tmpScr);
-			mainMenu->start();
+				lv_obj_del(tmpScr);
+			});
 		}, LV_EVENT_KEY, this);
 	}
 }
