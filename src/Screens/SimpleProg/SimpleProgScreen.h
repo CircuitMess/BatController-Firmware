@@ -3,6 +3,7 @@
 
 #include <Input/InputListener.h>
 #include <DisconnectListener.h>
+#include <memory>
 #include "../../Interface/LVScreen.h"
 #include "Storage.h"
 #include "../../Elements/GeneralInfoElement.h"
@@ -10,11 +11,13 @@
 class SimpleProgScreen : public LVScreen, private DisconnectListener, private InputListener {
 public:
 	SimpleProgScreen();
-	virtual ~SimpleProgScreen();
+	~SimpleProgScreen() override;
 
 	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
+
+	void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
 
 	static void touchIndex();
 
@@ -25,7 +28,8 @@ private:
 
 	static uint8_t lastProgramIndex;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
+
 	lv_obj_t* progView;
 	lv_obj_t* footer;
 	lv_obj_t* newProg;

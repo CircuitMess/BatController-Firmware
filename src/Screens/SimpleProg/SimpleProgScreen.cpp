@@ -11,7 +11,7 @@
 
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
-SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgramming){
+SimpleProgScreen::SimpleProgScreen(){
 	FSLVGL::loadSimple();
 
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
@@ -201,7 +201,7 @@ void SimpleProgScreen::buildProgView(){
 		do {
 			i++;
 			prog.name = "Program " + std::string(String(i).c_str());
-		} while(screen.storage.nameTaken(prog.name));
+		}while(screen.storage.nameTaken(prog.name));
 
 		auto index = screen.storage.getNumProgs();
 		screen.storage.addProg(prog);
@@ -215,23 +215,22 @@ void SimpleProgScreen::buildProgView(){
 			if(lv_event_get_key(e) != LV_KEY_HOME) return;
 
 			auto screen = (SimpleProgScreen*) e->user_data;
+			auto info = std::move(screen->infoElement);
+			lv_obj_t* tmpScr = lv_obj_create(nullptr);
+			if(info){
+				lv_obj_set_parent(info->getLvObj(), tmpScr);
+			}
+
 			SimpleProgScreen::lastProgramIndex = 0;
 			screen->stop();
 			delete screen;
 
 			FSLVGL::unloadSimple();
 
-			lv_obj_t* scr = lv_obj_create(nullptr);
-			lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
-			lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
-			lv_scr_load(scr);
-
-			LoopManager::defer([scr](uint32_t t){
-				lv_obj_del(scr);
-
-				auto mainMenu = new MainMenu();
-				mainMenu->start();
-			});
+			auto mainMenu = new MainMenu();
+			mainMenu->setInfoElement(std::move(info));
+			lv_obj_del(tmpScr);
+			mainMenu->start();
 		}, LV_EVENT_KEY, this);
 	}
 }
@@ -243,6 +242,10 @@ void SimpleProgScreen::onStarting(){
 		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_OFF);
 	});
 	lv_group_focus_obj(lv_obj_get_child(progView, lastProgramIndex));
+
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), DriveMode::SimpleProgramming);
+	}
 }
 
 void SimpleProgScreen::startEdit(uint8_t index){
@@ -251,6 +254,7 @@ void SimpleProgScreen::startEdit(uint8_t index){
 	auto edit = new ProgEditScreen(storage.getProg(index), [this, index](Simple::Program program){
 		storage.updateProg(index, program);
 	});
+	edit->setInfoElement(std::move(infoElement));
 
 	push(edit);
 }
@@ -258,11 +262,29 @@ void SimpleProgScreen::startEdit(uint8_t index){
 void SimpleProgScreen::startDrive(uint8_t index){
 	Simple::Program program = storage.getProg(index);
 
+	auto info = std::move(infoElement);
+	lv_obj_t* tmpScr = lv_obj_create(nullptr);
+	if(info){
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
+	}
+
 	stop();
 	delete this;
 
 	auto driver = new SimpleProgDriver(program);
 	auto ds = new DriveScreen(DriveMode::SimpleProgramming, std::unique_ptr<Driver>(driver));
-	ds->setInfoElement(std::make_unique<GeneralInfoElement>(ds->getLvObj(), DriveMode::SimpleProgramming));
+	ds->setInfoElement(std::move(info));
+	lv_obj_del(tmpScr);
 	ds->start();
+}
+
+void SimpleProgScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement){
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
+	this->infoElement = std::move(infoElement);
+	this->infoElement->setMode(DriveMode::SimpleProgramming);
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }
