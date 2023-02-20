@@ -257,8 +257,12 @@ void SimpleProgScreen::onStarting(){
 void SimpleProgScreen::startEdit(uint8_t index){
 	lastProgramIndex = index;
 
-	auto edit = new ProgEditScreen(storage.getProg(index), [this, index](Simple::Program program){
-		storage.updateProg(index, program);
+	auto edit = new ProgEditScreen(storage.getProg(index), [this, index](const Simple::Program& program){
+		if(program.actions.empty()){
+			storage.removeProg(index);
+		}else{
+			storage.updateProg(index, program);
+		}
 	});
 	edit->setInfoElement(std::move(infoElement));
 
