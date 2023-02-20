@@ -1,4 +1,5 @@
 #include "ActionEditModal.h"
+#include <BatController.h>
 #include "../../InputLVGL.h"
 
 ActionEditModal::ActionEditModal(LVScreen* parent) : LVModal(parent){
@@ -30,6 +31,7 @@ void ActionEditModal::startEdit(Simple::Action& action){
 		addToggle(action);
 	}else if(action.type == Simple::Action::Type::Sound){
 		addSound(action);
+		Com.sendSoundEffect(action.SoundData.sampleIndex);
 	}else if(action.type == Simple::Action::Type::Underlights){
 		addColor(action);
 	}
@@ -238,9 +240,11 @@ void ActionEditModal::addSound(Simple::Action& action){
 		if(lv_event_get_key(e) == LV_KEY_LEFT){
 			action.SoundData.sampleIndex = constrain(action.SoundData.sampleIndex - 1, 0, SoundsNum - 1);
 			lv_label_set_text(indicator, SoundNames[action.SoundData.sampleIndex]);
+			Com.sendSoundEffect(action.SoundData.sampleIndex);
 		}else if(lv_event_get_key(e) == LV_KEY_RIGHT){
 			action.SoundData.sampleIndex = constrain(action.SoundData.sampleIndex + 1, 0, SoundsNum - 1);
 			lv_label_set_text(indicator, SoundNames[action.SoundData.sampleIndex]);
+			Com.sendSoundEffect(action.SoundData.sampleIndex);
 		}
 	}, LV_EVENT_KEY, &action);
 
