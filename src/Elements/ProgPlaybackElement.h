@@ -14,9 +14,11 @@ private:
 	lv_obj_t* doneElement;
 	lv_obj_t* doneLabel;
 	lv_style_t border;
+	lv_style_t noBorder;
 	const Simple::Program program;
 
 	size_t actionCursor = 0;
+	bool scrolling = false;
 };
 
 
