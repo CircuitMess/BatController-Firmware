@@ -8,17 +8,23 @@ class ActionEditModal : public LVModal {
 public:
 	explicit ActionEditModal(LVScreen* parent);
 	void startEdit(Simple::Action& action);
+
 protected:
 	void onStart() override;
 	void onStop() override;
+
 private:
-
-
 	static constexpr size_t w = 79;
 	static constexpr size_t h = 48;
 
 	static constexpr size_t entryW = 75;
 	static constexpr size_t entryH = 13;
+
+	lv_obj_t* arrowLeft;
+	lv_obj_t* arrowRight;
+	lv_anim_t anim;
+
+	Simple::Action* editingAction;
 
 	void addDirection(Simple::Action& action);
 	void addDuration(Simple::Action& action);
