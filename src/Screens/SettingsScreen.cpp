@@ -370,12 +370,12 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
 		settings->stop();
+
 		delete settings->parent;
+		delete settings;
 
 		Com.sendDisconnectRequest();
 		Com.setClient(nullptr);
-
-		delete settings;
 
 		(new PairScreen())->start();
 	}, LV_EVENT_CLICKED, this);
