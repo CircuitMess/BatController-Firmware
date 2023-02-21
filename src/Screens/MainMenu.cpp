@@ -165,10 +165,12 @@ void MainMenu::onStart() {
 		}, LV_EVENT_PRESSED, this);
 	}
 
+	Com.sendIdleSound(true);
 	launching = false;
 }
 
 void MainMenu::onStop() {
+	Com.sendIdleSound(false);
 	lastSelected = selected;
     for (int i = 0; i < ItemCount; i++) {
         lv_gif_stop(bigs[i]);
