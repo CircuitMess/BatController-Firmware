@@ -30,6 +30,7 @@ private:
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
 
+	void onDisconnected() override;
 	std::function<void(Simple::Program)> saveCallback;
 
 	ActionEditModal editModal;
