@@ -17,11 +17,14 @@ ProgPlaybackElement::ProgPlaybackElement(lv_obj_t* parent, const Simple::Program
 	lv_style_set_radius(&border, 0);
 	lv_style_set_border_color(&border, lv_palette_main(LV_PALETTE_RED));
 	lv_style_set_border_opa(&border, LV_OPA_COVER);
-	lv_style_set_border_width(&border, 2);
+	lv_style_set_border_width(&border, 1);
+	lv_style_set_radius(&border, 3);
+	lv_style_set_bg_color(&border, lv_palette_main(LV_PALETTE_RED));
+	lv_style_set_bg_opa(&border, LV_OPA_COVER);
 	lv_style_set_pad_all(&border, 0);
 
 	lv_style_init(&noBorder);
-	lv_style_set_pad_all(&noBorder, 2);
+	lv_style_set_pad_all(&noBorder, 1);
 
 	for(auto action: program.actions){
 		lv_obj_t* prObj = lv_obj_create(obj);
