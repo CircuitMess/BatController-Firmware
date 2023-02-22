@@ -47,6 +47,7 @@ ProgPlaybackElement::ProgPlaybackElement(lv_obj_t* parent, const Simple::Program
 		lv_obj_set_style_text_align(text, LV_TEXT_ALIGN_CENTER, LV_STATE_DEFAULT);
 		lv_obj_set_style_bg_color(text, lv_color_black(), LV_STATE_DEFAULT);
 		lv_obj_set_style_bg_opa(text, LV_OPA_60, LV_STATE_DEFAULT);
+		lv_obj_set_style_pad_hor(text, 2, LV_STATE_DEFAULT);
 
 		switch(action.type){
 			case Simple::Action::Type::Drive:
@@ -97,6 +98,7 @@ ProgPlaybackElement::ProgPlaybackElement(lv_obj_t* parent, const Simple::Program
 	lv_label_set_text(doneLabel, "Done!\nPress MENU to return");
 	lv_obj_set_align(doneLabel, LV_ALIGN_CENTER);
 	lv_obj_set_style_text_align(doneLabel, LV_TEXT_ALIGN_CENTER, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_hor(doneLabel, 2, LV_STATE_DEFAULT);
 
 	lv_obj_set_size(obj, 160, 110);
 	lv_obj_set_pos(obj, 0, 18);
