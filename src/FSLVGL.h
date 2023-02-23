@@ -35,11 +35,17 @@ public:
 	static void loadSpecialCache(const char* path);
 	static void unloadSpecialCache();
 
+	static void loadSimple();
+	static void unloadSimple();
+
 private:
 	static const char* cached[];
 	static bool cacheLoaded;
 	static std::unordered_map<std::string, fs::File*> cache;
 	static fs::File* specialCache;
+
+	static const char* cachedSimple[];
+	static bool simpleLoaded;
 
 	lv_fs_drv_t drv;                   /*Needs to be static or global*/
 	fs::FS filesys;

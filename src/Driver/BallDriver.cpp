@@ -1,4 +1,5 @@
 #include "BallDriver.h"
+#include "../ShutdownService.h"
 #include <Com/Communication.h>
 #include <Pins.hpp>
 #include <Input/Input.h>
@@ -22,6 +23,8 @@ void BallDriver::onFrame(const DriveInfo& frame, Color* pixels){
 
 	if(frame.toBall() == nullptr || frame.toBall()->balls.empty()) return;
 	const auto& ball = frame.toBall()->balls.front();
+
+	AutoShutdown.activityReset();
 
 	lv_obj_t* canvas = lv_canvas_create(nullptr);
 	lv_canvas_set_buffer(canvas, pixels, 160, 120, LV_IMG_CF_TRUE_COLOR);

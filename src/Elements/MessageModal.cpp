@@ -19,8 +19,7 @@ MessageModal::MessageModal(LVScreen* parent, const char* message, uint32_t timeo
 	if(timeout != UINT32_MAX){
 		timer = lv_timer_create([](lv_timer_t* t){
 			auto modal = static_cast<MessageModal*>(t->user_data);
-			modal->stop();
-			delete modal;
+			modal->dismiss();
 		}, timeout, this);
 		lv_timer_set_repeat_count(timer, 1);
 		lv_timer_pause(timer);
@@ -46,7 +45,21 @@ void MessageModal::onStop(){
 
 void MessageModal::buttonReleased(uint i){
 	LoopManager::defer([this](uint32_t t){
-		stop();
-		delete this;
+		dismiss();
 	});
+}
+
+void MessageModal::setDismissCallback(std::function<void()> dismissCallback){
+	MessageModal::dismissCallback = std::move(dismissCallback);
+}
+
+void MessageModal::dismiss(){
+	std::function<void()> callback = dismissCallback;
+
+	stop();
+	delete this;
+
+	if(callback){
+		callback();
+	}
 }

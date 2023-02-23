@@ -2,6 +2,9 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 #include "../../InputLVGL.h"
+#include "SimpleProgScreen.h"
+#include "../PairScreen.h"
+#include <Com/Communication.h>
 
 static const std::map<Simple::Action::Type, const char*> actionIcons = {
 		{ Simple::Action::Type::Drive,       "S:/SimpleProg/Drive.bin" },
@@ -13,14 +16,18 @@ static const std::map<Simple::Action::Type, const char*> actionIcons = {
 };
 
 
-ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback) : program(program), editModal(this), pickModal(this),
-																							   saveCallback(saveCallback),
-																							   infoElement(obj, DriveMode::SimpleProgramming){
+ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback) : program(program), editModal(this),
+																													pickModal(this),
+																													saveCallback(saveCallback){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, LV_STATE_DEFAULT);
 	lv_obj_set_layout(obj, LV_LAYOUT_FLEX);
 	lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_COLUMN);
 	lv_obj_set_flex_align(obj, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+	// sue me
+	lv_obj_t* pad = lv_obj_create(obj);
+	lv_obj_set_size(pad, 160, 8);
 
 	actionView = lv_obj_create(obj);
 	lv_obj_set_size(actionView, 137, 102);
@@ -60,22 +67,14 @@ ProgEditScreen::ProgEditScreen(const Simple::Program& program, std::function<voi
 			}else if(key == LV_KEY_DOWN && (lv_obj_get_child_cnt(screen->actionView) - lv_obj_get_index(e->target) >= ProgEditScreen::rowLength)){
 				lv_group_focus_obj(lv_obj_get_child(screen->actionView, lv_obj_get_index(e->target) + ProgEditScreen::rowLength));
 			}else if(key == LV_KEY_HOME){
+				reinterpret_cast<SimpleProgScreen*>(screen->parent)->setInfoElement(std::move(screen->infoElement));
 				screen->pop();
 			}
 		}, LV_EVENT_KEY, this);
 	}
 
-	footer = lv_obj_create(obj);
-	lv_obj_set_size(footer, 160, 12);
-	lv_obj_set_style_bg_color(footer, lv_color_white(), LV_STATE_DEFAULT);
-	lv_obj_set_style_bg_opa(footer, LV_OPA_COVER, LV_STATE_DEFAULT);
-	lv_obj_t* footerLabel = lv_label_create(footer);
-	lv_obj_center(footerLabel);
-	lv_obj_set_style_text_align(footerLabel, LV_ALIGN_CENTER, LV_STATE_DEFAULT);
-	lv_label_set_recolor(footerLabel, true);
-	lv_obj_set_style_text_font(footerLabel, &lv_font_montserrat_10, LV_STATE_DEFAULT);
-	lv_obj_set_style_text_color(footerLabel, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text(footerLabel, "Hold #00bed6 BACK# to erase action");
+	footer = lv_img_create(obj);
+	lv_img_set_src(footer, "S:/SimpleProg/footer_2.bin");
 
 	lv_obj_scroll_to_view(lv_obj_get_child(actionView, 0), LV_ANIM_OFF);
 	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
@@ -87,10 +86,17 @@ ProgEditScreen::~ProgEditScreen(){
 	lv_timer_del(progDeleteTimer);
 }
 
+void ProgEditScreen::onStarting(){
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), DriveMode::SimpleProgramming);
+	}
+}
+
 void ProgEditScreen::onStart(){
 	InputLVGL::enableVerticalNavigation(false);
 	InputLVGL::enableHorizontalNavigation(true);
 	Input::getInstance()->addListener(this);
+	Com.addDcListener(this);
 }
 
 void ProgEditScreen::onStop(){
@@ -99,7 +105,19 @@ void ProgEditScreen::onStop(){
 	InputLVGL::enableVerticalNavigation(true);
 	InputLVGL::enableHorizontalNavigation(false);
 	Input::getInstance()->removeListener(this);
+	Com.removeDcListener(this);
 	if(saveCallback) saveCallback(program);
+}
+
+void ProgEditScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement){
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
+	this->infoElement = std::move(infoElement);
+	this->infoElement->setMode(DriveMode::SimpleProgramming);
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }
 
 void ProgEditScreen::buttonPressed(uint i){
@@ -107,7 +125,10 @@ void ProgEditScreen::buttonPressed(uint i){
 
 	if(i != BTN_B){
 		lv_timer_pause(progDeleteTimer);
-	}else if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()) return;
+		return;
+	}else if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()){
+		return;
+	}
 
 	lv_timer_reset(progDeleteTimer);
 	lv_timer_resume(progDeleteTimer);
@@ -190,5 +211,10 @@ void ProgEditScreen::addNewActionButton(){
 
 }
 
-
-
+void ProgEditScreen::onDisconnected(){
+	stop();
+	delete parent;
+	delete this;
+	auto pair = new PairScreen(true);
+	pair->start();
+}

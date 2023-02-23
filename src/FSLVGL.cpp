@@ -31,6 +31,9 @@ const char* FSLVGL::cached[] = {
 		"/DriveScreen/BallHueBar.bin",
 		"/DriveScreen/SpeedBar.bin",
 		"/DriveScreen/SpeedBarFill.bin",
+		"/DriveScreen/Boost_full.bin",
+		"/DriveScreen/Boost_empty.bin",
+		"/DriveScreen/Boost_segment.bin",
 		"/Signal/0.bin",
 		"/Signal/1.bin",
 		"/Signal/2.bin",
@@ -53,12 +56,28 @@ const char* FSLVGL::cached[] = {
 		"/DriveMode/SimpleProg.bin"
 };
 
+const char* FSLVGL::cachedSimple[] = {
+		"/SimpleProg/Backlight.bin",
+		"/SimpleProg/Delay.bin",
+		"/SimpleProg/Drive.bin",
+		"/SimpleProg/footer_1.bin",
+		"/SimpleProg/footer_2.bin",
+		"/SimpleProg/Frontlight.bin",
+		"/SimpleProg/new.bin",
+		"/SimpleProg/newFocused.bin",
+		"/SimpleProg/Sound.bin",
+		"/SimpleProg/Underlight.bin"
+};
+
 std::unordered_map<std::string, fs::File*> FSLVGL::cache;
 fs::File* FSLVGL::specialCache = nullptr;
 bool FSLVGL::cacheLoaded = false;
+bool FSLVGL::simpleLoaded = false;
 
 FSLVGL::FSLVGL(fs::FS& filesystem, char letter) : filesys(filesystem){
-	cache.reserve((sizeof(cached) / sizeof(cached[0])) * 2);
+	size_t cacheCount = (sizeof(cached) / sizeof(cached[0]));
+	size_t simpleCount = (sizeof(cachedSimple) / sizeof(cachedSimple[0]));
+	cache.reserve((cacheCount + simpleCount) * 2);
 
 	lv_fs_drv_init(&drv);                     /*Basic initialization*/
 
@@ -246,4 +265,22 @@ void FSLVGL::removeCache(const char* path){
 	lv_img_cache_invalidate_src((std::string("S:") + path).c_str());
 	delete pair->second;
 	cache.erase(pair);
+}
+
+void FSLVGL::loadSimple(){
+	if(simpleLoaded) return;
+	simpleLoaded = true;
+
+	for(const auto& path : cachedSimple){
+		addCache(path);
+	}
+}
+
+void FSLVGL::unloadSimple(){
+	if(!simpleLoaded) return;
+	simpleLoaded = false;
+
+	for(const auto& path : cachedSimple){
+		removeCache(path);
+	}
 }

@@ -4,13 +4,16 @@
 #include "../PairScreen.h"
 #include "ProgEditScreen.h"
 #include "../MainMenu.h"
+#include "../../FSLVGL.h"
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
 
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
-SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgramming){
+SimpleProgScreen::SimpleProgScreen(){
+	FSLVGL::loadSimple();
+
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, LV_STATE_DEFAULT);
 
@@ -33,10 +36,16 @@ SimpleProgScreen::SimpleProgScreen() : infoElement(obj, DriveMode::SimpleProgram
 	lv_obj_set_scrollbar_mode(progView, LV_SCROLLBAR_MODE_OFF);
 
 	footer = lv_img_create(obj);
-	lv_img_set_src(footer, "S:/SimpleProg/footer.bin");
+	lv_img_set_src(footer, "S:/SimpleProg/footer_1.bin");
 
 	progDeleteTimer = lv_timer_create([](lv_timer_t* timer){
 		auto& screen = *(SimpleProgScreen*) timer->user_data;
+		//in case the "+" element is selected, which doesn't have a bg as child
+		if(!lv_obj_get_child_cnt(lv_group_get_focused(screen.inputGroup))){
+			lv_timer_pause(timer);
+			return;
+		}
+
 		auto bg = lv_obj_get_child(lv_group_get_focused(screen.inputGroup), 0);
 		lv_obj_set_width(bg, map(millis() - screen.holdStartTime, 0, holdTime, 0, programWidth));
 
@@ -192,7 +201,7 @@ void SimpleProgScreen::buildProgView(){
 		do {
 			i++;
 			prog.name = "Program " + std::string(String(i).c_str());
-		} while(screen.storage.nameTaken(prog.name));
+		}while(screen.storage.nameTaken(prog.name));
 
 		auto index = screen.storage.getNumProgs();
 		screen.storage.addProg(prog);
@@ -206,12 +215,28 @@ void SimpleProgScreen::buildProgView(){
 			if(lv_event_get_key(e) != LV_KEY_HOME) return;
 
 			auto screen = (SimpleProgScreen*) e->user_data;
+			lv_obj_t* tmpScr = lv_obj_create(nullptr);
+			lv_obj_set_style_bg_color(tmpScr, lv_color_black(), 0);
+			lv_obj_set_style_bg_opa(tmpScr, LV_OPA_COVER, 0);
+			lv_scr_load(tmpScr);
+
+			auto info = screen->infoElement.release();
+			if(info){
+				lv_obj_set_parent(info->getLvObj(), tmpScr);
+			}
+
 			SimpleProgScreen::lastProgramIndex = 0;
 			screen->stop();
 			delete screen;
 
-			auto mainMenu = new MainMenu();
-			mainMenu->start();
+			FSLVGL::unloadSimple();
+			LoopManager::defer([tmpScr, info](uint32_t t){
+				auto mainMenu = new MainMenu();
+				mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
+				mainMenu->start();
+
+				lv_obj_del(tmpScr);
+			});
 		}, LV_EVENT_KEY, this);
 	}
 }
@@ -223,14 +248,23 @@ void SimpleProgScreen::onStarting(){
 		lv_obj_scroll_to_view(lv_group_get_focused(g), LV_ANIM_OFF);
 	});
 	lv_group_focus_obj(lv_obj_get_child(progView, lastProgramIndex));
+
+	if(infoElement == nullptr){
+		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), DriveMode::SimpleProgramming);
+	}
 }
 
 void SimpleProgScreen::startEdit(uint8_t index){
 	lastProgramIndex = index;
 
-	auto edit = new ProgEditScreen(storage.getProg(index), [this, index](Simple::Program program){
-		storage.updateProg(index, program);
+	auto edit = new ProgEditScreen(storage.getProg(index), [this, index](const Simple::Program& program){
+		if(program.actions.empty()){
+			storage.removeProg(index);
+		}else{
+			storage.updateProg(index, program);
+		}
 	});
+	edit->setInfoElement(std::move(infoElement));
 
 	push(edit);
 }
@@ -238,11 +272,29 @@ void SimpleProgScreen::startEdit(uint8_t index){
 void SimpleProgScreen::startDrive(uint8_t index){
 	Simple::Program program = storage.getProg(index);
 
+	auto info = std::move(infoElement);
+	lv_obj_t* tmpScr = lv_obj_create(nullptr);
+	if(info){
+		lv_obj_set_parent(info->getLvObj(), tmpScr);
+	}
+
 	stop();
 	delete this;
 
 	auto driver = new SimpleProgDriver(program);
 	auto ds = new DriveScreen(DriveMode::SimpleProgramming, std::unique_ptr<Driver>(driver));
-	ds->setInfoElement(std::make_unique<GeneralInfoElement>(ds->getLvObj(), DriveMode::SimpleProgramming));
+	ds->setInfoElement(std::move(info));
+	lv_obj_del(tmpScr);
 	ds->start();
+}
+
+void SimpleProgScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement){
+	if(infoElement == nullptr){
+		this->infoElement.reset();
+		return;
+	}
+
+	this->infoElement = std::move(infoElement);
+	this->infoElement->setMode(DriveMode::SimpleProgramming);
+	lv_obj_set_parent(this->infoElement->getLvObj(), getLvObj());
 }

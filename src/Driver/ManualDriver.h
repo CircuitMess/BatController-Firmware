@@ -22,20 +22,22 @@ private:
 	void buttonReleased(uint i) override;
 	uint8_t dir = 0;
 	size_t directionSendTimer = 0;
-	static constexpr size_t directionSendInterval = 100000; //send direction every 100ms
+	static constexpr size_t directionSendInterval = 1000000; //send direction every second
 	const uint directions[4] = { BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT };
 
 	void loop(uint micros) override;
 
 	BoostElement* boost;
-	uint8_t boostGauge = 0;
+	uint8_t boostGauge = 100;
 	bool boostActive = false;
 	uint32_t boostTimer = 0;
 	bool boostPressed = false;
-	static constexpr uint boostFillRate = 40000; //increment boost by 1 every 40ms when recharging boost
-	static constexpr uint boostConsumptionRate = 20000; //decrease by 1 every 10ms when using boost
+	static constexpr uint boostFillRate = 27000; //increment boost by 1 every 20ms when recharging boost
+	static constexpr uint boostConsumptionRate = 20000; //decrease by 1 every 20ms when using boost
 
-	void sendDriveDir();
+	void sendDriveDir() const;
+	uint8_t lastDir = 0;
+
 
 	bool gyro = false;
 	uint8_t gyroDir = 0;

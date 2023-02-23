@@ -7,6 +7,7 @@
 
 ManualDriver::ManualDriver(lv_obj_t* elementContainer) : Driver(DriveMode::Manual), boost(new BoostElement(elementContainer)){
 	lv_obj_set_pos(boost->getLvObj(), 2, 10);
+	boost->setLevel(boostGauge);
 }
 
 ManualDriver::~ManualDriver(){
@@ -60,6 +61,7 @@ void ManualDriver::buttonPressed(uint i){
 		}
 
 		sendDriveDir();
+		directionSendTimer = 0;
 	}
 }
 
@@ -88,6 +90,7 @@ void ManualDriver::buttonReleased(uint i){
 				break;
 		}
 		sendDriveDir();
+		directionSendTimer = 0;
 	}
 
 	if(dir == 0b0000 && boostActive){
@@ -96,12 +99,13 @@ void ManualDriver::buttonReleased(uint i){
 	}
 }
 
-void ManualDriver::sendDriveDir(){
+void ManualDriver::sendDriveDir() const{
 	auto direction = dir;
 	if(gyro){
 		direction |= gyroDir;
 	}
 
+	Serial.printf("%lu sendDriveDir\n", millis());
 	Com.sendDriveDir(direction);
 }
 
@@ -150,6 +154,7 @@ void ManualDriver::sendGyro(){
 	else if(x > 0.6) gyroDir |= 0b0001;
 
 	sendDriveDir();
+	directionSendTimer = 0;
 }
 
 void ManualDriver::loop(uint micros){
@@ -162,12 +167,15 @@ void ManualDriver::loop(uint micros){
 		checkGyro();
 	}
 
-	directionSendTimer += micros;
-	if(directionSendTimer >= directionSendInterval){
-		directionSendTimer = 0;
-		sendDriveDir();
+	//no need to repeat setting motors to zero again and again
+	if(!(lastDir == dir && dir == 0)){
+		directionSendTimer += micros;
+		if(directionSendTimer >= directionSendInterval){
+			directionSendTimer = 0;
+			sendDriveDir();
+			lastDir = dir;
+		}
 	}
-
 
 	if((!boostActive && boostGauge == 100) || (boostActive && boostGauge == 0)) return;
 

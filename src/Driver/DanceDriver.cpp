@@ -22,8 +22,7 @@ void DanceDriver::onStop(){
 void DanceDriver::buttonReleased(uint i){
 	if(i == BTN_LEFT){
 		danceElement.arrowLeftPressed(false);
-	}
-	if(i == BTN_RIGHT){
+	}else if(i == BTN_RIGHT){
 		danceElement.arrowRightPressed(false);
 	}
 }
@@ -38,8 +37,7 @@ void DanceDriver::buttonPressed(uint i){
 		}
 		danceElement.setCurrentDance((DanceType) danceIndex);
 		Com.sendDance((DanceType) danceIndex);
-	}
-	if(i == BTN_LEFT){
+	}else if(i == BTN_LEFT){
 		danceElement.arrowLeftPressed(true);
 		if(danceIndex == 0){
 			danceIndex = 8;
@@ -48,5 +46,7 @@ void DanceDriver::buttonPressed(uint i){
 		}
 		danceElement.setCurrentDance((DanceType) danceIndex);
 		Com.sendDance((DanceType) danceIndex);
+	}else if(i == BTN_B){
+		Com.sendHonk();
 	}
 }

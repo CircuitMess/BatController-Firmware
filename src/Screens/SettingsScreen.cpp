@@ -128,6 +128,12 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	}, LV_EVENT_STYLE_CHANGED, nullptr);
 
 	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
+		if(lv_event_get_key(event) != LV_KEY_HOME) return;
+		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
+		slider->backToMain();
+	}, LV_EVENT_KEY, this);
+
+	lv_obj_add_event_cb(soundSlider, [](lv_event_t* event){
 		lv_obj_t* slider = static_cast<lv_obj_t*>(event->user_data);
 		lv_group_t* group = static_cast<lv_group_t*>(lv_obj_get_group(slider));
 		if(group == nullptr){
@@ -202,6 +208,12 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	}, LV_EVENT_CANCEL, this);
 
 	lv_obj_add_event_cb(shutdownSlider, [](lv_event_t* event){
+		if(lv_event_get_key(event) != LV_KEY_HOME) return;
+		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
+		slider->backToMain();
+	}, LV_EVENT_KEY, this);
+
+	lv_obj_add_event_cb(shutdownSlider, [](lv_event_t* event){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
 
 		lv_label_set_text(settings->shutdownTimeLabel, ShutdownText[lv_slider_get_value(event->target)]);
@@ -242,6 +254,10 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 			lv_obj_clear_state(lv_obj_get_parent(lv_event_get_target(event)), LV_STATE_EDITED);
 		}
 	}, LV_EVENT_STYLE_CHANGED, nullptr);
+
+	lv_obj_add_style(shutdownSlider, &style_main, LV_PART_MAIN);
+	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB);
+	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//screenBrightness
 	screenBrightness = lv_obj_create(flexContainer);
@@ -310,6 +326,12 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 		lv_group_send_data(group, LV_KEY_ENTER);
 	}, LV_EVENT_CANCEL, brightnessSlider);
 
+	lv_obj_add_event_cb(brightnessSlider, [](lv_event_t* event){
+		if(lv_event_get_key(event) != LV_KEY_HOME) return;
+		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
+		slider->backToMain();
+	}, LV_EVENT_KEY, this);
+
 	lv_group_add_obj(inputGroup, brightnessSlider);
 
 	lv_obj_add_event_cb(brightnessSlider, [](lv_event_t* event){
@@ -317,6 +339,10 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 		Settings.get().screenBrightness = lv_slider_get_value(slider) * 5;
 		BatController.setBrightness(lv_slider_get_value(slider) * 5);
 	}, LV_EVENT_VALUE_CHANGED, brightnessSlider);
+
+	lv_obj_add_style(brightnessSlider, &style_main, LV_PART_MAIN);
+	lv_obj_add_style(brightnessSlider, &style_knob, LV_PART_KNOB);
+	lv_obj_add_style(brightnessSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//pairBatmobile
 	pairBatmobile = lv_obj_create(flexContainer);
@@ -343,9 +369,11 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 
 	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
 		auto* settings = static_cast<SettingsScreen*>(event->user_data);
-		delete settings->parent;
-
 		settings->stop();
+
+		delete settings->parent;
+		delete settings;
+
 		Com.sendDisconnectRequest();
 		Com.setClient(nullptr);
 
@@ -356,6 +384,12 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 		SettingsScreen* screen = static_cast<SettingsScreen*>(event->user_data);
 		screen->backToMain();
 	}, LV_EVENT_CANCEL, this);
+
+	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
+		if(lv_event_get_key(event) != LV_KEY_HOME) return;
+		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
+		slider->backToMain();
+	}, LV_EVENT_KEY, this);
 
 	lv_group_add_obj(inputGroup, pairBatmobile);
 
@@ -395,6 +429,12 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 		screen->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
+	lv_obj_add_event_cb(factoryReset, [](lv_event_t* event){
+		if(lv_event_get_key(event) != LV_KEY_HOME) return;
+		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
+		slider->backToMain();
+	}, LV_EVENT_KEY, this);
+
 	lv_group_add_obj(inputGroup, factoryReset);
 
 	lv_obj_t* factoryResetLabel = lv_label_create(factoryReset);
@@ -402,73 +442,38 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	lv_obj_set_style_text_color(factoryResetLabel, lv_color_white(), 0);
 	lv_label_set_text(factoryResetLabel, "Factory reset");
 
-	//HWtest
-	HWTest = lv_obj_create(flexContainer);
-	lv_obj_set_height(HWTest, LV_SIZE_CONTENT);
-	lv_obj_set_width(HWTest, lv_pct(100));
-	lv_obj_set_layout(HWTest, LV_LAYOUT_FLEX);
-	lv_obj_set_flex_flow(HWTest, LV_FLEX_FLOW_ROW);
-	lv_obj_set_flex_align(HWTest, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-	lv_obj_set_style_pad_gap(HWTest, 8, 0);
-	lv_obj_set_style_pad_all(HWTest, 3, 0);
-	lv_obj_set_style_bg_opa(HWTest, 0, 0);
-	lv_obj_add_style(HWTest, &style_focused, selFocus);
-	lv_obj_add_style(HWTest, &style_def, sel);
-	lv_obj_add_flag(HWTest, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
-
-
-	lv_obj_t* HWTestLabel = lv_label_create(HWTest);
-	lv_obj_set_style_text_font(HWTestLabel, &lv_font_montserrat_10, 0);
-	lv_obj_set_style_text_color(HWTestLabel, lv_color_white(), 0);
-	lv_label_set_text(HWTestLabel, "Hardware test");
-	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_CLICK_FOCUSABLE);
-	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_CHECKABLE);
-	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_SCROLLABLE);
-
-	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
-		auto* settings = static_cast<SettingsScreen*>(event->user_data);
-		//TODO - dodati UserHWTest kada se on završi
-
-		//	settings->push(new UserHWTest());
-	}, LV_EVENT_CLICKED, this);
-
-	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
-		SettingsScreen* settings = static_cast<SettingsScreen*>(event->user_data);
-		settings->backToMain();
-	}, LV_EVENT_CANCEL, this);
-
-	lv_group_add_obj(inputGroup, HWTest);
-
-
 	//Save and exit
 	saveBtn = lv_btn_create(flexContainer);
-	lv_obj_set_height(HWTest, LV_SIZE_CONTENT);
-	lv_obj_set_width(HWTest, lv_pct(100));
-	lv_obj_set_style_pad_all(HWTest, 3, 0);
-	lv_obj_set_style_bg_opa(HWTest, 0, 0);
-	lv_obj_add_style(HWTest, &style_focused, selFocus);
-	lv_obj_add_style(HWTest, &style_def, sel);
-	lv_obj_add_flag(HWTest, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+	lv_obj_set_height(saveBtn, LV_SIZE_CONTENT);
+	lv_obj_set_width(saveBtn, lv_pct(100));
+	lv_obj_set_style_pad_all(saveBtn, 3, 0);
+	lv_obj_set_style_bg_opa(saveBtn, 0, 0);
+	lv_obj_add_style(saveBtn, &style_focused, selFocus);
+	lv_obj_add_style(saveBtn, &style_def, sel);
+	lv_obj_add_flag(saveBtn, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
 
 	lv_obj_t* saveLabel = lv_label_create(saveBtn);
-	lv_obj_set_style_text_font(HWTestLabel, &lv_font_montserrat_10, 0);
-	lv_obj_set_style_text_color(HWTestLabel, lv_color_white(), 0);
-	lv_label_set_text(HWTestLabel, "Save and exit");
-	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_CLICK_FOCUSABLE);
-	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_CHECKABLE);
-	lv_obj_clear_flag(HWTest, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_set_style_text_font(saveLabel, &lv_font_montserrat_10, 0);
+	lv_obj_set_style_text_color(saveLabel, lv_color_white(), 0);
+	lv_label_set_text(saveLabel, "Save and exit");
 
-	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
+	lv_obj_add_event_cb(saveBtn, [](lv_event_t* event){
 		auto* screen = static_cast<SettingsScreen*>(event->user_data);
 		screen->backToMain();
 	}, LV_EVENT_CLICKED, this);
 
-	lv_obj_add_event_cb(HWTest, [](lv_event_t* event){
+	lv_obj_add_event_cb(saveBtn, [](lv_event_t* event){
 		SettingsScreen* screen = static_cast<SettingsScreen*>(event->user_data);
 		screen->backToMain();
 	}, LV_EVENT_CANCEL, this);
 
-	lv_group_add_obj(inputGroup, HWTest);
+	lv_obj_add_event_cb(saveBtn, [](lv_event_t* event){
+		if(lv_event_get_key(event) != LV_KEY_HOME) return;
+		SettingsScreen* slider = static_cast<SettingsScreen*>(event->user_data);
+		slider->backToMain();
+	}, LV_EVENT_KEY, this);
+
+	lv_group_add_obj(inputGroup, saveBtn);
 }
 
 SettingsScreen::~SettingsScreen(){
@@ -488,13 +493,13 @@ void SettingsScreen::onStarting(){
 }
 
 void SettingsScreen::onStart(){
-    Com.addDcListener(this);
+	Com.addDcListener(this);
 }
 
 void SettingsScreen::onStop(){
 	factoryResetPrompt.stop();
 	Settings.store();
-    Com.removeDcListener(this);
+	Com.removeDcListener(this);
 }
 
 void SettingsScreen::backToMain(){
@@ -506,9 +511,10 @@ void SettingsScreen::backToMain(){
 	parent->start();
 }
 
-void SettingsScreen::onDisconnected() {
-    stop();
-    delete this;
-    auto pair = new PairScreen(true);
-    pair->start();
+void SettingsScreen::onDisconnected(){
+	stop();
+	delete parent;
+	delete this;
+	auto pair = new PairScreen(true);
+	pair->start();
 }

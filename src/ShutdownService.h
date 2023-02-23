@@ -10,16 +10,23 @@ public:
 	void begin();
 	void pause();
 	void resume();
+	/**
+	 * Call when an activity other than keypresses have occured.
+	 * This will reset the inactivity timer.
+	 */
+	void activityReset();
 
 private:
 	void loop(uint micros) override;
 
-	void buttonPressed(uint i) override;
-	void buttonReleased(uint i) override;
+	void anyKeyPressed() override;
 
 	uint32_t timer = 0;
 
 	bool paused = false;
+
+	bool done = false;
+	void shutdown();
 };
 
 extern ShutdownService AutoShutdown;
