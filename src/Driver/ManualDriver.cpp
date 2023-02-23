@@ -156,6 +156,17 @@ void ManualDriver::sendGyro(){
 
 	float speedVec = sqrt(pow(x, 2) + pow(y, 2));
 	gyroSpeed = (constrain(speedVec - GyroDeadzone, 0, 1.0 - GyroDeadzone)) / (1.0 - GyroDeadzone) * GyroSpeedRange;
+
+	if(boostPressed && gyroDir && !boostActive && boostGauge > 0){
+		boostActive = true;
+		Com.sendBoost(boostActive);
+	}
+
+	if(gyroDir == 0 && boostActive){
+		boostActive = false;
+		Com.sendBoost(boostActive);
+	}
+
 	sendDriveDir();
 	directionSendTimer = 0;
 }
