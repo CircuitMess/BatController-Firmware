@@ -100,13 +100,12 @@ void ManualDriver::buttonReleased(uint i){
 }
 
 void ManualDriver::sendDriveDir() const{
-	auto direction = dir;
-	if(gyro){
-		direction |= gyroDir;
+	//gyro value is pushed only when no button inputs, gyro detected and moved beyond deadzone
+	if(!dir && gyro && gyroSpeed){
+		Com.sendDriveDir(gyroDir, gyroSpeed);
+	}else{
+		Com.sendDriveDir(dir);
 	}
-
-	Serial.printf("%lu sendDriveDir\n", millis());
-	Com.sendDriveDir(direction);
 }
 
 void ManualDriver::checkGyro(){
@@ -129,6 +128,8 @@ void ManualDriver::sendGyro(){
 	if(Wire.endTransmission() != 0){
 		gyro = false;
 		gyroDir = 0;
+		//disconnect occured, send button direction (or stop moving)
+		sendDriveDir();
 		return;
 	}
 
@@ -142,17 +143,19 @@ void ManualDriver::sendGyro(){
 			(data[5] << 8) | data[4],
 	};
 
-	float x = (float) accel.x / 10000.0f;
-	float y = (float) accel.y / 10000.0f;
+	float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
+	float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
 
 	gyroDir = 0;
 
-	if(y < -0.6) gyroDir |= 0b1000;
-	else if(y > 0.6) gyroDir |= 0b0100;
+	if(y < -GyroDeadzone) gyroDir |= 0b1000;
+	else if(y > GyroDeadzone) gyroDir |= 0b0100;
 
-	if(x < -0.6) gyroDir |= 0b0010;
-	else if(x > 0.6) gyroDir |= 0b0001;
+	if(x < -GyroDeadzone) gyroDir |= 0b0010;
+	else if(x > GyroDeadzone) gyroDir |= 0b0001;
 
+	float speedVec = sqrt(pow(x, 2) + pow(y, 2));
+	gyroSpeed = (constrain(speedVec - GyroDeadzone, 0, 1.0 - GyroDeadzone)) / (1.0 - GyroDeadzone) * GyroSpeedRange;
 	sendDriveDir();
 	directionSendTimer = 0;
 }
