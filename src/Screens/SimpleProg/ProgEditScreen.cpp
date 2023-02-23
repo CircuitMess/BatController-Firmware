@@ -126,8 +126,9 @@ void ProgEditScreen::buttonPressed(uint i){
 	if(i != BTN_B){
 		lv_timer_pause(progDeleteTimer);
 		return;
-	}else if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()){
-		return;
+	}else{
+		backClickTimer = millis();
+		if(lv_obj_get_index(lv_group_get_focused(inputGroup)) >= program.actions.size()) return;
 	}
 
 	lv_timer_reset(progDeleteTimer);
@@ -136,6 +137,12 @@ void ProgEditScreen::buttonPressed(uint i){
 
 void ProgEditScreen::buttonReleased(uint i){
 	if(editModal.isActive()) return;
+
+	if(i == BTN_B && millis() - backClickTimer <= clickTimeMax){
+		pop();
+		return;
+	}
+
 	lv_timer_pause(progDeleteTimer);
 }
 
