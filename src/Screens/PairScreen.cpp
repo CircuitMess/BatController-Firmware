@@ -25,22 +25,17 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 		scanning.start();
 	});
 
-	input.setCallbackDone([this](std::string ssidInput, std::string passInput){
-		if(ssidInput.size() > 24){
-			ssidInput.resize(24);
-		}
-
+	input.setCallbackDone([this]( std::string passInput){
 		if(passInput.size() > 23){
 			passInput.resize(23);
 		}
 
-		ssid = std::move(ssidInput);
 		password = std::move(passInput);
 
 		memset(Settings.get().ssid, 0, sizeof(Settings.get().ssid));
 		memset(Settings.get().password, 0, sizeof(Settings.get().password));
-		memcpy(Settings.get().ssid, ssid.c_str(), ssid.size());
-		memcpy(Settings.get().password, password.c_str(), password.size());
+		strncpy(Settings.get().ssid, ssid.c_str(), ssid.size());
+		strncpy(Settings.get().password, password.c_str(), password.size());
 		Settings.store();
 
 
