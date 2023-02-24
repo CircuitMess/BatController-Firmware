@@ -83,14 +83,8 @@ void WiFiScanning::loop(uint micros){
 	int networks = WiFi.scanComplete();
 	bool done = networks != -1;
 
-	if(counter >= Timeout)
+	if(counter >= Timeout || (done && networks <= 0))
 	{
-		LoopManager::removeListener(this);
-		counter = 0;
-		if(!callbackError) return;
-		callbackError("Timeout error\n\nPress any key.");
-		return;
-	}else if(done && networks <= 0){
 		LoopManager::removeListener(this);
 		counter = 0;
 		if(!callbackError) return;
