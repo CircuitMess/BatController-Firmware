@@ -100,6 +100,7 @@ void ProgEditScreen::onStart(){
 }
 
 void ProgEditScreen::onStop(){
+	lv_timer_pause(progDeleteTimer);
 	editModal.stop();
 	pickModal.stop();
 	InputLVGL::enableVerticalNavigation(true);
