@@ -68,6 +68,7 @@ void SimpleProgScreen::onStart(){
 }
 
 void SimpleProgScreen::onStop(){
+	lv_timer_pause(progDeleteTimer);
 	Input::getInstance()->removeListener(this);
 }
 

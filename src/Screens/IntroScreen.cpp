@@ -75,7 +75,6 @@ void IntroScreen::loop(uint micros){
 				lv_obj_del((lv_obj_t*) timer->user_data);
 				lv_timer_del(timer);
 			}, 600, scr);
-			lv_timer_set_repeat_count(timer, 1);
 		});
 		return;
 	}
