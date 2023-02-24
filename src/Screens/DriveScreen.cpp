@@ -179,10 +179,13 @@ void DriveScreen::onDisconnected(){
 	pair->start();
 }
 
-void DriveScreen::onCameraError(uint8_t errorCode){
+void DriveScreen::onError(BatError error){
 	if(LVModal::getCurrent() != nullptr) return;
 
-	if(errorCode == 1){
+	if(error == Camera){
+		memset(imgBuf, 0, 160*120*2);
+		lv_obj_invalidate(img);
+
 		auto errorMessage = new MessageModal(this, "Camera error!\nReinsert ribbon cable.", 5000);
 		errorMessage->start();
 	}

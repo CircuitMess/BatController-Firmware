@@ -27,7 +27,7 @@ public:
 
 private:
 	void onDisconnected() override;
-	void onCameraError(uint8_t errorCode) override;
+	void onError(BatError error) override;
 
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
