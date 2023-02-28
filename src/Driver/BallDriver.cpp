@@ -19,6 +19,8 @@ BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode
 	lv_obj_center(img);
 	lv_obj_t* text = lv_label_create(lockElement);
 	lv_obj_center(text);
+	lv_obj_set_width(text, lv_pct(100));
+	lv_obj_set_style_text_align(text, LV_TEXT_ALIGN_CENTER, 0);
 	lv_obj_set_style_text_color(text, lv_color_white(), 0);
 	lv_obj_set_style_text_font(text, &lv_font_montserrat_10, 0);
 	lv_label_set_text(text, "Motors locked");
