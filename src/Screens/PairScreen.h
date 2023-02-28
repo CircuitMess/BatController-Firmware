@@ -9,6 +9,7 @@
 #include "PairScreenElements/Error.h"
 #include "PairScreenElements/ScanQR.h"
 #include "PairScreenElements/InputPS.h"
+#include "PairScreenElements/WiFiScanning.h"
 
 
 class PairScreen : public LVScreen {
@@ -27,7 +28,7 @@ private:
 	Error error;
 	ScanQR scanQR;
 	InputPS input;
-
+	WiFiScanning scanning;
 	PairService pair;
 
 	std::string ssid;

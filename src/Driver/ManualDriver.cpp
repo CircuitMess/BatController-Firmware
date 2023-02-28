@@ -33,6 +33,8 @@ void ManualDriver::buttonPressed(uint i){
 		if(dir != 0b0000){
 			if(boostGauge > 0) boostActive = true;
 			Com.sendBoost(boostActive);
+			boostTimer = 0;
+			boostGaugeStart = boostGauge;
 		}
 	}else if(i == BTN_B){
 		Com.sendHonk();
@@ -42,6 +44,8 @@ void ManualDriver::buttonPressed(uint i){
 		if(boostPressed){
 			if(boostGauge > 0) boostActive = true;
 			Com.sendBoost(boostActive);
+			boostTimer = 0;
+			boostGaugeStart = boostGauge;
 		}
 		switch(i){
 			case BTN_UP:
@@ -71,6 +75,8 @@ void ManualDriver::buttonReleased(uint i){
 		if(boostActive){
 			boostActive = false;
 			Com.sendBoost(boostActive);
+			boostTimer = 0;
+			boostGaugeStart = boostGauge;
 		}
 	}else{
 		switch(i){
@@ -96,6 +102,8 @@ void ManualDriver::buttonReleased(uint i){
 	if(dir == 0b0000 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		boostTimer = 0;
+		boostGaugeStart = boostGauge;
 	}
 }
 
@@ -181,16 +189,16 @@ void ManualDriver::loop(uint micros){
 
 	boostTimer += micros;
 
-	if(boostActive && boostTimer > boostConsumptionRate){
-		boostGauge = max(boostGauge - 1, 0);
-		boostTimer = 0;
-	}else if(!boostActive && boostTimer > boostFillRate){
-		boostGauge = min(boostGauge + 1, 100);
-		boostTimer = 0;
+	if(boostActive){
+		boostGauge = max(boostGaugeStart - map(boostTimer, 0, boostDuration, 0, 100), 0L);
+	}else{
+		boostGauge = min(boostGaugeStart + map(boostTimer, 0, boostFillDuration, 0, 100), 100L);
 	}
 
 	if(boostActive && boostGauge == 0){
 		boostActive = false;
+		boostTimer = 0;
+		boostGaugeStart = boostGauge;
 		Com.sendBoost(false);
 	}
 

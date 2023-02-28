@@ -21,6 +21,8 @@ private:
 	lv_timer_t* timer = nullptr;
 
 	std::function<void()> dismissCallback;
+	uint32_t startMillis = 0;
+	static constexpr uint32_t nonDismissMillis = 1000;
 
 	void dismiss();
 };

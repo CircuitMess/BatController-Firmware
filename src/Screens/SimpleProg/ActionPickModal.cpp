@@ -10,9 +10,11 @@ static const std::map<Simple::Action::Type, const char*> actionIcons = {
 		{ Simple::Action::Type::Delay,       "S:/SimpleProg/Delay.bin" }
 };
 
+constexpr std::array<const char*, 6> ActionPickModal::actionNames;
+
 ActionPickModal::ActionPickModal(LVScreen* parent) : LVModal(parent){
 	lv_obj_set_size(obj, w, h);
-	lv_obj_set_style_bg_img_src(obj, "S:/DriveScreen/ModalBg.bin", LV_STATE_DEFAULT);
+	lv_obj_set_style_bg_img_src(obj, "S:/SimpleProg/ActionPickBg.bin", LV_STATE_DEFAULT);
 	lv_obj_set_layout(obj, LV_LAYOUT_FLEX);
 	lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_ROW_WRAP);
 	lv_obj_set_flex_align(obj, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -41,6 +43,21 @@ ActionPickModal::ActionPickModal(LVScreen* parent) : LVModal(parent){
 			}
 		}, LV_EVENT_KEY, this);
 	}
+
+	actionLabel = lv_label_create(obj);
+	lv_obj_set_flex_grow(actionLabel, 1);
+	lv_obj_set_style_text_align(actionLabel, LV_TEXT_ALIGN_CENTER, 0);
+	lv_label_set_text(actionLabel, actionNames[lv_obj_get_index(lv_group_get_focused(inputGroup))]);
+	lv_obj_set_style_text_font(actionLabel, &lv_font_montserrat_10, 0);
+	inputGroup->user_data = actionLabel;
+	lv_obj_add_flag(actionLabel, LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
+
+	lv_group_set_focus_cb(inputGroup, [](lv_group_t* g){
+		auto actionLabel = (lv_obj_t*) g->user_data;
+		lv_label_set_text(actionLabel, actionNames[lv_obj_get_index(lv_group_get_focused(g))]);
+
+	});
+
 }
 
 void ActionPickModal::addAction(Simple::Action::Type type){

@@ -44,6 +44,9 @@ private:
 	static constexpr uint8_t spaceBetweenProgs = 3;
 	static constexpr uint32_t holdTime = 1000; //1s hold to confirm play/eras
 
+	static constexpr uint32_t clickTimeMax = 350; //press and release under 350ms is tolerated as a click
+	uint32_t backClickTimer = 0;
+
 	lv_timer_t* progDeleteTimer;
 	uint32_t holdStartTime = 0;
 

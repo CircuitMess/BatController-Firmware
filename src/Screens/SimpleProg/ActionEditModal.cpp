@@ -1,4 +1,5 @@
 #include "ActionEditModal.h"
+#include <BatController.h>
 #include "../../InputLVGL.h"
 
 ActionEditModal::ActionEditModal(LVScreen* parent) : LVModal(parent){
@@ -9,8 +10,9 @@ ActionEditModal::ActionEditModal(LVScreen* parent) : LVModal(parent){
 	lv_obj_set_flex_flow(obj, LV_FLEX_FLOW_COLUMN);
 	lv_obj_set_flex_align(obj, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 	lv_obj_set_style_pad_row(obj, 1, LV_STATE_DEFAULT);
-	lv_obj_set_style_pad_ver(obj, 5, LV_STATE_DEFAULT);
-	lv_obj_set_style_pad_hor(obj, 2, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_all(obj, 5, LV_STATE_DEFAULT);
+
+
 }
 
 void ActionEditModal::startEdit(Simple::Action& action){
@@ -31,6 +33,7 @@ void ActionEditModal::startEdit(Simple::Action& action){
 		addToggle(action);
 	}else if(action.type == Simple::Action::Type::Sound){
 		addSound(action);
+		Com.sendSoundEffect(action.SoundData.sampleIndex);
 	}else if(action.type == Simple::Action::Type::Underlights){
 		addColor(action);
 	}
@@ -65,10 +68,11 @@ void ActionEditModal::addDirection(Simple::Action& action){
 	lv_obj_t* dir = lv_obj_create(obj);
 	lv_obj_set_size(dir, entryW, entryH);
 	lv_obj_set_style_pad_all(dir, 1, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_left(dir, 4, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_right(dir, 4, LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(dir, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-	lv_obj_set_style_outline_color(dir, lv_color_hex(0x5c6167), LV_STATE_FOCUSED);
-	lv_obj_set_style_outline_opa(dir, LV_OPA_COVER, LV_STATE_FOCUSED);
-	lv_obj_set_style_outline_width(dir, 1, LV_STATE_FOCUSED);
+	lv_obj_set_style_bg_img_src(dir,"S:/SimpleProg/Frame.bin", LV_STATE_FOCUSED);
+	lv_obj_set_style_bg_img_opa(dir, LV_OPA_COVER, LV_STATE_FOCUSED);
 	lv_obj_t* label = lv_label_create(dir);
 	lv_obj_set_style_text_font(label, &lv_font_montserrat_10, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(label, lv_color_black(), LV_STATE_DEFAULT);
@@ -102,11 +106,12 @@ void ActionEditModal::addDuration(Simple::Action& action){
 	lv_obj_t* dir = lv_obj_create(obj);
 	lv_obj_set_size(dir, entryW, entryH);
 	lv_obj_set_style_pad_all(dir, 1, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_left(dir, 4, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_right(dir, 4, LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(dir, LV_OPA_TRANSP, LV_STATE_DEFAULT);
 	if(action.type == Simple::Action::Type::Drive){
-		lv_obj_set_style_outline_color(dir, lv_color_hex(0x5c6167), LV_STATE_FOCUSED);
-		lv_obj_set_style_outline_opa(dir, LV_OPA_COVER, LV_STATE_FOCUSED);
-		lv_obj_set_style_outline_width(dir, 1, LV_STATE_FOCUSED);
+		lv_obj_set_style_bg_img_src(dir,"S:/SimpleProg/Frame.bin", LV_STATE_FOCUSED);
+		lv_obj_set_style_bg_img_opa(dir, LV_OPA_COVER, LV_STATE_FOCUSED);
 	}
 	lv_obj_t* label = lv_label_create(dir);
 	lv_obj_set_style_text_font(label, &lv_font_montserrat_10, LV_STATE_DEFAULT);
@@ -127,10 +132,10 @@ void ActionEditModal::addDuration(Simple::Action& action){
 		auto& duration = (action.type == Simple::Action::Type::Drive ? action.DriveData.duration : action.DelayData.duration);
 
 		if(lv_event_get_key(e) == LV_KEY_LEFT){
-			duration = constrain(duration - 1, 0, 100);
+			duration = constrain(duration - 1, 0, 99);
 			lv_label_set_text_fmt(indicator, "%d.%ds", duration / 10, duration % 10);
 		}else if(lv_event_get_key(e) == LV_KEY_RIGHT){
-			duration = constrain(duration + 1, 0, 100);
+			duration = constrain(duration + 1, 0, 99);
 			lv_label_set_text_fmt(indicator, "%d.%ds", duration / 10, duration % 10);
 		}
 	}, LV_EVENT_KEY, &action);
@@ -142,10 +147,11 @@ void ActionEditModal::addSpeed(Simple::Action& action){
 	lv_obj_t* dir = lv_obj_create(obj);
 	lv_obj_set_size(dir, entryW, entryH);
 	lv_obj_set_style_pad_all(dir, 1, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_left(dir, 4, LV_STATE_DEFAULT);
+	lv_obj_set_style_pad_right(dir, 4, LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(dir, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-	lv_obj_set_style_outline_color(dir, lv_color_hex(0x5c6167), LV_STATE_FOCUSED);
-	lv_obj_set_style_outline_opa(dir, LV_OPA_COVER, LV_STATE_FOCUSED);
-	lv_obj_set_style_outline_width(dir, 1, LV_STATE_FOCUSED);
+	lv_obj_set_style_bg_img_src(dir,"S:/SimpleProg/Frame.bin", LV_STATE_FOCUSED);
+	lv_obj_set_style_bg_img_opa(dir, LV_OPA_COVER, LV_STATE_FOCUSED);
 	lv_obj_t* label = lv_label_create(dir);
 	lv_obj_set_style_text_font(label, &lv_font_montserrat_10, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(label, lv_color_black(), LV_STATE_DEFAULT);
@@ -353,6 +359,7 @@ void ActionEditModal::addSound(Simple::Action& action){
 			lv_anim_set_var(&modal.anim, modal.arrowRight);
 			lv_anim_start(&modal.anim);
 
+			Com.sendSoundEffect(action.SoundData.sampleIndex);
 		}else if(lv_event_get_key(e) == LV_KEY_RIGHT){
 			action.SoundData.sampleIndex = constrain(action.SoundData.sampleIndex + 1, 0, SoundsNum - 1);
 			lv_label_set_text(txt, SoundNames[action.SoundData.sampleIndex]);
@@ -369,6 +376,7 @@ void ActionEditModal::addSound(Simple::Action& action){
 				lv_anim_set_var(&modal.anim, modal.arrowRight);
 				lv_anim_start(&modal.anim);
 			}
+			Com.sendSoundEffect(action.SoundData.sampleIndex);
 		}
 	}, LV_EVENT_KEY, this);
 
