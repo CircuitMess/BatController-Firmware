@@ -154,7 +154,7 @@ void ManualDriver::sendGyro(){
 	gyroDir = 0;
 	gyroSpeed = 0;
 
-	if(accel.z > 0 ){
+	if(accel.z > 0){
 		float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
 		float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
 
@@ -171,11 +171,15 @@ void ManualDriver::sendGyro(){
 	if(boostPressed && gyroDir && !boostActive && boostGauge > 0){
 		boostActive = true;
 		Com.sendBoost(boostActive);
+		boostTimer = 0;
+		boostGaugeStart = boostGauge;
 	}
 
 	if(dir == 0 && gyroDir == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		boostTimer = 0;
+		boostGaugeStart = boostGauge;
 	}
 
 	sendDriveDir();
