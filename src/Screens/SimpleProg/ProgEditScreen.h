@@ -42,6 +42,9 @@ private:
 	lv_obj_t* actionView;
 	lv_obj_t* footer;
 
+	static constexpr uint32_t clickTimeMax = 350; //press and release under 350ms is tolerated as a click
+	uint32_t backClickTimer = 0;
+
 	static constexpr uint32_t holdTime = 800; //0.8s hold to confirm erase
 	static constexpr uint8_t rowLength = 7;
 	lv_timer_t* progDeleteTimer;

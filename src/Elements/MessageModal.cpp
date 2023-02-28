@@ -31,7 +31,7 @@ void MessageModal::onStart(){
 		lv_timer_reset(timer);
 		lv_timer_resume(timer);
 	}
-
+	startMillis = millis();
 	Input::getInstance()->addListener(this);
 }
 
@@ -44,6 +44,7 @@ void MessageModal::onStop(){
 }
 
 void MessageModal::buttonReleased(uint i){
+	if(millis() - startMillis < nonDismissMillis) return;
 	LoopManager::defer([this](uint32_t t){
 		dismiss();
 	});

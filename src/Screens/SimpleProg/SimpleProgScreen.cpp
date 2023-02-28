@@ -68,7 +68,9 @@ void SimpleProgScreen::onStart(){
 }
 
 void SimpleProgScreen::onStop(){
+	lv_timer_pause(progDeleteTimer);
 	Input::getInstance()->removeListener(this);
+	lv_group_remove_all_objs(inputGroup);
 }
 
 void SimpleProgScreen::touchIndex(){
@@ -85,6 +87,9 @@ void SimpleProgScreen::onDisconnected(){
 
 void SimpleProgScreen::buttonPressed(uint i){
 	if(i != BTN_B) return;
+
+	backClickTimer = millis();
+
 	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
 	auto bg = lv_obj_get_child(lv_group_get_focused(inputGroup), 0);
 
@@ -97,8 +102,33 @@ void SimpleProgScreen::buttonPressed(uint i){
 }
 
 void SimpleProgScreen::buttonReleased(uint i){
-	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
+	if(i == BTN_B && millis() - backClickTimer <= clickTimeMax){
+		lv_obj_t* tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_style_bg_color(tmpScr, lv_color_black(), 0);
+		lv_obj_set_style_bg_opa(tmpScr, LV_OPA_COVER, 0);
+		lv_scr_load(tmpScr);
 
+		auto info = infoElement.release();
+		if(info){
+			lv_obj_set_parent(info->getLvObj(), tmpScr);
+		}
+
+		SimpleProgScreen::lastProgramIndex = 0;
+		stop();
+		delete this;
+
+		FSLVGL::unloadSimple();
+		LoopManager::defer([tmpScr, info](uint32_t t){
+			auto mainMenu = new MainMenu();
+			mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
+			mainMenu->start();
+
+			lv_obj_del(tmpScr);
+		});
+		return;
+	}
+
+	if(!lv_obj_get_child_cnt(lv_group_get_focused(inputGroup))) return;
 	auto bg = lv_obj_get_child(lv_group_get_focused(inputGroup), 0);
 	lv_obj_set_width(bg, 0);
 	holdStartTime = millis();
