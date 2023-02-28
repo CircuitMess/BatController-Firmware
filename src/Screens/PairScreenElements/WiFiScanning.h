@@ -32,7 +32,7 @@ private:
 	uint8_t numOfNetworks = 0;
 	uint32_t counter = 0;
 
-	static constexpr uint32_t Timeout = 3000000;
+	static constexpr uint32_t Timeout = 5000000;
 	static constexpr uint8_t ElementWidth = 141;
 	static constexpr uint8_t ElementHeight = 17;
 
