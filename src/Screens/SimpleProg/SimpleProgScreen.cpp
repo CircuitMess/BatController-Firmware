@@ -69,6 +69,15 @@ void SimpleProgScreen::onStart(){
 
 void SimpleProgScreen::onStop(){
 	lv_timer_pause(progDeleteTimer);
+	bool oneLeft = true;
+	while(oneLeft){
+		oneLeft = false;
+		for(int j = 0; j < lv_obj_get_child_cnt(progView); ++j){
+			if(lv_obj_remove_event_cb(lv_obj_get_child(progView, j), nullptr)){
+				oneLeft = true;
+			}
+		}
+	}
 	Input::getInstance()->removeListener(this);
 	lv_group_remove_all_objs(inputGroup);
 }
@@ -86,6 +95,32 @@ void SimpleProgScreen::onDisconnected(){
 }
 
 void SimpleProgScreen::buttonPressed(uint i){
+	if(i == BTN_MENU){
+		lv_obj_t* tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_style_bg_color(tmpScr, lv_color_black(), 0);
+		lv_obj_set_style_bg_opa(tmpScr, LV_OPA_COVER, 0);
+		lv_scr_load(tmpScr);
+
+		auto info = infoElement.release();
+		if(info){
+			lv_obj_set_parent(info->getLvObj(), tmpScr);
+		}
+
+		SimpleProgScreen::lastProgramIndex = 0;
+		stop();
+		delete this;
+
+		FSLVGL::unloadSimple();
+		LoopManager::defer([tmpScr, info](uint32_t t){
+			auto mainMenu = new MainMenu();
+			mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
+			mainMenu->start();
+
+			lv_obj_del(tmpScr);
+		});
+		return;
+	}
+
 	if(i != BTN_B) return;
 
 	backClickTimer = millis();
@@ -239,36 +274,6 @@ void SimpleProgScreen::buildProgView(){
 		lastProgramIndex = index;
 		screen.startEdit(index);
 	}, LV_EVENT_PRESSED, this);
-
-	for(int j = 0; j < lv_obj_get_child_cnt(progView); ++j){
-		lv_obj_add_event_cb(lv_obj_get_child(progView, j), [](lv_event_t* e){
-			if(lv_event_get_key(e) != LV_KEY_HOME) return;
-
-			auto screen = (SimpleProgScreen*) e->user_data;
-			lv_obj_t* tmpScr = lv_obj_create(nullptr);
-			lv_obj_set_style_bg_color(tmpScr, lv_color_black(), 0);
-			lv_obj_set_style_bg_opa(tmpScr, LV_OPA_COVER, 0);
-			lv_scr_load(tmpScr);
-
-			auto info = screen->infoElement.release();
-			if(info){
-				lv_obj_set_parent(info->getLvObj(), tmpScr);
-			}
-
-			SimpleProgScreen::lastProgramIndex = 0;
-			screen->stop();
-			delete screen;
-
-			FSLVGL::unloadSimple();
-			LoopManager::defer([tmpScr, info](uint32_t t){
-				auto mainMenu = new MainMenu();
-				mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
-				mainMenu->start();
-
-				lv_obj_del(tmpScr);
-			});
-		}, LV_EVENT_KEY, this);
-	}
 }
 
 void SimpleProgScreen::onStarting(){

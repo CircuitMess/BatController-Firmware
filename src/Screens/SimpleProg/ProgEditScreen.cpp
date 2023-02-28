@@ -107,6 +107,17 @@ void ProgEditScreen::onStop(){
 	InputLVGL::enableHorizontalNavigation(false);
 	Input::getInstance()->removeListener(this);
 	Com.removeDcListener(this);
+
+	bool allStopped = false;
+	while(!allStopped){
+		for(int j = 0; j < lv_obj_get_child_cnt(actionView); ++j){
+			if(!lv_obj_remove_event_cb(lv_obj_get_child(actionView, j), nullptr)){
+				allStopped = true;
+				break;
+			}
+		}
+	}
+
 	if(saveCallback) saveCallback(program);
 }
 
@@ -122,7 +133,7 @@ void ProgEditScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElem
 }
 
 void ProgEditScreen::buttonPressed(uint i){
-	if(editModal.isActive()) return;
+	if(editModal.isActive() || pickModal.isActive()) return;
 
 	if(i != BTN_B){
 		lv_timer_pause(progDeleteTimer);
@@ -137,9 +148,10 @@ void ProgEditScreen::buttonPressed(uint i){
 }
 
 void ProgEditScreen::buttonReleased(uint i){
-	if(editModal.isActive()) return;
+	if(editModal.isActive() || pickModal.isActive()) return;
 
 	if(i == BTN_B && millis() - backClickTimer <= clickTimeMax){
+		reinterpret_cast<SimpleProgScreen*>(parent)->setInfoElement(std::move(infoElement));
 		pop();
 		return;
 	}
@@ -189,7 +201,6 @@ void ProgEditScreen::addNewActionButton(){
 
 	lv_obj_add_event_cb(newAction, [](lv_event_t* e){
 		auto screen = (ProgEditScreen*) e->user_data;
-		auto& program = screen->program;
 
 		screen->pickModal.startPick([screen](Simple::Action action){
 			screen->program.actions.push_back(action);
@@ -208,6 +219,7 @@ void ProgEditScreen::addNewActionButton(){
 					}else if(key == LV_KEY_DOWN && (lv_obj_get_child_cnt(screen->actionView) - lv_obj_get_index(e->target) >= ProgEditScreen::rowLength)){
 						lv_group_focus_obj(lv_obj_get_child(screen->actionView, lv_obj_get_index(e->target) + ProgEditScreen::rowLength));
 					}else if(key == LV_KEY_HOME){
+						reinterpret_cast<SimpleProgScreen*>(screen->parent)->setInfoElement(std::move(screen->infoElement));
 						screen->pop();
 					}
 				}, LV_EVENT_KEY, screen);
