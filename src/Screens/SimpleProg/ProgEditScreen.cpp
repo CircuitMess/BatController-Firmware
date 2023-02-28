@@ -133,7 +133,7 @@ void ProgEditScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElem
 }
 
 void ProgEditScreen::buttonPressed(uint i){
-	if(editModal.isActive()) return;
+	if(editModal.isActive() || pickModal.isActive()) return;
 
 	if(i != BTN_B){
 		lv_timer_pause(progDeleteTimer);
@@ -148,7 +148,7 @@ void ProgEditScreen::buttonPressed(uint i){
 }
 
 void ProgEditScreen::buttonReleased(uint i){
-	if(editModal.isActive()) return;
+	if(editModal.isActive() || pickModal.isActive()) return;
 
 	if(i == BTN_B && millis() - backClickTimer <= clickTimeMax){
 		reinterpret_cast<SimpleProgScreen*>(parent)->setInfoElement(std::move(infoElement));
