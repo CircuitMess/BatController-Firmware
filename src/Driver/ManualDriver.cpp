@@ -93,7 +93,7 @@ void ManualDriver::buttonReleased(uint i){
 		directionSendTimer = 0;
 	}
 
-	if(dir == 0b0000 && boostActive){
+	if(dir == 0b0000 && gyroDir == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
 	}
@@ -143,26 +143,29 @@ void ManualDriver::sendGyro(){
 			(data[5] << 8) | data[4],
 	};
 
-	float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
-	float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
-
 	gyroDir = 0;
+	gyroSpeed = 0;
 
-	if(y < -GyroDeadzone) gyroDir |= 0b1000;
-	else if(y > GyroDeadzone) gyroDir |= 0b0100;
+	if(accel.z > 0 ){
+		float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
+		float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
 
-	if(x < -GyroDeadzone) gyroDir |= 0b0010;
-	else if(x > GyroDeadzone) gyroDir |= 0b0001;
+		if(y < -GyroDeadzone) gyroDir |= 0b1000;
+		else if(y > GyroDeadzone) gyroDir |= 0b0100;
 
-	float speedVec = sqrt(pow(x, 2) + pow(y, 2));
-	gyroSpeed = (constrain(speedVec - GyroDeadzone, 0, 1.0 - GyroDeadzone)) / (1.0 - GyroDeadzone) * GyroSpeedRange;
+		if(x < -GyroDeadzone) gyroDir |= 0b0010;
+		else if(x > GyroDeadzone) gyroDir |= 0b0001;
+
+		float speedVec = sqrt(pow(x, 2) + pow(y, 2));
+		gyroSpeed = (constrain(speedVec - GyroDeadzone, 0, 1.0 - GyroDeadzone)) / (1.0 - GyroDeadzone) * GyroSpeedRange;
+	}
 
 	if(boostPressed && gyroDir && !boostActive && boostGauge > 0){
 		boostActive = true;
 		Com.sendBoost(boostActive);
 	}
 
-	if(gyroDir == 0 && boostActive){
+	if(dir == 0 && gyroDir == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
 	}
