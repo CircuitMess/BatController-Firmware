@@ -3,6 +3,8 @@
 #include <Input/Input.h>
 #include "../../InputLVGL.h"
 #include "SimpleProgScreen.h"
+#include "../PairScreen.h"
+#include <Com/Communication.h>
 
 static const std::map<Simple::Action::Type, const char*> actionIcons = {
 		{ Simple::Action::Type::Drive,       "S:/SimpleProg/Drive.bin" },
@@ -94,14 +96,17 @@ void ProgEditScreen::onStart(){
 	InputLVGL::enableVerticalNavigation(false);
 	InputLVGL::enableHorizontalNavigation(true);
 	Input::getInstance()->addListener(this);
+	Com.addDcListener(this);
 }
 
 void ProgEditScreen::onStop(){
+	lv_timer_pause(progDeleteTimer);
 	editModal.stop();
 	pickModal.stop();
 	InputLVGL::enableVerticalNavigation(true);
 	InputLVGL::enableHorizontalNavigation(false);
 	Input::getInstance()->removeListener(this);
+	Com.removeDcListener(this);
 	if(saveCallback) saveCallback(program);
 }
 
@@ -205,4 +210,12 @@ void ProgEditScreen::addNewActionButton(){
 
 	}, LV_EVENT_PRESSED, this);
 
+}
+
+void ProgEditScreen::onDisconnected(){
+	stop();
+	delete parent;
+	delete this;
+	auto pair = new PairScreen(true);
+	pair->start();
 }
