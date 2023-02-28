@@ -151,6 +151,7 @@ void ProgEditScreen::buttonReleased(uint i){
 	if(editModal.isActive()) return;
 
 	if(i == BTN_B && millis() - backClickTimer <= clickTimeMax){
+		reinterpret_cast<SimpleProgScreen*>(parent)->setInfoElement(std::move(infoElement));
 		pop();
 		return;
 	}
