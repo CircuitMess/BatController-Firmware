@@ -24,11 +24,7 @@ public:
 private:
 
 	ScanAruco scanAruco;
-	Connecting connecting;
 	Error error;
-	ScanQR scanQR;
-	InputPS input;
-	WiFiScanning scanning;
 	PairService pair;
 
 	std::string ssid;
