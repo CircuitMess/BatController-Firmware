@@ -9,7 +9,7 @@
 #include "../Elements/MessageModal.h"
 
 PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup), connecting(obj), error(obj, inputGroup), scanQR(obj, inputGroup),
-										  input(obj, inputGroup), disconnect(disconnect){
+										  input(obj, inputGroup), disconnect(disconnect), scanning(obj, inputGroup){
 	lv_obj_set_style_bg_color(obj, lv_color_black(), 0);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, 0);
 	lv_obj_set_size(obj, 160, 128);
@@ -22,28 +22,20 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 		scanAruco.stop();
 		pair.stop();
 
-		input.setNetwork(Settings.get().ssid);
-		input.setPassword(Settings.get().password);
-
-		input.start();
+		scanning.start();
 	});
 
-	input.setCallbackDone([this](std::string ssidInput, std::string passInput){
-		if(ssidInput.size() > 24){
-			ssidInput.resize(24);
-		}
-
+	input.setCallbackDone([this]( std::string passInput){
 		if(passInput.size() > 23){
 			passInput.resize(23);
 		}
 
-		ssid = std::move(ssidInput);
 		password = std::move(passInput);
 
 		memset(Settings.get().ssid, 0, sizeof(Settings.get().ssid));
 		memset(Settings.get().password, 0, sizeof(Settings.get().password));
-		memcpy(Settings.get().ssid, ssid.c_str(), ssid.size());
-		memcpy(Settings.get().password, password.c_str(), password.size());
+		strncpy(Settings.get().ssid, ssid.c_str(), ssid.size());
+		strncpy(Settings.get().password, password.c_str(), password.size());
 		Settings.store();
 
 
@@ -125,6 +117,38 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 				break;
 		}
 	});
+
+	scanning.setCallbackError([this](std::string errorMessage){
+		scanning.stop();
+		error.start(errorMessage);
+	});
+
+	scanning.setCallbackBack([this](){
+		scanning.stop();
+
+		resetDirect();
+		scanAruco.start(randID);
+
+		pair.stop();
+		pair.start(directSSID, directPass, true);
+	});
+
+	scanning.setCallbackDone([this](std::string ssid){
+		scanning.stop();
+		if(ssid.size() > 24){
+			ssid.resize(24);
+		}
+
+		this->ssid = std::move(ssid);
+		if(strcmp(this->ssid.c_str(), Settings.get().ssid) == 0){
+			input.setPassword(Settings.get().password);
+		}else{
+			input.setPassword("");
+		}
+
+		input.start();
+	});
+
 }
 
 PairScreen::~PairScreen(){
