@@ -42,10 +42,14 @@ private:
 
 	bool gyro = false;
 	uint8_t gyroDir = 0;
+	uint8_t gyroSpeed = 0;
 	static constexpr uint8_t GyroAddr = 0x18;
 	uint32_t gyroCounter = 0;
 	static constexpr uint32_t GyroReadInterval = 10000;
 	static constexpr uint32_t GyroCheckInterval = 100000;
+	static constexpr float GyroRange = 16384.0f; //14-bit precision
+	static constexpr float GyroDeadzone = 0.22f;
+	static constexpr uint8_t GyroSpeedRange = 15;
 	void sendGyro();
 	void checkGyro();
 };
