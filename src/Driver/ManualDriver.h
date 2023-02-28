@@ -11,7 +11,7 @@ class ManualDriver : public Driver, private LoopListener, private InputListener 
 public:
 	ManualDriver(lv_obj_t* elementContainer);
 
-    ~ManualDriver() override;
+	~ManualDriver() override;
 
 protected:
 	void onStart() override;
@@ -29,11 +29,12 @@ private:
 
 	BoostElement* boost;
 	uint8_t boostGauge = 100;
+	uint8_t boostGaugeStart = 100;
 	bool boostActive = false;
 	uint32_t boostTimer = 0;
 	bool boostPressed = false;
-	static constexpr uint boostFillRate = 27000; //increment boost by 1 every 20ms when recharging boost
-	static constexpr uint boostConsumptionRate = 20000; //decrease by 1 every 20ms when using boost
+	static constexpr uint boostFillDuration = 4500000; //recharging boost from empty to full requires 4.5s
+	static constexpr uint boostDuration = 3500000; //using boost bar from full to empty lasts 3.5s
 
 	void sendDriveDir() const;
 	uint8_t lastDir = 0;

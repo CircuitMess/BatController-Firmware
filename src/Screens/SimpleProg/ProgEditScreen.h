@@ -30,6 +30,7 @@ private:
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
 
+	void onDisconnected() override;
 	std::function<void(Simple::Program)> saveCallback;
 
 	ActionEditModal editModal;
@@ -40,6 +41,9 @@ private:
 	lv_obj_t* newAction;
 	lv_obj_t* actionView;
 	lv_obj_t* footer;
+
+	static constexpr uint32_t clickTimeMax = 350; //press and release under 350ms is tolerated as a click
+	uint32_t backClickTimer = 0;
 
 	static constexpr uint32_t holdTime = 800; //0.8s hold to confirm erase
 	static constexpr uint8_t rowLength = 7;
