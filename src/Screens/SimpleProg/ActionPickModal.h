@@ -4,6 +4,7 @@
 #include "../../Interface/LVModal.h"
 #include "SimpleProgModel.h"
 #include <functional>
+#include <array>
 
 class ActionPickModal : public LVModal {
 public:
@@ -18,9 +19,13 @@ private:
 	void addAction(Simple::Action::Type type);
 
 	static constexpr size_t w = 79;
-	static constexpr size_t h = 48;
+	static constexpr size_t h = 64;
 	static constexpr uint8_t rowLength = 3;
 	std::function<void(Simple::Action action)> pickedCallback;
+
+	static constexpr std::array<const char*, 6> actionNames = { "Drive", "Headlights", "Taillights", "Underlights", "Sound", "Delay" };
+
+	lv_obj_t* actionLabel;
 };
 
 

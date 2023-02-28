@@ -8,7 +8,11 @@
 #include "PairScreen.h"
 #include "SimpleProg/SimpleProgScreen.h"
 
+uint8_t MainMenu::lastSelected = 0;
 MainMenu::MainMenu() : LVScreen() {
+
+	selected = lastSelected;
+
     bigContainers.reserve(ItemCount * 2);
     bigs.reserve(ItemCount * 2);
     bigLabels.reserve(ItemCount * 2);
@@ -74,7 +78,7 @@ MainMenu::MainMenu() : LVScreen() {
     loadGIFs();
 
     lv_group_set_wrap(inputGroup, false);
-    lv_group_focus_obj(bigContainers.front());
+    lv_group_focus_obj(bigContainers[selected]);
 
     inputGroup->user_data = this;
     lv_group_set_focus_cb(inputGroup, [](lv_group_t *group) {
@@ -85,10 +89,6 @@ MainMenu::MainMenu() : LVScreen() {
         uint8_t index = lv_obj_get_index(focused);
         menu->scrollTo(index);
     });
-}
-
-MainMenu::~MainMenu() {
-
 }
 
 void MainMenu::loadGIFs() {
@@ -165,10 +165,13 @@ void MainMenu::onStart() {
 		}, LV_EVENT_PRESSED, this);
 	}
 
+	Com.sendIdleSound(true);
 	launching = false;
 }
 
 void MainMenu::onStop() {
+	Com.sendIdleSound(false);
+	lastSelected = selected;
     for (int i = 0; i < ItemCount; i++) {
         lv_gif_stop(bigs[i]);
     }
@@ -229,11 +232,20 @@ void MainMenu::launch() {
 			screen->start();
 			return;
 		}else if(selected == 1){ // Simple prog
+
+			auto info = std::move(menu->infoElement);
+			auto tmpScr = lv_obj_create(nullptr);
+			lv_obj_set_parent(info->getLvObj(), tmpScr);
+
 			delete menu;
 
-			// TODO: info element passing
-			auto screen = screens[selected]();
-			if(screen == nullptr) return;
+			auto launcher = screens[selected];
+			if(launcher == nullptr) return;
+
+			auto screen = reinterpret_cast<SimpleProgScreen*>(launcher());
+			screen->setInfoElement(std::move(info));
+			lv_obj_del(tmpScr);
+
 			screen->start();
 
 			return;
@@ -252,7 +264,6 @@ void MainMenu::launch() {
         screen->start();
 
 	}, 500, this);
-	lv_timer_set_repeat_count(timer, 1);
 }
 
 void MainMenu::selectNext() {
@@ -294,6 +305,7 @@ void MainMenu::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement) {
 void MainMenu::onDisconnected() {
     stop();
     delete this;
+	lastSelected = 0;
     auto pair = new PairScreen(true);
     pair->start();
 }

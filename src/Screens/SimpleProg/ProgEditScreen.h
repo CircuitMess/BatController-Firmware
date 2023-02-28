@@ -9,13 +9,19 @@
 #include "ActionPickModal.h"
 #include "../../Elements/GeneralInfoElement.h"
 #include <functional>
+#include <memory>
 
-class ProgEditScreen : public LVScreen, private DisconnectListener, private InputListener{
+class ProgEditScreen : public LVScreen, private DisconnectListener, private InputListener {
 public:
 	ProgEditScreen(const Simple::Program& program, std::function<void(Simple::Program)> saveCallback);
+	~ProgEditScreen() override;
+
+	void onStarting() override;
 	void onStart() override;
 	void onStop() override;
-	virtual ~ProgEditScreen();
+
+	void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
+
 
 private:
 	Simple::Program program;
@@ -24,15 +30,20 @@ private:
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;
 
+	void onDisconnected() override;
 	std::function<void(Simple::Program)> saveCallback;
 
 	ActionEditModal editModal;
 	ActionPickModal pickModal;
 
-	GeneralInfoElement infoElement;
+	std::unique_ptr<GeneralInfoElement> infoElement;
+
 	lv_obj_t* newAction;
 	lv_obj_t* actionView;
 	lv_obj_t* footer;
+
+	static constexpr uint32_t clickTimeMax = 350; //press and release under 350ms is tolerated as a click
+	uint32_t backClickTimer = 0;
 
 	static constexpr uint32_t holdTime = 800; //0.8s hold to confirm erase
 	static constexpr uint8_t rowLength = 7;

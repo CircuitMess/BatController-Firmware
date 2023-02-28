@@ -25,7 +25,6 @@ private:
 	lv_obj_t* screenBrightness;
 	lv_obj_t* factoryReset;
 	Prompt factoryResetPrompt;
-	lv_obj_t* HWTest;
 	lv_obj_t* title;
 	lv_obj_t* pairBatmobile;
 	lv_obj_t* saveBtn;
@@ -43,7 +42,7 @@ private:
 
 	void backToMain();
 
-    void onDisconnected() override;
+	void onDisconnected() override;
 };
 
 #endif //BATCONTROLLER_FIRMWARE_SETTINGSSCREEN_H
