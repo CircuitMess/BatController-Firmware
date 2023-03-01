@@ -25,8 +25,6 @@ ScanAruco::ScanAruco(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGr
 	buffer = static_cast<lv_color_t*>(malloc(sizeof(lv_color_t) * 49 * Scale * Scale));
 
 	top = lv_label_create(scanAruco);
-	lv_obj_set_width(top, lv_pct(100));
-	lv_obj_set_style_text_align(top, LV_TEXT_ALIGN_CENTER, 0);
 	lv_obj_set_style_text_color(top, lv_color_white(), 0);
 	lv_obj_set_style_text_font(top, &lv_font_unscii_8, 0);
 	lv_label_set_long_mode(top, LV_LABEL_LONG_WRAP);
@@ -44,7 +42,20 @@ ScanAruco::ScanAruco(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGr
 	black.full = 1;
 	lv_canvas_fill_bg(canvas, black, LV_OPA_COVER);
 
+	bot = lv_label_create(scanAruco);
+	lv_obj_set_style_text_color(bot, lv_color_white(), 0);
+	lv_obj_set_style_text_font(bot, &lv_font_unscii_8, 0);
+	lv_label_set_long_mode(bot, LV_LABEL_LONG_WRAP);
+	lv_label_set_text(bot, "Or press A for\nhome WiFi mode");
+
 	lv_obj_update_layout(scanAruco);
+
+	lv_obj_set_width(top, lv_obj_get_width(scanAruco));
+	lv_obj_set_width(bot, lv_obj_get_width(scanAruco));
+	lv_obj_set_style_pad_hor(top, 5, 0);
+	lv_obj_set_style_pad_hor(bot, 5, 0);
+	lv_obj_set_style_text_align(top, LV_TEXT_ALIGN_CENTER, 0);
+	lv_obj_set_style_text_align(bot, LV_TEXT_ALIGN_CENTER, 0);
 
 }
 

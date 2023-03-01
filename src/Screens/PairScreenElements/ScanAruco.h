@@ -16,6 +16,7 @@ private:
 	lv_obj_t* scanAruco;
 	lv_obj_t* canvas;
 	lv_obj_t* top;
+	lv_obj_t* bot;
 
 	lv_color_t* buffer;
 	lv_color_t black;
