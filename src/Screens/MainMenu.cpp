@@ -264,7 +264,6 @@ void MainMenu::launch() {
         screen->start();
 
 	}, 500, this);
-	lv_timer_set_repeat_count(timer, 1);
 }
 
 void MainMenu::selectNext() {
