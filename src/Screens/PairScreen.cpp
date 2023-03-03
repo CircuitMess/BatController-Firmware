@@ -90,6 +90,7 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 				BatController.setBrightness(Settings.get().screenBrightness);
 				Com.sendVolume(Settings.get().soundVolume);
 
+				MainMenu::resetLastSelected();
 				auto mainMenu = new MainMenu();
 				mainMenu->setInfoElement(std::make_unique<GeneralInfoElement>(mainMenu->getLvObj()));
 				mainMenu->start();
