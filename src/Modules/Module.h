@@ -40,6 +40,7 @@ private:
 	static constexpr uint32_t CheckInterval = 100000;
 	static constexpr uint32_t ReadInterval = 10000;
 	uint32_t checkCounter = 0;
+	uint32_t transmissionCounter = 0;
 
 };
 

@@ -12,6 +12,7 @@ Module::~Module(){
 void Module::begin(){
 	if(isConnected()){
 		init();
+		transmissionCounter = 0;
 	}
 	LoopManager::addListener(this);
 }
@@ -30,15 +31,18 @@ void Module::checkConnection(){
 }
 
 void Module::loop(uint micros){
-	checkCounter++;
-	if(connected && checkCounter >= ReadInterval){
-		checkCounter = 0;
+	checkCounter += micros;
+	transmissionCounter += micros;
+	if(connected && transmissionCounter >= ReadInterval){
+		transmissionCounter = 0;
 		transmission(micros);
-	}else if(checkCounter >= CheckInterval){
+	}else if(!connected && checkCounter >= CheckInterval){
 		checkCounter = 0;
+		bool prevConnected = connected;
 		checkConnection();
-		if(isConnected()){
+		if(isConnected() && !prevConnected){
 			init();
+		}else if(!isConnected()){
 		}
 	}
 }
@@ -47,6 +51,7 @@ void Module::loop(uint micros){
 void Module::errorOccured(){
 	connected = false;
 	checkCounter = 0;
+	transmissionCounter = 0;
 }
 
 

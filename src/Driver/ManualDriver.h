@@ -36,22 +36,16 @@ private:
 	static constexpr uint boostFillDuration = 4500000; //recharging boost from empty to full requires 4.5s
 	static constexpr uint boostDuration = 3500000; //using boost bar from full to empty lasts 3.5s
 
-	void sendDriveDir() const;
+	void sendDriveDir();
 	uint8_t lastDir = 0;
 
 
-	bool gyro = false;
-	uint8_t gyroDir = 0;
-	uint8_t gyroSpeed = 0;
-	static constexpr uint8_t GyroAddr = 0x18;
-	uint32_t gyroCounter = 0;
-	static constexpr uint32_t GyroReadInterval = 10000;
-	static constexpr uint32_t GyroCheckInterval = 100000;
+	uint8_t getGyroDir() const;
+	uint8_t getGyroSpeed() const;
 	static constexpr float GyroRange = 16384.0f; //14-bit precision
 	static constexpr float GyroDeadzone = 0.22f;
 	static constexpr uint8_t GyroSpeedRange = 15;
 	void sendGyro();
-	void checkGyro();
 };
 
 
