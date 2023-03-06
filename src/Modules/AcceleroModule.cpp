@@ -1,6 +1,8 @@
 #include "AcceleroModule.h"
 #include <Wire.h>
 
+AcceleroModule accelero;
+
 AcceleroModule::AcceleroModule() : Module(0x18){
 }
 

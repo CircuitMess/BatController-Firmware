@@ -30,4 +30,6 @@ private:
 	bool push = false;
 };
 
+extern VibroModule vibro;
+
 #endif //BATCONTROLLER_FIRMWARE_VIBROMODULE_H

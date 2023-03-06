@@ -20,5 +20,6 @@ private:
 
 };
 
+extern AcceleroModule accelero;
 
 #endif //BATCONTROLLER_FIRMWARE_ACCELEROMODULE_H

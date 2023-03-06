@@ -43,7 +43,6 @@ void Module::loop(uint micros){
 	}
 }
 
-}
 
 void Module::errorOccured(){
 	connected = false;

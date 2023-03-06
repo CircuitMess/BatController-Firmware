@@ -14,6 +14,8 @@
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
 #include "src/LowBatteryService.h"
+#include "src/Modules/VibroModule.h"
+#include "src/Modules/AcceleroModule.h"
 
 Display* display;
 lv_disp_draw_buf_t drawBuffer;
@@ -43,6 +45,9 @@ void setup(){
 	srand(analogRead(PIN_BATT)*7+analogRead(PIN_BATT)*13);
 
 	LoopManager::reserve(26);
+
+	accelero.begin();
+	vibro.begin();
 
 	lv_init();
 	lv_disp_draw_buf_init(&drawBuffer, drawData, nullptr, sizeof(drawData)/2);

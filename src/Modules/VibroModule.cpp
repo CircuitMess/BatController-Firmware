@@ -1,6 +1,8 @@
 #include "VibroModule.h"
 
-VibroModule::VibroModule() : Module(0x58){}
+VibroModule vibro;
+
+VibroModule::VibroModule() : Module(0x59), aw9523(::Wire, 0x59){}
 
 void VibroModule::init(){
 	if(!aw9523.begin()) errorOccured();
@@ -10,7 +12,7 @@ void VibroModule::init(){
 			setVibro();
 		}else{
 			aw9523.pinMode(i, AW9523::LED);
-			aw9523.dim(i, 255);
+			aw9523.dim(i, 0);
 		}
 	}
 	push = false;
@@ -42,6 +44,10 @@ void VibroModule::setLEDs(){
 	uint32_t fill = map(fillPercentage, 0, 100, 0, NumLEDs * 255);
 	for(int i = 0; i < NumLEDs; ++i){
 		uint8_t pixelValue = min(fill, 255U);
+		float fp = (float) pixelValue / 255.0f;
+		fp *= 0.2f;
+		fp = pow(fp, 2);
+		pixelValue = fp * 255.0f;
 		aw9523.dim(mapPin(i), pixelValue);
 		if(fill >= 255){
 			fill -= 255;
