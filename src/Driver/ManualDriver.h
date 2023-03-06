@@ -23,7 +23,6 @@ private:
 	uint8_t dir = 0;
 	size_t directionSendTimer = 0;
 	static constexpr size_t directionSendInterval = 1000000; //send direction every second
-	const uint directions[4] = { BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT };
 
 	void loop(uint micros) override;
 

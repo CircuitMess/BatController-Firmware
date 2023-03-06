@@ -5,7 +5,10 @@ VibroModule vibro;
 VibroModule::VibroModule() : Module(0x59), aw9523(::Wire, 0x59){}
 
 void VibroModule::init(){
-	if(!aw9523.begin()) errorOccured();
+	if(!aw9523.begin()){
+		errorOccured();
+		return;
+	}
 	for(int i = 0; i < 16; ++i){
 		if(i == VibroPin){
 			aw9523.pinMode(VibroPin, AW9523::OUT);
@@ -16,6 +19,7 @@ void VibroModule::init(){
 		}
 	}
 	push = false;
+	fillPercentage = 0;
 }
 
 void VibroModule::transmission(uint micros){
@@ -32,6 +36,8 @@ void VibroModule::setVibrating(bool on){
 }
 
 void VibroModule::setLEDFill(uint8_t percentage){
+	if(fillPercentage == percentage) return;
+
 	fillPercentage = percentage;
 	push = true;
 }
@@ -63,4 +69,3 @@ uint8_t VibroModule::mapPin(uint8_t led){
 	else return 23 - led;
 }
 //pins bottom to top: 15, 14, 13, 12, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9
-

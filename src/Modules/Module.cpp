@@ -36,13 +36,12 @@ void Module::loop(uint micros){
 	if(connected && transmissionCounter >= ReadInterval){
 		transmissionCounter = 0;
 		transmission(micros);
-	}else if(!connected && checkCounter >= CheckInterval){
+	}else if(checkCounter >= CheckInterval){
 		checkCounter = 0;
 		bool prevConnected = connected;
 		checkConnection();
 		if(isConnected() && !prevConnected){
 			init();
-		}else if(!isConnected()){
 		}
 	}
 }

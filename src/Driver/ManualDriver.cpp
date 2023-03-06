@@ -20,9 +20,13 @@ ManualDriver::~ManualDriver(){
 void ManualDriver::onStart(){
 	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);
+	vibro.begin();
+	vibro.setLEDFill(boostGauge);
 }
 
 void ManualDriver::onStop(){
+	vibro.setLEDFill(0);
+	vibro.setVibrating(false);
 	LoopManager::removeListener(this);
 	Input::getInstance()->removeListener(this);
 }
@@ -33,6 +37,7 @@ void ManualDriver::buttonPressed(uint i){
 		if(dir != 0b0000){
 			if(boostGauge > 0) boostActive = true;
 			Com.sendBoost(boostActive);
+			vibro.setVibrating(boostActive);
 			boostTimer = 0;
 			boostGaugeStart = boostGauge;
 		}
@@ -44,6 +49,7 @@ void ManualDriver::buttonPressed(uint i){
 		if(boostPressed){
 			if(boostGauge > 0) boostActive = true;
 			Com.sendBoost(boostActive);
+			vibro.setVibrating(boostActive);
 			boostTimer = 0;
 			boostGaugeStart = boostGauge;
 		}
@@ -75,6 +81,7 @@ void ManualDriver::buttonReleased(uint i){
 		if(boostActive){
 			boostActive = false;
 			Com.sendBoost(boostActive);
+			vibro.setVibrating(boostActive);
 			boostTimer = 0;
 			boostGaugeStart = boostGauge;
 		}
@@ -102,6 +109,7 @@ void ManualDriver::buttonReleased(uint i){
 	if(dir == 0b0000 && getGyroDir() == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
 	}
@@ -122,6 +130,7 @@ void ManualDriver::sendGyro(){
 	if(boostPressed && getGyroDir() && !boostActive && boostGauge > 0){
 		boostActive = true;
 		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
 	}
@@ -129,6 +138,7 @@ void ManualDriver::sendGyro(){
 	if(dir == 0 && getGyroDir() == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
 	}
@@ -150,6 +160,7 @@ void ManualDriver::loop(uint micros){
 			sendDriveDir();
 		}
 	}
+	vibro.setLEDFill(boostGauge);
 
 	if((!boostActive && boostGauge == 100) || (boostActive && boostGauge == 0)) return;
 
@@ -165,7 +176,8 @@ void ManualDriver::loop(uint micros){
 		boostActive = false;
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
-		Com.sendBoost(false);
+		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 	}
 
 	boost->setActive(boostActive);
