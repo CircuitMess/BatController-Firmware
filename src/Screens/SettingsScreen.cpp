@@ -156,7 +156,7 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 
 	lv_style_init(&style_main);
 	lv_style_set_bg_opa(&style_main, LV_OPA_COVER);
-	lv_style_set_bg_color(&style_main, lv_color_hex3(0xbbb));
+	lv_style_set_bg_color(&style_main, lv_color_hex3(0x666));
 	lv_style_set_radius(&style_main, LV_RADIUS_CIRCLE);
 	lv_obj_add_style(soundSlider, &style_main, LV_PART_MAIN);
 
