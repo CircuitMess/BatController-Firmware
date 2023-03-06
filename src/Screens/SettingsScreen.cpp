@@ -245,7 +245,7 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	lv_obj_set_style_text_font(shutdownTimeLabel, &lv_font_montserrat_10, 0);
 	lv_obj_set_style_text_color(shutdownTimeLabel, lv_color_black(), 0);
 	lv_obj_set_style_pad_top(shutdownTimeLabel, 1, 0);
-	lv_obj_set_style_text_color(shutdownTimeLabel, lv_color_hex(0x892eff), 0);
+	lv_obj_set_style_text_color(shutdownTimeLabel, lv_color_black(), 0);
 
 	lv_obj_add_event_cb(shutdownSlider, [](lv_event_t* event){
 		if(lv_obj_get_state(event->target) & LV_STATE_EDITED){
@@ -256,8 +256,6 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	}, LV_EVENT_STYLE_CHANGED, nullptr);
 
 	lv_obj_add_style(shutdownSlider, &style_main, LV_PART_MAIN);
-	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB);
-	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//screenBrightness
 	screenBrightness = lv_obj_create(flexContainer);
