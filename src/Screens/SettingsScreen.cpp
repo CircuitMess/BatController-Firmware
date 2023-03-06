@@ -472,6 +472,11 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	}, LV_EVENT_KEY, this);
 
 	lv_group_add_obj(inputGroup, saveBtn);
+
+	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
+		lv_obj_t* lastItem = static_cast<lv_obj_t*>(event->user_data);
+		lv_obj_scroll_to_view(lastItem, LV_ANIM_ON);
+	}, LV_EVENT_FOCUSED, saveBtn);
 }
 
 SettingsScreen::~SettingsScreen(){
