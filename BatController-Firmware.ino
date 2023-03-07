@@ -14,8 +14,6 @@
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
 #include "src/LowBatteryService.h"
-#include "src/Modules/VibroModule.h"
-#include "src/Modules/AcceleroModule.h"
 
 Display* display;
 lv_disp_draw_buf_t drawBuffer;

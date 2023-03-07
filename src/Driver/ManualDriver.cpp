@@ -4,8 +4,6 @@
 #include <BatController.h>
 #include <Com/Communication.h>
 #include <Wire.h>
-#include "../Modules/AcceleroModule.h"
-#include "../Modules/VibroModule.h"
 
 ManualDriver::ManualDriver(lv_obj_t* elementContainer) : Driver(DriveMode::Manual), boost(new BoostElement(elementContainer)){
 	lv_obj_set_pos(boost->getLvObj(), 2, 10);
