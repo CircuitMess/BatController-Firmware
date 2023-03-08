@@ -33,6 +33,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	frame.img = static_cast<Color*>(heap_caps_malloc(160 * 120 * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT));
 
 	udp.listen(controllerIP, feedPort);
+	udp.writeTo((const uint8_t*)tag, 1, batmobileIP, feedPort);
 	udp.onPacket([this](AsyncUDPPacket& packet){
 		Locker lock(rxMut);
 

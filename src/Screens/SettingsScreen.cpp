@@ -156,7 +156,7 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 
 	lv_style_init(&style_main);
 	lv_style_set_bg_opa(&style_main, LV_OPA_COVER);
-	lv_style_set_bg_color(&style_main, lv_color_hex3(0xbbb));
+	lv_style_set_bg_color(&style_main, lv_color_hex3(0x666));
 	lv_style_set_radius(&style_main, LV_RADIUS_CIRCLE);
 	lv_obj_add_style(soundSlider, &style_main, LV_PART_MAIN);
 
@@ -245,7 +245,7 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	lv_obj_set_style_text_font(shutdownTimeLabel, &lv_font_montserrat_10, 0);
 	lv_obj_set_style_text_color(shutdownTimeLabel, lv_color_black(), 0);
 	lv_obj_set_style_pad_top(shutdownTimeLabel, 1, 0);
-	lv_obj_set_style_text_color(shutdownTimeLabel, lv_color_hex(0x892eff), 0);
+	lv_obj_set_style_text_color(shutdownTimeLabel, lv_color_black(), 0);
 
 	lv_obj_add_event_cb(shutdownSlider, [](lv_event_t* event){
 		if(lv_obj_get_state(event->target) & LV_STATE_EDITED){
@@ -256,8 +256,6 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	}, LV_EVENT_STYLE_CHANGED, nullptr);
 
 	lv_obj_add_style(shutdownSlider, &style_main, LV_PART_MAIN);
-	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB);
-	lv_obj_add_style(shutdownSlider, &style_knob, LV_PART_KNOB | LV_STATE_EDITED);
 
 	//screenBrightness
 	screenBrightness = lv_obj_create(flexContainer);
@@ -474,6 +472,11 @@ SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you
 	}, LV_EVENT_KEY, this);
 
 	lv_group_add_obj(inputGroup, saveBtn);
+
+	lv_obj_add_event_cb(pairBatmobile, [](lv_event_t* event){
+		lv_obj_t* lastItem = static_cast<lv_obj_t*>(event->user_data);
+		lv_obj_scroll_to_view(lastItem, LV_ANIM_ON);
+	}, LV_EVENT_FOCUSED, saveBtn);
 }
 
 SettingsScreen::~SettingsScreen(){
