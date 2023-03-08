@@ -26,7 +26,7 @@ private:
 									"Wiggle",
 									"Step",
 									"Spin",
-									"Back it up",
+									"Back up",
 									"Waltz",
 									"Wax on",
 									"Wax off",
