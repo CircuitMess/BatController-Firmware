@@ -14,10 +14,10 @@
 #include "../Feed/Feed.h"
 #include "../Elements/OverrideElement.h"
 
-class DriveScreen : public LVScreen, private InputListener, private DisconnectListener, private LoopListener {
+class DriveScreen : public LVScreen, private InputListener, private DisconnectListener, private LoopListener, private ComListener {
 public:
 	DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver = nullptr);
-	virtual ~DriveScreen();
+	~DriveScreen() override;
 
 	void onStarting() override;
 	void onStart() override;
@@ -27,6 +27,7 @@ public:
 
 private:
 	void onDisconnected() override;
+	void onError(BatError error) override;
 
 	void buttonReleased(uint i) override;
 	void buttonPressed(uint i) override;

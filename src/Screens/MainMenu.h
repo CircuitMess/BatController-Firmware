@@ -16,7 +16,7 @@ public:
     void onStart() override;
     void onStop() override;
     void setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement);
-
+	static void resetLastSelected();
 private:
 	static constexpr uint8_t ItemCount = 6;
 	const char* const Items[ItemCount] = {

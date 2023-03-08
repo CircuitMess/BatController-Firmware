@@ -33,6 +33,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	frame.img = static_cast<Color*>(heap_caps_malloc(160 * 120 * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT));
 
 	udp.listen(controllerIP, feedPort);
+	udp.writeTo((const uint8_t*)tag, 1, batmobileIP, feedPort);
 	udp.onPacket([this](AsyncUDPPacket& packet){
 		Locker lock(rxMut);
 
@@ -167,7 +168,8 @@ void Feed::decodeFunc(){
 
 		/** We can't continue into the next iteration in case of error, because the task will end up waiting for a
 		 * semaphore that will never get signaled - frameReady never gets set, and the main thread never signals
-		 * the semaphore. Therefore, a goto is required.
+		 * the semaphore. Therefore, a goto is required so that once the semaphore is passed, it isn't waited on again
+		 * unless a frame has been produced.
 		 */
 
 start:
@@ -195,12 +197,45 @@ start:
 
 		rxMut.unlock();
 
+		if(taskKill){
+			free(frame->frame.data);
+			frame->frame.data = nullptr;
+			return;
+		}
+
+		const auto frameDone = [this, frame](){
+			free(frame->frame.data);
+			frame->frame.data = nullptr;
+
+			this->frame.info = frame;
+			this->frame.info->frame = {};
+
+			if(postProcCallback){
+				postProcCallback(*this->frame.info, this->frame.img);
+			}
+
+			frameReady = true;
+		};
+
+		const auto handleError = [this, frameDone](){
+			memset(this->frame.img, 0, 160*120*2);
+			frameDone();
+		};
+
 		if(frame == nullptr){
 			ESP_LOGD(tag, "Couldn't deserialize frame");
 
+			handleError();
 			if(taskKill) return;
+			continue;
+		}
 
-			goto start;
+		if(frame->frame.size == 0 || frame->frame.data == nullptr){
+			ESP_LOGE(tag, "JPG frame size: %zu, ptr: 5x%p", frame->frame.size, frame->frame.data);
+
+			handleError();
+			if(taskKill) return;
+			continue;
 		}
 
 		jpeg.openRAM((uint8_t*) (frame->frame.data), frame->frame.size, [](JPEGDRAW* data) -> int{
@@ -218,23 +253,12 @@ start:
 		if(jpeg.decode(0, 0, 0) == 0){
 			ESP_LOGE(tag, "decode error: %d", jpeg.getLastError());
 
+			handleError();
 			if(taskKill) return;
-
-			goto start;
+			continue;
 		}
 
-		free(frame->frame.data);
-		frame->frame.data = nullptr;
-		this->frame.info = frame;
-		this->frame.info->frame = {};
-
-		if(postProcCallback){
-			postProcCallback(*this->frame.info, this->frame.img);
-		}
-
-		frameReady = true;
-
-		if(taskKill) return;
+		frameDone();
 	}
 }
 

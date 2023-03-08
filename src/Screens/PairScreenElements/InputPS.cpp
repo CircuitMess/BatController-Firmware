@@ -74,29 +74,8 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 	lv_obj_set_pos(title, 10, 10);
 	lv_obj_set_style_text_color(title, lv_palette_lighten(LV_PALETTE_GREY, 1), 0);
 	lv_obj_set_style_text_font(title, &lv_font_unscii_8, 0);
-	lv_label_set_text(title, "Enter WiFi name:");
+	lv_label_set_text(title, "Enter password:");
 
-	taNetwork = lv_textarea_create(input);
-	lv_obj_align(taNetwork, LV_ALIGN_TOP_LEFT, 10, 30);
-	lv_obj_set_style_text_font(taNetwork, &lv_font_unscii_8, 0);
-	lv_textarea_set_one_line(taNetwork, true);
-	lv_obj_set_style_text_color(taNetwork, lv_color_white(), 0);
-	lv_textarea_set_max_length(taNetwork, 24);
-	lv_obj_set_scrollbar_mode(taNetwork, LV_SCROLLBAR_MODE_OFF);
-	lv_obj_set_size(taNetwork, 140, 20);
-	lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
-
-	lv_obj_add_event_cb(taNetwork, [](lv_event_t* e){
-		auto input = static_cast<InputPS*>(lv_event_get_user_data(e));
-		input->toPassword();
-	}, LV_EVENT_READY, this);
-
-	lv_obj_add_event_cb(taNetwork, [](lv_event_t* e){
-		auto input = static_cast<InputPS*>(lv_event_get_user_data(e));
-
-		if(!input->callbackBack) return;
-		input->callbackBack();
-	}, LV_EVENT_CANCEL, this);
 
 	taPassword = lv_textarea_create(input);
 	lv_obj_align(taPassword, LV_ALIGN_TOP_LEFT, 10, 30);
@@ -112,16 +91,16 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
 
 		if(input->callbackDone){
-			input->callbackDone(lv_textarea_get_text(input->taNetwork), lv_textarea_get_text(input->taPassword));
+			input->callbackDone(lv_textarea_get_text(input->taPassword));
 		}
-
-		input->toNetwork();
 	}, LV_EVENT_READY, this);
 
 
 	lv_obj_add_event_cb(taPassword, [](lv_event_t* e){
 		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
-		input->toNetwork();
+
+		if(!input->callbackBack) return;
+		input->callbackBack();
 	}, LV_EVENT_CANCEL, this);
 
 	auto oldGroup = lv_group_get_default();
@@ -140,7 +119,6 @@ InputPS::InputPS(lv_obj_t* obj, lv_group_t* inputGroup) : inputGroup(inputGroup)
 }
 
 InputPS::~InputPS(){
-	lv_obj_remove_event_cb_with_user_data(taNetwork, nullptr, this);
 	lv_obj_remove_event_cb_with_user_data(taPassword, nullptr, this);
 	callbackDone = nullptr;
 	callbackBack = nullptr;
@@ -153,18 +131,16 @@ void InputPS::start(){
 		if(lv_indev_get_key(lv_indev_get_act()) != LV_KEY_ESC) return;
 		InputPS* input = static_cast<InputPS*>(lv_event_get_user_data(e));
 
-		if(lv_keyboard_get_textarea(input->kb) == input->taNetwork){
+		if(lv_keyboard_get_textarea(input->kb) == input->taPassword){
 			if(!input->callbackBack) return;
 			input->callbackBack();
-		}else{
-			input->toNetwork();
 		}
 
 	}, LV_EVENT_CANCEL, this);
 
 	lv_group_add_obj(inputGroup, kb);
 	lv_group_focus_obj(kb);
-	toNetwork();
+	toPassword();
 }
 
 void InputPS::stop(){
@@ -174,7 +150,7 @@ void InputPS::stop(){
 	lv_group_remove_obj(kb);
 }
 
-void InputPS::setCallbackDone(std::function<void(std::string, std::string)> cb){
+void InputPS::setCallbackDone(std::function<void(std::string)> cb){
 	callbackDone = cb;
 }
 
@@ -182,22 +158,9 @@ void InputPS::setCallbackBack(std::function<void()> cb){
 	callbackBack = cb;
 }
 
-void InputPS::toNetwork(){
-	lv_textarea_set_text(taNetwork, ssid);
-
-	lv_obj_add_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_clear_flag(taNetwork, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_add_state(taNetwork, LV_STATE_FOCUSED);
-	lv_keyboard_set_textarea(kb, taNetwork);
-	lv_label_set_text(title, "Enter WiFi name:");
-	lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_TEXT_UPPER);
-	lv_btnmatrix_set_selected_btn((lv_obj_t*) &(((lv_keyboard_t*) kb)->btnm), 0);
-}
-
 void InputPS::toPassword(){
 	lv_textarea_set_text(taPassword, pass);
 
-	lv_obj_add_flag(taNetwork, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_clear_flag(taPassword, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_state(taPassword, LV_STATE_FOCUSED);
 	lv_keyboard_set_textarea(kb, taPassword);
@@ -206,10 +169,6 @@ void InputPS::toPassword(){
 	lv_btnmatrix_set_selected_btn((lv_obj_t*) &(((lv_keyboard_t*) kb)->btnm), 0);
 }
 
-void InputPS::setNetwork(const char* network){
-	ssid = network;
-	lv_textarea_set_text(taNetwork, ssid);
-}
 
 void InputPS::setPassword(const char* password){
 	pass = password;
