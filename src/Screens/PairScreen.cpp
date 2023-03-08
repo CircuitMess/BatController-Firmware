@@ -128,10 +128,9 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 		scanning.stop();
 
 		resetDirect();
-		scanAruco.start(randID);
-
 		pair.stop();
 		pair.start(directSSID, directPass, true);
+		scanAruco.start(randID);
 	});
 
 	scanning.setCallbackDone([this](std::string ssid){
