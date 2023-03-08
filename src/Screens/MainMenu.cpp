@@ -263,7 +263,7 @@ void MainMenu::launch() {
 		lv_obj_del(tmpScr);
         screen->start();
 
-	}, 500, this);
+	}, 600, this);
 }
 
 void MainMenu::selectNext() {
