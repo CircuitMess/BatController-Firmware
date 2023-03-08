@@ -137,7 +137,12 @@ PairScreen::PairScreen(bool disconnect) : LVScreen(), scanAruco(obj, inputGroup)
 	scanning.setCallbackDone([this](std::string ssid){
 		scanning.stop();
 		if(ssid.size() > 24){
-			ssid.resize(24);
+			auto message = new MessageModal(this, "WiFi name is\nlimited to 24\ncharacters.", 5000);
+			message->setDismissCallback([this](){
+				scanning.start();
+			});
+			message->start();
+			return;
 		}
 
 		this->ssid = std::move(ssid);
