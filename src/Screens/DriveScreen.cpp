@@ -175,8 +175,17 @@ void DriveScreen::onDisconnected(){
 	stop();
 	delete this;
 
-	auto pair = new PairScreen(true);
-	pair->start();
+	auto scr = lv_obj_create(nullptr);
+	lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
+	lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
+	lv_scr_load(scr);
+
+	LoopManager::defer([scr](uint32_t){
+		lv_obj_del(scr);
+
+		auto pair = new PairScreen();
+		pair->start();
+	});
 }
 
 void DriveScreen::onError(BatError error){
