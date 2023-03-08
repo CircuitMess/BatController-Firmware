@@ -309,3 +309,8 @@ void MainMenu::onDisconnected() {
     auto pair = new PairScreen(true);
     pair->start();
 }
+
+void MainMenu::resetLastSelected(){
+	lastSelected = 0;
+}
+
