@@ -46,7 +46,5 @@ void DanceDriver::buttonPressed(uint i){
 		}
 		danceElement.setCurrentDance((DanceType) danceIndex);
 		Com.sendDance((DanceType) danceIndex);
-	}else if(i == BTN_B){
-		Com.sendHonk();
 	}
 }
