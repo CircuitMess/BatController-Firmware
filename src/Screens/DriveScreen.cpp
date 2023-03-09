@@ -39,7 +39,7 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
-		if(driver && info->mode == driver->getMode()){
+		if(driver && info && info->mode == driver->getMode()){
 			driver->onFrame(*info, imgBuf);
 		}
 
