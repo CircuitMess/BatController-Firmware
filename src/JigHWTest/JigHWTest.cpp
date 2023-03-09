@@ -32,7 +32,7 @@ void JigHWTest::start(){
 	canvas->setTextSize(1);
 	canvas->setCursor(0, 6);
 
-	canvas->printCenter("CircuitPet Hardware Test");
+	canvas->printCenter("BatController test");
 	canvas->setCursor(canvas->width() / 2, 16);
 	canvas->println();
 	display->commit();
@@ -114,11 +114,9 @@ void JigHWTest::log(const char* property, const String& value){
 }
 
 bool JigHWTest::BatteryCalib(){
-	//TODO - remove return, speficy test
-	return false;
-	/*if(Battery.getVoltOffset() != 0){
+	if(Battery.getVoltOffset() != 0){
 		test->log("calibrated", Battery.getVoltOffset());
-		CircuitPet.getDisplay()->getBaseSprite()->print("fused. ");
+		BatController.getDisplay()->getBaseSprite()->print("fused. ");
 		return true;
 	}
 
@@ -154,13 +152,11 @@ bool JigHWTest::BatteryCalib(){
 	esp_efuse_burn_new_values();
 	esp_efuse_reset();
 
-	return true;*/
+	return true;
 }
 
 bool JigHWTest::BatteryCheck(){
-	//TODO - remove return, speficy test
-	return false;
-	/*constexpr uint16_t numReadings = 50;
+	constexpr uint16_t numReadings = 50;
 	constexpr uint16_t readDelay = 10;
 	uint32_t reading = 0;
 
@@ -179,7 +175,7 @@ bool JigHWTest::BatteryCheck(){
 		return false;
 	}
 
-	return true;*/
+	return true;
 }
 
 bool JigHWTest::SPIFFSTest(){
