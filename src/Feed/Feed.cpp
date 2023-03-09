@@ -204,14 +204,18 @@ start:
 		}
 
 		const auto frameDone = [this, frame](){
-			free(frame->frame.data);
-			frame->frame.data = nullptr;
+			if(frame){
+				free(frame->frame.data);
+				frame->frame.data = nullptr;
+			}
 
 			this->frame.info = frame;
-			this->frame.info->frame = {};
+			if(this->frame.info){
+				this->frame.info->frame = {};
+			}
 
 			if(postProcCallback){
-				postProcCallback(*this->frame.info, this->frame.img);
+				postProcCallback(this->frame.info ? *this->frame.info : DriveInfo(), this->frame.img);
 			}
 
 			frameReady = true;
