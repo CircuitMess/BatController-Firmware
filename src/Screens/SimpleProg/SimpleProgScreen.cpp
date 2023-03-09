@@ -8,6 +8,7 @@
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
+#include <Com/Communication.h>
 
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
@@ -67,6 +68,7 @@ SimpleProgScreen::~SimpleProgScreen(){
 
 void SimpleProgScreen::onStart(){
 	Input::getInstance()->addListener(this);
+	Com.addDcListener(this);
 }
 
 void SimpleProgScreen::onStop(){
@@ -82,6 +84,7 @@ void SimpleProgScreen::onStop(){
 	}
 	Input::getInstance()->removeListener(this);
 	lv_group_remove_all_objs(inputGroup);
+	Com.removeDcListener(this);
 }
 
 void SimpleProgScreen::touchIndex(){
