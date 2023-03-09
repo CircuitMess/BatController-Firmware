@@ -18,6 +18,7 @@ ManualDriver::~ManualDriver(){
 void ManualDriver::onStart(){
 	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);
+	accelero.begin();
 	vibro.begin();
 	vibro.setLEDFill(boostGauge);
 }
