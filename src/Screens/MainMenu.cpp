@@ -249,20 +249,28 @@ void MainMenu::launch() {
 			screen->start();
 
 			return;
-	}
+		}
 
-        auto info = std::move(menu->infoElement);
+        GeneralInfoElement* info = menu->infoElement.release();
+
+
 		auto tmpScr = lv_obj_create(nullptr);
+		lv_obj_set_style_bg_color(tmpScr, lv_color_black(), 0);
+		lv_obj_set_style_bg_opa(tmpScr, LV_OPA_COVER, 0);
 		lv_obj_set_parent(info->getLvObj(), tmpScr);
 
 		delete menu;
+		lv_scr_load(tmpScr);
 
 		auto launcher = screens[selected];
-		DriveScreen* screen = reinterpret_cast<DriveScreen*>(launcher());
-        screen->setInfoElement(std::move(info));
-		lv_obj_del(tmpScr);
-        screen->start();
+		LoopManager::defer([launcher, info, tmpScr](uint32_t){
+			DriveScreen* screen = reinterpret_cast<DriveScreen*>(launcher());
 
+			screen->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
+			lv_obj_del(tmpScr);
+
+			screen->start();
+		});
 	}, 600, this);
 }
 
