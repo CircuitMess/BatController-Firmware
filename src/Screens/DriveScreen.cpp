@@ -154,6 +154,7 @@ void DriveScreen::setMode(DriveMode newMode){
 
 void DriveScreen::buttonPressed(uint i){
 	if(i == BTN_B){
+		if(currentMode == DriveMode::SimpleProgramming) return;
 		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
 		LoopManager::addListener(this);
 		overrideTime = millis();
@@ -163,6 +164,7 @@ void DriveScreen::buttonPressed(uint i){
 
 void DriveScreen::buttonReleased(uint i){
 	if(i == BTN_B){
+		if(currentMode == DriveMode::SimpleProgramming) return;
 		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
 		LoopManager::removeListener(this);
 		hideOverrideElement();
