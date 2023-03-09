@@ -36,6 +36,7 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 
 	feed.onFrame([this](std::shared_ptr<const DriveInfo> info, const Color* frame){
 		if(!isRunning()) return;
+		if(!frame || !imgBuf) return;
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
