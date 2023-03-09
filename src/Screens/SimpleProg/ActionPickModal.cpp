@@ -89,10 +89,10 @@ void ActionPickModal::addAction(Simple::Action::Type type){
 				action.HeadTaillightData.toggle = true;
 				break;
 			case Simple::Action::Type::Underlights:
-				action.RGBData.color = Simple::Green;
+				action.RGBData.color = Simple::Red;
 				break;
 			case Simple::Action::Type::Sound:
-				action.SoundData.sampleIndex = 2;
+				action.SoundData.sampleIndex = 0;
 				break;
 			case Simple::Action::Type::Delay:
 				action.DelayData.duration = 10;
