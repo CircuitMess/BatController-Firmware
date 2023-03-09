@@ -45,9 +45,6 @@ void setup(){
 
 	LoopManager::reserve(26);
 
-	accelero.begin();
-	vibro.begin();
-
 	lv_init();
 	lv_disp_draw_buf_init(&drawBuffer, drawData, nullptr, sizeof(drawData)/2);
 
