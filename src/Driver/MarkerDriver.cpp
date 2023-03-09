@@ -28,6 +28,8 @@ MarkerDriver::~MarkerDriver(){
 }
 
 void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){
+	if(frame.mode != DriveMode::Marker) return;
+
 	auto markerInfo = frame.toMarker();
 	if(markerInfo == nullptr) return;
 

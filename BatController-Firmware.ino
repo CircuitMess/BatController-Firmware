@@ -11,6 +11,7 @@
 #include <WiFi.h>
 #include "src/BatTheme.h"
 #include "src/Screens/SimpleProg/SimpleProgScreen.h"
+#include "src/Screens/MainMenu.h"
 #include "src/Screens/IntroScreen.h"
 #include "src/ShutdownService.h"
 #include "src/LowBatteryService.h"
@@ -80,6 +81,7 @@ void setup(){
 
 	BatController.getInput()->addListener(new InputLVGL());
 	SimpleProgScreen::touchIndex();
+	MainMenu::resetLastSelected();
 
 	auto intro = new IntroScreen();
 	intro->setPreCallback([](){

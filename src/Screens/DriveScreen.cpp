@@ -36,10 +36,11 @@ DriveScreen::DriveScreen(DriveMode mode, std::unique_ptr<Driver> customDriver) :
 
 	feed.onFrame([this](std::shared_ptr<const DriveInfo> info, const Color* frame){
 		if(!isRunning()) return;
+		if(!frame || !imgBuf) return;
 
 		memcpy(imgBuf, frame, 160 * 120 * 2);
 
-		if(driver && info->mode == driver->getMode()){
+		if(driver && info && info->mode == driver->getMode()){
 			driver->onFrame(*info, imgBuf);
 		}
 
@@ -154,6 +155,7 @@ void DriveScreen::setMode(DriveMode newMode){
 
 void DriveScreen::buttonPressed(uint i){
 	if(i == BTN_B){
+		if(currentMode == DriveMode::SimpleProgramming) return;
 		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
 		LoopManager::addListener(this);
 		overrideTime = millis();
@@ -163,6 +165,7 @@ void DriveScreen::buttonPressed(uint i){
 
 void DriveScreen::buttonReleased(uint i){
 	if(i == BTN_B){
+		if(currentMode == DriveMode::SimpleProgramming) return;
 		if(currentMode == DriveMode::Manual && originalMode == DriveMode::Idle) return;
 		LoopManager::removeListener(this);
 		hideOverrideElement();
@@ -175,8 +178,17 @@ void DriveScreen::onDisconnected(){
 	stop();
 	delete this;
 
-	auto pair = new PairScreen(true);
-	pair->start();
+	auto scr = lv_obj_create(nullptr);
+	lv_obj_set_style_bg_color(scr, lv_color_black(), 0);
+	lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, 0);
+	lv_scr_load(scr);
+
+	LoopManager::defer([scr](uint32_t){
+		lv_obj_del(scr);
+
+		auto pair = new PairScreen();
+		pair->start();
+	});
 }
 
 void DriveScreen::onError(BatError error){

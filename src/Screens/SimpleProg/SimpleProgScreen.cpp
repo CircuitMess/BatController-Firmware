@@ -8,6 +8,7 @@
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
+#include <Com/Communication.h>
 
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
@@ -46,6 +47,8 @@ SimpleProgScreen::SimpleProgScreen(){
 			return;
 		}
 
+		if(screen.holdStartTime == 0) return;
+
 		auto bg = lv_obj_get_child(lv_group_get_focused(screen.inputGroup), 0);
 		lv_obj_set_width(bg, map(millis() - screen.holdStartTime, 0, holdTime, 0, programWidth));
 
@@ -65,6 +68,7 @@ SimpleProgScreen::~SimpleProgScreen(){
 
 void SimpleProgScreen::onStart(){
 	Input::getInstance()->addListener(this);
+	Com.addDcListener(this);
 }
 
 void SimpleProgScreen::onStop(){
@@ -80,6 +84,7 @@ void SimpleProgScreen::onStop(){
 	}
 	Input::getInstance()->removeListener(this);
 	lv_group_remove_all_objs(inputGroup);
+	Com.removeDcListener(this);
 }
 
 void SimpleProgScreen::touchIndex(){
@@ -229,6 +234,8 @@ void SimpleProgScreen::buildProgView(){
 			auto t = p->holdStartTime;
 			auto bg = lv_obj_get_child(e->target, 0);
 
+			if(t == 0) return;
+
 			lv_obj_set_width(bg, map(millis() - t, 0, holdTime, 0, programWidth));
 			if(millis() - t >= holdTime){
 				//Playback program
@@ -287,6 +294,8 @@ void SimpleProgScreen::onStarting(){
 	if(infoElement == nullptr){
 		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), DriveMode::SimpleProgramming);
 	}
+
+	holdStartTime = 0;
 }
 
 void SimpleProgScreen::startEdit(uint8_t index){

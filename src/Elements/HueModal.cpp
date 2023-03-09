@@ -66,7 +66,7 @@ HueModal::HueModal(LVScreen* parent, std::function<void(uint8_t)> hueCB, uint8_t
 	lv_obj_add_event_cb(slider, [](lv_event_t* e){
 		auto key = lv_event_get_key(e);
 		auto modal = ((HueModal*) e->user_data);
-		if(modal->isActive() && (key == LV_KEY_ESC || key == LV_KEY_ENTER)){
+		if(modal->isActive() && (key == LV_KEY_ESC || key == LV_KEY_ENTER || key == LV_KEY_HOME)){
 			modal->stop();
 		}else{
 			lv_timer_reset(modal->timeout);

@@ -33,6 +33,7 @@ Feed::Feed() : rxBuf(RxBufSize), decodeTask("Feed", [](Task* t){
 	frame.img = static_cast<Color*>(heap_caps_malloc(160 * 120 * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT));
 
 	udp.listen(controllerIP, feedPort);
+	udp.writeTo((const uint8_t*)tag, 1, batmobileIP, feedPort);
 	udp.onPacket([this](AsyncUDPPacket& packet){
 		Locker lock(rxMut);
 
@@ -203,14 +204,18 @@ start:
 		}
 
 		const auto frameDone = [this, frame](){
-			free(frame->frame.data);
-			frame->frame.data = nullptr;
+			if(frame){
+				free(frame->frame.data);
+				frame->frame.data = nullptr;
+			}
 
 			this->frame.info = frame;
-			this->frame.info->frame = {};
+			if(this->frame.info){
+				this->frame.info->frame = {};
+			}
 
 			if(postProcCallback){
-				postProcCallback(*this->frame.info, this->frame.img);
+				postProcCallback(this->frame.info ? *this->frame.info : DriveInfo(), this->frame.img);
 			}
 
 			frameReady = true;

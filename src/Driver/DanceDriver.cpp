@@ -30,7 +30,7 @@ void DanceDriver::buttonReleased(uint i){
 void DanceDriver::buttonPressed(uint i){
 	if(i == BTN_RIGHT){
 		danceElement.arrowRightPressed(true);
-		if(danceIndex == 3){
+		if((DanceType)(danceIndex + 1) == DanceType::Size){
 			danceIndex = 0;
 		}else{
 			danceIndex++;
@@ -40,13 +40,11 @@ void DanceDriver::buttonPressed(uint i){
 	}else if(i == BTN_LEFT){
 		danceElement.arrowLeftPressed(true);
 		if(danceIndex == 0){
-			danceIndex = 3;
+			danceIndex = ((uint8_t)DanceType::Size) - 1;
 		}else{
 			danceIndex--;
 		}
 		danceElement.setCurrentDance((DanceType) danceIndex);
 		Com.sendDance((DanceType) danceIndex);
-	}else if(i == BTN_B){
-		Com.sendHonk();
 	}
 }
