@@ -62,6 +62,7 @@ void lvglFlush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p){
 void setup(){
 	Serial.begin(115200);
 	BatController.begin(false);
+	display = BatController.getDisplay();
 
 	if(checkJig()){
 		BatController.fadeIn(0);
@@ -71,7 +72,6 @@ void setup(){
 		for(;;);
 	}
 
-	display = BatController.getDisplay();
 	auto sprite = display->getBaseSprite();
 	sprite->resize(1, 1);
 
