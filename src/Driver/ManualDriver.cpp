@@ -18,11 +18,14 @@ ManualDriver::~ManualDriver(){
 void ManualDriver::onStart(){
 	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this);
-
-	checkGyro();
+	accelero.begin();
+	vibro.begin();
+	vibro.setLEDFill(boostGauge);
 }
 
 void ManualDriver::onStop(){
+	vibro.setLEDFill(0);
+	vibro.setVibrating(false);
 	LoopManager::removeListener(this);
 	Input::getInstance()->removeListener(this);
 }
@@ -33,6 +36,7 @@ void ManualDriver::buttonPressed(uint i){
 		if(dir != 0b0000){
 			if(boostGauge > 0) boostActive = true;
 			Com.sendBoost(boostActive);
+			vibro.setVibrating(boostActive);
 			boostTimer = 0;
 			boostGaugeStart = boostGauge;
 		}
@@ -44,6 +48,7 @@ void ManualDriver::buttonPressed(uint i){
 		if(boostPressed){
 			if(boostGauge > 0) boostActive = true;
 			Com.sendBoost(boostActive);
+			vibro.setVibrating(boostActive);
 			boostTimer = 0;
 			boostGaugeStart = boostGauge;
 		}
@@ -75,6 +80,7 @@ void ManualDriver::buttonReleased(uint i){
 		if(boostActive){
 			boostActive = false;
 			Com.sendBoost(boostActive);
+			vibro.setVibrating(boostActive);
 			boostTimer = 0;
 			boostGaugeStart = boostGauge;
 		}
@@ -99,85 +105,39 @@ void ManualDriver::buttonReleased(uint i){
 		directionSendTimer = 0;
 	}
 
-	if(dir == 0b0000 && gyroDir == 0 && boostActive){
+	if(dir == 0b0000 && getGyroDir() == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
 	}
 }
 
-void ManualDriver::sendDriveDir() const{
+void ManualDriver::sendDriveDir(){
 	//gyro value is pushed only when no button inputs, gyro detected and moved beyond deadzone
-	if(!dir && gyro && gyroSpeed){
-		Com.sendDriveDir(gyroDir, gyroSpeed);
+	if(!dir && accelero.isConnected() && getGyroSpeed()){
+		lastDir = getGyroDir();
+		Com.sendDriveDir(getGyroDir(), getGyroSpeed());
 	}else{
+		lastDir = dir;
 		Com.sendDriveDir(dir);
 	}
 }
 
-void ManualDriver::checkGyro(){
-	gyroDir = 0;
-
-	Wire.beginTransmission(GyroAddr);
-	gyro = Wire.endTransmission() == 0;
-	if(!gyro) return;
-
-	uint8_t data[2] = { 0x20, 0b01010001 };
-
-	Wire.beginTransmission(GyroAddr);
-	Wire.write(data, sizeof(data));
-	Wire.endTransmission();
-}
-
 void ManualDriver::sendGyro(){
-	Wire.beginTransmission(GyroAddr);
-	Wire.write(0x28);
-	if(Wire.endTransmission() != 0){
-		gyro = false;
-		gyroDir = 0;
-		//disconnect occured, send button direction (or stop moving)
-		sendDriveDir();
-		return;
-	}
-
-	uint8_t data[6];
-	Wire.requestFrom(GyroAddr, (uint8_t) 6);
-	Wire.readBytes(data, 6);
-
-	glm::vec<3, int16_t> accel = {
-			(data[1] << 8) | data[0],
-			(data[3] << 8) | data[2],
-			(data[5] << 8) | data[4],
-	};
-
-	gyroDir = 0;
-	gyroSpeed = 0;
-
-	if(accel.z > 0){
-		float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
-		float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
-
-		if(y < -GyroDeadzone) gyroDir |= 0b1000;
-		else if(y > GyroDeadzone) gyroDir |= 0b0100;
-
-		if(x < -GyroDeadzone) gyroDir |= 0b0010;
-		else if(x > GyroDeadzone) gyroDir |= 0b0001;
-
-		float speedVec = sqrt(pow(x, 2) + pow(y, 2));
-		gyroSpeed = (constrain(speedVec - GyroDeadzone, 0, 1.0 - GyroDeadzone)) / (1.0 - GyroDeadzone) * GyroSpeedRange;
-	}
-
-	if(boostPressed && gyroDir && !boostActive && boostGauge > 0){
+	if(boostPressed && getGyroDir() && !boostActive && boostGauge > 0){
 		boostActive = true;
 		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
 	}
 
-	if(dir == 0 && gyroDir == 0 && boostActive){
+	if(dir == 0 && getGyroDir() == 0 && boostActive){
 		boostActive = false;
 		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
 	}
@@ -187,13 +147,8 @@ void ManualDriver::sendGyro(){
 }
 
 void ManualDriver::loop(uint micros){
-	gyroCounter += micros;
-	if(gyro && gyroCounter >= GyroReadInterval){
-		gyroCounter = 0;
+	if(accelero.isConnected()){
 		sendGyro();
-	}else if(!gyro && gyroCounter >= GyroCheckInterval){
-		gyroCounter = 0;
-		checkGyro();
 	}
 
 	//no need to repeat setting motors to zero again and again
@@ -202,9 +157,9 @@ void ManualDriver::loop(uint micros){
 		if(directionSendTimer >= directionSendInterval){
 			directionSendTimer = 0;
 			sendDriveDir();
-			lastDir = dir;
 		}
 	}
+	vibro.setLEDFill(boostGauge);
 
 	if((!boostActive && boostGauge == 100) || (boostActive && boostGauge == 0)) return;
 
@@ -220,9 +175,44 @@ void ManualDriver::loop(uint micros){
 		boostActive = false;
 		boostTimer = 0;
 		boostGaugeStart = boostGauge;
-		Com.sendBoost(false);
+		Com.sendBoost(boostActive);
+		vibro.setVibrating(boostActive);
 	}
 
 	boost->setActive(boostActive);
 	boost->setLevel(boostGauge);
+}
+
+uint8_t ManualDriver::getGyroDir() const{
+	if(!accelero.isConnected()) return 0;
+
+	auto& accel = accelero.getAccelerometer();
+	uint8_t gyroDir = 0;
+
+	if(accel.z > 0){
+		const float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
+		const float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
+
+		if(y < -GyroDeadzone) gyroDir |= 0b1000;
+		else if(y > GyroDeadzone) gyroDir |= 0b0100;
+
+		if(x < -GyroDeadzone) gyroDir |= 0b0010;
+		else if(x > GyroDeadzone) gyroDir |= 0b0001;
+	}
+
+	return gyroDir;
+}
+
+uint8_t ManualDriver::getGyroSpeed() const{
+	auto& accel = accelero.getAccelerometer();
+
+	uint8_t gyroSpeed = 0;
+
+	if(accel.z > 0){
+		const float y = constrain((float) accel.x / GyroRange, -1.0, 1.0);
+		const float x = constrain((float) -accel.y / GyroRange, -1.0, 1.0);
+		const float speedVec = sqrt(pow(x, 2) + pow(y, 2));
+		gyroSpeed = (constrain(speedVec - GyroDeadzone, 0, 1.0 - GyroDeadzone)) / (1.0 - GyroDeadzone) * GyroSpeedRange;
+	}
+	return gyroSpeed;
 }
