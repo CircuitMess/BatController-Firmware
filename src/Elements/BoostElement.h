@@ -1,16 +1,22 @@
 #ifndef BATCONTROLLER_FIRMWARE_BOOSTELEMENT_H
 #define BATCONTROLLER_FIRMWARE_BOOSTELEMENT_H
 
+#include <Loop/LoopListener.h>
 #include "../Interface/LVObject.h"
 
-class BoostElement : public LVObject {
+class BoostElement : public LVObject, private LoopListener {
 public:
 
 	explicit BoostElement(lv_obj_t* parent);
-/**
+	virtual ~BoostElement();
+
+	/**
 	 * @param active True - on (fire), False - off (no fire)
 	 */
 	void setActive(bool active);
+
+	bool isActive() const;
+
 	/**
 	 * @param level [0-100]
 	 */
@@ -18,10 +24,13 @@ public:
 
 private:
 	lv_obj_t* bar;
-	lv_obj_t* bgGIF;
 	lv_obj_t* bgIMG;
 
 	bool gifRunning = false; //to prevent gif restarting on subsequent setActive(true) calls
+	uint8_t frame = 0;
+	uint32_t frameTime = 0;
+	void loop(uint micros) override;
+	void nextFrame();
 
 	static constexpr uint8_t w = 27;
 	static constexpr uint8_t h = 118;

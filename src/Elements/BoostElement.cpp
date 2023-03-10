@@ -1,18 +1,11 @@
 #include <Arduino.h>
+#include <Loop/LoopManager.h>
 #include "BoostElement.h"
 
 BoostElement::BoostElement(lv_obj_t* parent) : LVObject(parent){
 
 	lv_obj_set_size(obj, w, h);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-
-	bgGIF = lv_gif_create(obj);
-	lv_gif_set_src(bgGIF, activePath);
-	lv_obj_set_pos(bgGIF, 0, 0);
-	lv_obj_set_size(bgGIF, w, h);
-	lv_obj_set_style_opa(bgGIF, LV_OPA_COVER, LV_STATE_DEFAULT);
-	lv_obj_set_style_bg_opa(bgGIF, LV_OPA_TRANSP, LV_STATE_DEFAULT);
-	lv_obj_add_flag(bgGIF, LV_OBJ_FLAG_HIDDEN);
 
 	bgIMG = lv_img_create(obj);
 	lv_obj_set_pos(bgIMG, 0, 0);
@@ -36,24 +29,19 @@ BoostElement::BoostElement(lv_obj_t* parent) : LVObject(parent){
 	setLevel(0);
 }
 
+BoostElement::~BoostElement(){
+	LoopManager::removeListener(this);
+}
+
 void BoostElement::setActive(bool active){
 	if(active && !gifRunning){
-		lv_obj_set_style_bg_opa(bar, LV_OPA_COVER, LV_PART_MAIN);
-		lv_obj_add_flag(bgIMG, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(bgGIF, LV_OBJ_FLAG_HIDDEN);
-
-		lv_gif_start(bgGIF);
-		lv_gif_set_loop(bgGIF, LV_GIF_LOOP_ON);
 		gifRunning = true;
-
+		nextFrame();
+		LoopManager::addListener(this);
 	}else if(!active && gifRunning){
-		lv_obj_set_style_bg_opa(bar, LV_OPA_TRANSP, LV_PART_MAIN);
-		lv_obj_clear_flag(bgIMG, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_add_flag(bgGIF, LV_OBJ_FLAG_HIDDEN);
-		lv_gif_stop(bgGIF);
-
-		lv_img_set_src(bgIMG, emptyPath);
 		gifRunning = false;
+		lv_img_set_src(bgIMG, emptyPath);
+		LoopManager::removeListener(this);
 	}
 }
 
@@ -67,4 +55,26 @@ void BoostElement::setLevel(uint8_t level){
 	}else{
 		lv_img_set_src(bgIMG, emptyPath);
 	}
+}
+
+bool BoostElement::isActive() const{
+	return gifRunning;
+}
+
+void BoostElement::loop(uint micros){
+	if(!gifRunning){
+		LoopManager::removeListener(this);
+		return;
+	}
+
+	if(millis() - frameTime < 100) return;
+	nextFrame();
+}
+
+void BoostElement::nextFrame(){
+	frame = (frame+1) % 12;
+	frameTime = millis();
+
+	String path = "S:/Fire/frame" + String(frame) + ".bin";
+	lv_img_set_src(bgIMG, path.c_str());
 }
