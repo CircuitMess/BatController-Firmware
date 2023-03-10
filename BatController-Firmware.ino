@@ -63,6 +63,18 @@ void setup(){
 	Serial.begin(115200);
 	BatController.begin(false);
 	display = BatController.getDisplay();
+	auto sprite = display->getBaseSprite();
+
+	{
+		auto file = SPIFFS.open("/logo.raw");
+		if(file){
+			sprite->clear(TFT_BLACK);
+			sprite->drawIcon(file, 60, 52, 41, 23);
+			display->commit();
+
+			BatController.setBrightness(150);
+		}
+	}
 
 	if(checkJig()){
 		BatController.fadeIn(0);
@@ -72,7 +84,6 @@ void setup(){
 		for(;;);
 	}
 
-	auto sprite = display->getBaseSprite();
 	sprite->resize(1, 1);
 
 	pinMode(PIN_BATT, INPUT);
@@ -124,6 +135,8 @@ void setup(){
 		AutoShutdown.begin();
 		BatteryShutdown.begin();
 	});
+
+	BatController.setBrightness(0);
 	intro->start();
 	lv_timer_handler();
 }

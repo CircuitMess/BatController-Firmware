@@ -7,6 +7,7 @@ struct {
 	String name;
 	uint32_t sum;
 } static const SPIFFSChecksums[] PROGMEM = {
+		{ "/logo.raw",                       77520 },
 		{ "/SimpleProg/Frontlight.bin",      8885 },
 		{ "/SimpleProg/newFocused.bin",      2399 },
 		{ "/SimpleProg/footer_1.bin",        7657 },
