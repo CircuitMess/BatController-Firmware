@@ -21,7 +21,7 @@ const char* FSLVGL::cached[] = {
 		"/Menu/Label/Manual.bin",
 		"/Menu/Label/Marker.bin",
 		"/Menu/Label/Settings.bin",
-		"/DriveScreen/ModalBg.bin",
+		// "/DriveScreen/ModalBg.bin",
 		"/DriveScreen/BallHue.bin",
 		"/DriveScreen/MarkerBackward.bin",
 		"/DriveScreen/MarkerForward.bin",
