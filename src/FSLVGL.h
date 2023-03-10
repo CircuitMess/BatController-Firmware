@@ -38,6 +38,9 @@ public:
 	static void loadSimple();
 	static void unloadSimple();
 
+	static void loadFleha();
+	static void unloadFleha();
+
 private:
 	static const char* cached[];
 	static bool cacheLoaded;
@@ -46,6 +49,8 @@ private:
 
 	static const char* cachedSimple[];
 	static bool simpleLoaded;
+
+	static bool flehaLoaded;
 
 	lv_fs_drv_t drv;                   /*Needs to be static or global*/
 	fs::FS filesys;

@@ -5,6 +5,7 @@
 #include "SimpleProgScreen.h"
 #include "../PairScreen.h"
 #include <Com/Communication.h>
+#include "../../FSLVGL.h"
 
 static const std::map<Simple::Action::Type, const char*> actionIcons = {
 		{ Simple::Action::Type::Drive,       "S:/SimpleProg/Drive.bin" },
@@ -90,6 +91,8 @@ void ProgEditScreen::onStarting(){
 	if(infoElement == nullptr){
 		infoElement = std::make_unique<GeneralInfoElement>(getLvObj(), DriveMode::SimpleProgramming);
 	}
+
+	FSLVGL::loadFleha();
 }
 
 void ProgEditScreen::onStart(){
@@ -119,6 +122,8 @@ void ProgEditScreen::onStop(){
 	}
 
 	if(saveCallback) saveCallback(program);
+
+	FSLVGL::unloadFleha();
 }
 
 void ProgEditScreen::setInfoElement(std::unique_ptr<GeneralInfoElement> infoElement){
@@ -235,6 +240,9 @@ void ProgEditScreen::onDisconnected(){
 	stop();
 	delete parent;
 	delete this;
+
+	FSLVGL::unloadFleha();
+
 	auto pair = new PairScreen(true);
 	pair->start();
 }

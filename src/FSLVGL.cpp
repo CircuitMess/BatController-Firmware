@@ -73,6 +73,7 @@ std::unordered_map<std::string, fs::File*> FSLVGL::cache;
 fs::File* FSLVGL::specialCache = nullptr;
 bool FSLVGL::cacheLoaded = false;
 bool FSLVGL::simpleLoaded = false;
+bool FSLVGL::flehaLoaded = false;
 
 FSLVGL::FSLVGL(fs::FS& filesystem, char letter) : filesys(filesystem){
 	size_t cacheCount = (sizeof(cached) / sizeof(cached[0]));
@@ -283,4 +284,16 @@ void FSLVGL::unloadSimple(){
 	for(const auto& path : cachedSimple){
 		removeCache(path);
 	}
+}
+
+void FSLVGL::loadFleha(){
+	if(flehaLoaded) return;
+	flehaLoaded = true;
+	addCache("/DriveScreen/ModalBg.bin");
+}
+
+void FSLVGL::unloadFleha(){
+	if(!flehaLoaded) return;
+	flehaLoaded = true;
+	removeCache("/DriveScreen/ModalBg.bin");
 }
