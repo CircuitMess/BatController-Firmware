@@ -25,6 +25,8 @@ MarkerDriver::MarkerDriver(lv_obj_t* container) : Driver(DriveMode::Marker), aut
 
 MarkerDriver::~MarkerDriver(){
 	stop();
+	lv_obj_del(lockElement);
+	lockElement = nullptr;
 }
 
 void MarkerDriver::onFrame(const DriveInfo& frame, Color* pixels){

@@ -28,6 +28,8 @@ BallDriver::BallDriver(lv_obj_t* container, LVScreen* screen) : Driver(DriveMode
 
 BallDriver::~BallDriver(){
 	stop();
+	lv_obj_del(lockElement);
+	lockElement = nullptr;
 }
 
 void BallDriver::onFrame(const DriveInfo& frame, Color* pixels){
