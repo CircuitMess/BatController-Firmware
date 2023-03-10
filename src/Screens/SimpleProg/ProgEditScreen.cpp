@@ -242,6 +242,7 @@ void ProgEditScreen::onDisconnected(){
 	delete this;
 
 	FSLVGL::unloadFleha();
+	FSLVGL::unloadSimple();
 
 	auto pair = new PairScreen(true);
 	pair->start();

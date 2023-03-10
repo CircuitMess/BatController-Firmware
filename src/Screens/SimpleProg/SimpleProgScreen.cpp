@@ -95,6 +95,8 @@ void SimpleProgScreen::onDisconnected(){
 	stop();
 	delete this;
 
+	FSLVGL::unloadSimple();
+
 	auto pair = new PairScreen();
 	pair->start();
 }
