@@ -26,7 +26,7 @@ bool checkJig(){
 	int wp = 0;
 
 	uint32_t start = millis();
-	while(millis() - start < 1000){
+	while(millis() - start < 500){
 		while(Serial.available()){
 			buf[wp] = Serial.read();
 			wp = (wp + 1) % 7;
