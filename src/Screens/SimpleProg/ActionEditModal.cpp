@@ -116,7 +116,7 @@ void ActionEditModal::addDuration(Simple::Action& action){
 	lv_obj_t* label = lv_label_create(dir);
 	lv_obj_set_style_text_font(label, &lv_font_montserrat_10, LV_STATE_DEFAULT);
 	lv_obj_set_style_text_color(label, lv_color_black(), LV_STATE_DEFAULT);
-	lv_label_set_text(label, "Delay");
+	lv_label_set_text(label, action.type == Simple::Action::Type::Delay ? "Delay" : "Duration");
 	lv_obj_set_align(label, LV_ALIGN_LEFT_MID);
 
 	lv_obj_t* indicator = lv_label_create(dir);
