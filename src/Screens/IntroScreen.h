@@ -4,6 +4,7 @@
 #include "../Interface/LVScreen.h"
 #include <Loop/LoopListener.h>
 #include <functional>
+#include "../LVGIF.h"
 
 class IntroScreen : public LVScreen, private LoopListener {
 public:
@@ -27,7 +28,7 @@ private:
 	uint32_t currentFrame = 0;
 	uint32_t frameTime;
 
-	lv_obj_t* img;
+	LVGIF gif;
 
 	static constexpr auto FadeTime = 300000;
 	uint32_t fade;
