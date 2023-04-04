@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_BOOSTELEMENT_H
 
 #include <Loop/LoopListener.h>
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class BoostElement : public LVObject, private LoopListener {
 public:

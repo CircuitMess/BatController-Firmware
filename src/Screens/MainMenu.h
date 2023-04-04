@@ -4,7 +4,7 @@
 #include <Input/InputListener.h>
 #include <memory>
 #include <DisconnectListener.h>
-#include "../Interface/LVScreen.h"
+#include <LVScreen.h>
 #include "../Elements/GeneralInfoElement.h"
 
 

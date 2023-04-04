@@ -4,7 +4,7 @@
 #include "../PairScreen.h"
 #include "ProgEditScreen.h"
 #include "../MainMenu.h"
-#include "../../FSLVGL.h"
+#include <FSLVGL.h>
 #include <Input/Input.h>
 #include <Pins.hpp>
 #include <Loop/LoopManager.h>
@@ -13,7 +13,7 @@
 uint8_t SimpleProgScreen::lastProgramIndex = 0;
 
 SimpleProgScreen::SimpleProgScreen(){
-	FSLVGL::loadSimple();
+//	FSLVGL::loadSimple();
 
 	lv_obj_set_style_bg_color(obj, lv_color_black(), LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(obj, LV_OPA_COVER, LV_STATE_DEFAULT);
@@ -95,7 +95,7 @@ void SimpleProgScreen::onDisconnected(){
 	stop();
 	delete this;
 
-	FSLVGL::unloadSimple();
+//	FSLVGL::unloadSimple();
 
 	auto pair = new PairScreen();
 	pair->start();
@@ -117,7 +117,7 @@ void SimpleProgScreen::buttonPressed(uint i){
 		stop();
 		delete this;
 
-		FSLVGL::unloadSimple();
+//		FSLVGL::unloadSimple();
 		LoopManager::defer([tmpScr, info](uint32_t t){
 			auto mainMenu = new MainMenu();
 			mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));
@@ -159,7 +159,7 @@ void SimpleProgScreen::buttonReleased(uint i){
 		stop();
 		delete this;
 
-		FSLVGL::unloadSimple();
+//		FSLVGL::unloadSimple();
 		LoopManager::defer([tmpScr, info](uint32_t t){
 			auto mainMenu = new MainMenu();
 			mainMenu->setInfoElement(std::unique_ptr<GeneralInfoElement>(info));

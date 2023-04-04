@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_DANCEELEMENT_H
 
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 #include <DanceType.h>
 #include <string>
 

@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_SIGNALELEMENT_H
 
 #include <Com/ComListener.h>
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class SignalElement : public LVObject, private ComListener {
 public:

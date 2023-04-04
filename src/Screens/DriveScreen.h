@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_DRIVESCREEN_H
 
 #include "../Driver/Driver.h"
-#include "../Interface/LVScreen.h"
+#include <LVScreen.h>
 #include <memory>
 #include <Input/InputListener.h>
 #include <DriveMode.h>

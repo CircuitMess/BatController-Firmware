@@ -1,5 +1,5 @@
 #include "Prompt.h"
-#include "../InputLVGL.h"
+#include <InputLVGL.h>
 
 static const char* tag = "prompt";
 

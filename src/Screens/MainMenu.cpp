@@ -7,7 +7,7 @@
 #include "SettingsScreen.h"
 #include "PairScreen.h"
 #include "SimpleProg/SimpleProgScreen.h"
-#include "../FSLVGL.h"
+#include <FSLVGL.h>
 
 uint8_t MainMenu::lastSelected = 0;
 MainMenu::MainMenu() : LVScreen() {
@@ -129,8 +129,8 @@ void MainMenu::setRed(uint8_t index, bool reverse) {
 }
 
 void MainMenu::onStarting() {
-	FSLVGL::unloadFleha();
-	FSLVGL::unloadSimple();
+//	FSLVGL::unloadFleha();
+//	FSLVGL::unloadSimple();
 
 	if(infoElement == nullptr){
 		infoElement = std::make_unique<GeneralInfoElement>(getLvObj());

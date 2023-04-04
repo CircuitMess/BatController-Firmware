@@ -1,6 +1,6 @@
 
 #include "InputPS.h"
-#include "../../InputLVGL.h"
+#include <InputLVGL.h>
 #include <lvgl.h>
 
 #define LV_KB_BTN(width) width

@@ -1,7 +1,7 @@
 #ifndef BATCONTROLLER_FIRMWARE_SETTINGSSCREEN_H
 #define BATCONTROLLER_FIRMWARE_SETTINGSSCREEN_H
 
-#include "../Interface/LVScreen.h"
+#include <LVScreen.h>
 #include <Input/InputListener.h>
 #include <DisconnectListener.h>
 #include "../Elements/Prompt.h"

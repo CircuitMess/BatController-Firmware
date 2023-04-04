@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_BATSZOOMELEMENT_H
 
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class BatsZoomElement : public LVObject {
 public:

@@ -1,7 +1,7 @@
 #ifndef BATCONTROLLER_FIRMWARE_GENERALINFOELEMENT_H
 #define BATCONTROLLER_FIRMWARE_GENERALINFOELEMENT_H
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 #include <DriveMode.h>
 #include <Loop/LoopListener.h>
 #include "BatteryElement.h"

@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_PAIRSCREEN_H
 
 #include <Display/Sprite.h>
-#include "../Interface/LVScreen.h"
+#include <LVScreen.h>
 #include "../PairService.h"
 #include "PairScreenElements/ScanAruco.h"
 #include "PairScreenElements/Connecting.h"

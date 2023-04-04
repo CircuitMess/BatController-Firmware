@@ -3,7 +3,7 @@
 
 
 #include <Input/InputListener.h>
-#include "../Interface/LVModal.h"
+#include <LVModal.h>
 #include <functional>
 
 class MessageModal : public LVModal, private InputListener {

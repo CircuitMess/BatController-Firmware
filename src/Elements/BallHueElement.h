@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_BALLHUEELEMENT_H
 
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class BallHueElement : public LVObject {
 public:

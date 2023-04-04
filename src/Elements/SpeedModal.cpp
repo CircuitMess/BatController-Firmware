@@ -1,6 +1,6 @@
 #include "SpeedModal.h"
 #include <BatController.h>
-#include "../InputLVGL.h"
+#include <InputLVGL.h>
 
 [[maybe_unused]] SpeedModal::SpeedModal(LVScreen* parent, std::function<void(uint8_t)> speedCB, uint8_t currentSpeed) : LVModal(parent), speedCB(speedCB){
 

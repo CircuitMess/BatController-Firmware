@@ -1,7 +1,7 @@
 #ifndef BATCONTROLLER_FIRMWARE_SPEEDMODAL_H
 #define BATCONTROLLER_FIRMWARE_SPEEDMODAL_H
 
-#include "../Interface/LVModal.h"
+#include <LVModal.h>
 #include <Input/InputListener.h>
 #include <functional>
 

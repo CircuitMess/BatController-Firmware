@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_MARKERACTIONELEMENT_H
 
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 #include <DriveInfo.h>
 
 class MarkerActionElement : public LVObject {

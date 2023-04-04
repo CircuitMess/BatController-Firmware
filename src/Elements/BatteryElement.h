@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_BATTERYELEMENT_H
 
 #include <Loop/LoopListener.h>
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 enum class BatType {
 	Controller, Batmobile

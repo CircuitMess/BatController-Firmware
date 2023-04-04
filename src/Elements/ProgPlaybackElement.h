@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_PROGPLAYBACKELEMENT_H
 
 #include "../Screens/SimpleProg/SimpleProgModel.h"
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class ProgPlaybackElement : public LVObject {
 public:

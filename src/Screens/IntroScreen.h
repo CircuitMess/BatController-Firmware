@@ -1,10 +1,10 @@
 #ifndef BATCONTROLLER_FIRMWARE_INTROSCREEN_H
 #define BATCONTROLLER_FIRMWARE_INTROSCREEN_H
 
-#include "../Interface/LVScreen.h"
+#include <LVScreen.h>
 #include <Loop/LoopListener.h>
 #include <functional>
-#include "../LVGIF.h"
+#include <LVGIF.h>
 
 class IntroScreen : public LVScreen, private LoopListener {
 public:

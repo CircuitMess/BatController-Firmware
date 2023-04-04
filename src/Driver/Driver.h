@@ -3,7 +3,7 @@
 
 #include <DriveInfo.h>
 #include <Display/Color.h>
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class Driver{
 public:

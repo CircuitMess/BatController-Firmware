@@ -4,11 +4,12 @@
 #include <BatController.h>
 #include <BatCommon.h>
 #include <SPIFFS.h>
-#include "src/FSLVGL.h"
-#include "src/InputLVGL.h"
+#include <LVGL-cpp.h>
 #include <Loop/LoopManager.h>
 #include <Com/Communication.h>
 #include <WiFi.h>
+#include <FSLVGL.h>
+#include <InputLVGL.h>
 #include "src/BatTheme.h"
 #include "src/Screens/SimpleProg/SimpleProgScreen.h"
 #include "src/Screens/MainMenu.h"
@@ -119,10 +120,70 @@ void setup(){
 		BatController.shutdown();
 	}
 
-	new FSLVGL(SPIFFS, 'S');
-	FSLVGL::loadCache();
+	static const char* cached[] = {
+			"/Menu/Small/Ball_b.bin",
+			"/Menu/Small/Ball_r.bin",
+			"/Menu/Small/SimpleProg_b.bin",
+			"/Menu/Small/SimpleProg_r.bin",
+			"/Menu/Small/Dance_b.bin",
+			"/Menu/Small/Dance_r.bin",
+			"/Menu/Small/Manual_b.bin",
+			"/Menu/Small/Manual_r.bin",
+			"/Menu/Small/Marker_b.bin",
+			"/Menu/Small/Marker_r.bin",
+			"/Menu/Small/Settings_b.bin",
+			"/Menu/Small/Settings_r.bin",
+			"/Menu/Label/Ball.bin",
+			"/Menu/Label/SimpleProg.bin",
+			"/Menu/Label/Dance.bin",
+			"/Menu/Label/Manual.bin",
+			"/Menu/Label/Marker.bin",
+			"/Menu/Label/Settings.bin",
+			// "/DriveScreen/ModalBg.bin",
+			"/DriveScreen/BallHue.bin",
+			"/DriveScreen/MarkerBackward.bin",
+			"/DriveScreen/MarkerForward.bin",
+			"/DriveScreen/MarkerRotate.bin",
+			"/DriveScreen/MarkerBurnout.bin",
+			"/DriveScreen/BallHuePicker.bin",
+			"/DriveScreen/BallHueBar.bin",
+			"/DriveScreen/SpeedBar.bin",
+			"/DriveScreen/SpeedBarFill.bin",
+			"/DriveScreen/Boost_full.bin",
+			"/DriveScreen/Boost_empty.bin",
+			"/DriveScreen/Boost_segment.bin",
+			"/Signal/0.bin",
+			"/Signal/1.bin",
+			"/Signal/2.bin",
+			"/Signal/3.bin",
+			"/Battery/0.bin",
+			"/Battery/1.bin",
+			"/Battery/2.bin",
+			"/Battery/3.bin",
+			"/Battery/4.bin",
+			"/Battery/5.bin",
+			"/Battery/6.bin",
+			"/Battery/7.bin",
+			"/Battery/Batmobile.bin",
+			"/Battery/Controller.bin",
+			"/DriveMode/Ball.bin",
+			"/DriveMode/Idle.bin",
+			"/DriveMode/Line.bin",
+			"/DriveMode/Marker.bin",
+			"/DriveMode/Manual.bin",
+			"/DriveMode/SimpleProg.bin"
+	};
 
-	BatController.getInput()->addListener(new InputLVGL());
+	new FSLVGL(SPIFFS, 'S', cached, sizeof(cached) / sizeof(cached[0]));
+	FSLVGL::loadCache();
+	static const std::map<uint8_t, lv_key_t> keyMap = {{ BTN_UP,    LV_KEY_PREV },
+													   { BTN_DOWN,  LV_KEY_NEXT },
+													   { BTN_LEFT,  LV_KEY_LEFT },
+													   { BTN_RIGHT, LV_KEY_RIGHT },
+													   { BTN_A,     LV_KEY_ENTER },
+													   { BTN_B,     LV_KEY_ESC },
+													   { BTN_MENU,  LV_KEY_HOME }};
+	BatController.getInput()->addListener(new InputLVGL(keyMap));
 	SimpleProgScreen::touchIndex();
 	MainMenu::resetLastSelected();
 

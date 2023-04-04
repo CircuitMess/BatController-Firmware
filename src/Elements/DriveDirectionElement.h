@@ -1,7 +1,7 @@
 #ifndef BATCONTROLLER_FIRMWARE_DRIVEDIRECTIONELEMENT_H
 #define BATCONTROLLER_FIRMWARE_DRIVEDIRECTIONELEMENT_H
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 
 class DriveDirectionElement : public LVObject {
 public:

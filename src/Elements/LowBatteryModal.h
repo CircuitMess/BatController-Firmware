@@ -2,7 +2,7 @@
 #ifndef BATCONTROLLER_FIRMWARE_LOWBATTERYMODAL_H
 #define BATCONTROLLER_FIRMWARE_LOWBATTERYMODAL_H
 
-#include "../Interface/LVModal.h"
+#include <LVModal.h>
 #include "BatteryElement.h"
 
 class LowBatteryModal : public LVModal{

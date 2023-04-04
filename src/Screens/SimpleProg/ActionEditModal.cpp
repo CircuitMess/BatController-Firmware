@@ -1,6 +1,6 @@
 #include "ActionEditModal.h"
 #include <BatController.h>
-#include "../../InputLVGL.h"
+#include <InputLVGL.h>
 
 ActionEditModal::ActionEditModal(LVScreen* parent) : LVModal(parent){
 

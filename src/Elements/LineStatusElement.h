@@ -2,7 +2,7 @@
 #define BATCONTROLLER_FIRMWARE_LINESTATUSELEMENT_H
 
 
-#include "../Interface/LVObject.h"
+#include <LVObject.h>
 #include <DriveInfo.h>
 
 class LineStatusElement : public LVObject {

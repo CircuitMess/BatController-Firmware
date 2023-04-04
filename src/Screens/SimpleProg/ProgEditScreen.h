@@ -3,7 +3,7 @@
 
 #include <DisconnectListener.h>
 #include <Input/InputListener.h>
-#include "../../Interface/LVScreen.h"
+#include <LVScreen.h>
 #include "SimpleProgModel.h"
 #include "ActionEditModal.h"
 #include "ActionPickModal.h"

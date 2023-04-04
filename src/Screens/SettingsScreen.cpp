@@ -7,7 +7,7 @@
 #include <nvs_flash.h>
 #include <Com/Communication.h>
 #include "PairScreen.h"
-#include "../InputLVGL.h"
+#include <InputLVGL.h>
 
 SettingsScreen::SettingsScreen() : LVScreen(), factoryResetPrompt(this, "Are you sure?\n\nThis will erase ALL data!"){
 
